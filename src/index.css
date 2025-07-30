@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #e8d6b2;
+  --color-secondary: #fff2d9;
+  --color-dark: #02020e;
+}
+
+@layer utilities {
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}
+.Toastify__toast--success {
+  background-color: #e8d6b2 !important; /* Light green, or choose your custom */
+  color: #02020e !important; /* Text color */
+  border-left: #e8d6b2 10px solid !important;
+}
