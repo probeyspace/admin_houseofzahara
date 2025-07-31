@@ -1,6 +1,6 @@
 import api from "../Api/api";
 
-export const addProduct = async (productData) => {
+export const createProduct = async (productData) => {
   try {
     const response = await api.post("/products", productData, {
       headers: {
@@ -9,15 +9,33 @@ export const addProduct = async (productData) => {
     });
     return response.data;
   } catch (error) {
-    throw new Error(error?.response?.data?.message || "Something went wrong");
+    throw error;
   }
 };
+
 export const fetchProducts = async () => {
   try {
-    const response = await api.get("/products/admin");
+    const response = await api.get("/products");
     return response.data.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
+  }
+};
+
+export const createVariant = async (productId, variantData) => {
+  try {
+    const response = await api.post(
+      `/products/${productId}/add-variant`,
+      variantData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -26,32 +44,15 @@ export const updateProduct = async (id, productData) => {
     const response = await api.put(`/products/${id}`, productData);
     return response.data;
   } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };
+
 export const deleteProductById = async (id) => {
   try {
     const response = await api.delete(`/products/${id}`);
     return response.data;
   } catch (error) {
-    throw new Error(error);
-  }
-};
-
-export const verifyProductById = async (id, isVerified) => {
-  try {
-    const response = await api.put(`/products/verify/${id}`, { isVerified });
-    return response.data.data;
-  } catch (error) {
-    throw new Error(error);
-  }
-};
-
-export const fetchCustomers = async () => {
-  try {
-    const response = await api.get("/vendor/customers");
-    return response.data.data;
-  } catch (error) {
-    throw new Error(error);
+    throw error;
   }
 };

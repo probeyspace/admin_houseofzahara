@@ -49,7 +49,7 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
     if (image) formData.append("image", image);
 
     try {
-      await updateCategory(category.id, formData);
+      await updateCategory(category._id, formData);
       toast.success("Category updated successfully");
       handleClose(); // this is not async, so no need for await
     } catch (error) {

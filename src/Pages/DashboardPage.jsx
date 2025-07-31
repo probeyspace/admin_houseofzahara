@@ -11,10 +11,8 @@ const DashboardPage = () => {
   useUsers();
   useCategory();
   useProducts();
-  useOrders();
-  // const categories = useSelector((state) => state.category);
+  // useOrders();
   const orders = useSelector((state) => state.orders);
-  const users = useSelector((state) => state.users);
   const products = useSelector((store) => store.products);
   const pendingOrders = orders.filter((order) => order.status === "PENDING");
   // processing order
@@ -40,8 +38,6 @@ const DashboardPage = () => {
   );
   // const revenue = orders.reduce((total, order) => total + order.totalPrice, 0);
 
-  const { vendors } = useUsers();
-
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
@@ -66,33 +62,19 @@ const DashboardPage = () => {
           color="#7d1e0c"
         />
         <MetricsCard
-          to={"/users"}
-          title="USERS"
-          value={users?.length}
-          color="#3BC0C3"
-        />
-        <MetricsCard
           to={"/products"}
           title="PRODUCTS"
           value={products?.length}
           color="#3BC0C3"
         />
-        <MetricsCard
-          to={"/vendors"}
-          title="VENDORS"
-          value={vendors?.length}
-          color="#3BC0C3"
-        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <WeeklySalesReport />
-        <YearlySalesReport />
+        {/* <WeeklySalesReport /> */}
+        {/* <YearlySalesReport /> */}
       </div>
 
-      <div className="mt-8">
-        <MonthlySalesReport />
-      </div>
+      <div className="mt-8">{/* <MonthlySalesReport /> */}</div>
     </>
   );
 };

@@ -1,30 +1,29 @@
 import { useState } from "react";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash, FaPlusCircle, FaListUl } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
 import ViewProductModal from "./ViewProductModal";
-import { deleteProduct, verifyProduct } from "../../store/slices/productSlice";
+import { deleteProduct } from "../../store/slices/productSlice";
 // import EditProductModal from "./EditProductModal";
-import { deleteProductById, verifyProductById } from "../../services/products";
+import { deleteProductById } from "../../services/products";
 import { toast } from "react-toastify";
+import AddProductModal from "./AddProductModal";
+import AddVariantModal from "./AddVariantModal";
+import VariantListModal from "./VariantListModal";
 
 function ProductList() {
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-  const [filterStatus, setFilterStatus] = useState("all");
-
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [editModal, setEditModal] = useState(false);
-  useProducts();
+  const [addModal, setAddModal] = useState(false);
+  // const [showAddVariant, setShowAddVariant] = useState(false);
+  const [showVariantList, setShowVariantList] = useState(false);
+  const [showAddVariant, setShowAddVariant] = useState(false);
+  // useProducts();
   const products = useSelector((store) => store.products);
-
-  // const handleEdit = (product) => {
-  //   setSelectedProduct(product);
-  //   setEditModal(true);
-  // };
 
   const handleView = (product) => {
     setSelectedProduct(product);
@@ -43,36 +42,19 @@ function ProductList() {
     }
   };
 
-  const handleVerify = async (product) => {
-    try {
-      await verifyProductById(product.id, !product.isVerified);
-      dispatch(
-        verifyProduct({ id: product.id, isVerified: !product.isVerified })
-      );
-      toast.success(
-        `Product ${
-          product.isVerified ? "unverified" : "verified"
-        } successfully!`
-      );
-    } catch (error) {
-      console.error("Error verifying product:", error);
-    }
+  const openAddVariantModal = (product) => {
+    setSelectedProduct(product);
+    setShowAddVariant(true);
   };
 
-  // Filter products
-  let filteredProducts = products
-    ?.filter((product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter((product) => {
-      if (filterStatus === "verified") return product.isVerified;
-      if (filterStatus === "pending") return !product.isVerified;
-      return true;
-    });
+  const openVariantListModal = (product) => {
+    setSelectedProduct(product);
+    setShowVariantList(true);
+  };
 
   // Pagination Logic
-  const totalPages = Math.ceil(filteredProducts?.length / perPage);
-  const paginatedProducts = filteredProducts?.slice(
+  const totalPages = Math.ceil(products?.length / perPage);
+  const paginatedProducts = products?.slice(
     (page - 1) * perPage,
     page * perPage
   );
@@ -91,18 +73,12 @@ function ProductList() {
           />
         </div>
         <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <label className="text-gray-600 font-medium text-sm sm:text-base">
-            Filter:
-          </label>
-          <select
-            className="border border-gray-400 text-gray-600 px-2 py-1 rounded-sm text-sm sm:text-base w-full sm:w-auto"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+          <button
+            onClick={() => setAddModal(true)}
+            className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer"
           >
-            <option value="all">All</option>
-            <option value="verified">Verified</option>
-            <option value="pending">Pending</option>
-          </select>
+            Add Product
+          </button>
         </div>
       </div>
 
@@ -113,12 +89,12 @@ function ProductList() {
             <tr className="text-left">
               <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Name</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Store Name</th>
+
               <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
                 Category
               </th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Verified</th>
             </tr>
           </thead>
           <tbody>
@@ -136,46 +112,53 @@ function ProductList() {
                       ? product.name.substring(0, 25)
                       : product.name}
                   </td>
+
                   <td className="p-2 sm:p-3 hidden sm:table-cell">
-                    {product.vendor?.storeName}
+                    {product.categoryId?.name}
                   </td>
-                  <td className="p-2 sm:p-3 hidden sm:table-cell">
-                    {product.category?.name}
+
+                  <td className="p-2 sm:p-3 space-x-2 sm:space-x-3">
+                    <button
+                      onClick={() => openAddVariantModal(product)}
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                      aria-label="View product variants"
+                    >
+                      <FaPlusCircle
+                        size={16}
+                        className="w-4 h-4 sm:w-5 sm:h-5"
+                      />
+                    </button>
+                    <button
+                      onClick={() => openVariantListModal(product)}
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                      aria-label="View product variants"
+                    >
+                      <FaListUl size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
                   </td>
+
                   <td className="p-2 sm:p-3 flex space-x-2 sm:space-x-3">
                     <button
                       onClick={() => handleView(product)}
-                      className="text-primary hover:text-primary/80 cursor-pointer"
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="View product"
                     >
                       <FaEye size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
-                    {/* <button
+                    <button
                       onClick={() => handleEdit(product)}
-                      className="text-green-600 hover:text-green-800 cursor-pointer"
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="Edit product"
                     >
                       <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button> */}
+                    </button>
                     <button
-                      onClick={() => handleDelete(product.id)}
-                      className="text-primary hover:text-primary/80 cursor-pointer"
+                      onClick={() => handleDelete(product._id)}
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="Delete product"
                     >
                       <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
-                  </td>
-                  <td className="p-2 sm:p-3">
-                    <label className="relative inline-block w-8 h-4 sm:w-10 sm:h-5">
-                      <input
-                        type="checkbox"
-                        checked={product.isVerified}
-                        onChange={() => handleVerify(product)}
-                        className="peer sr-only"
-                      />
-                      <div className="w-full h-full bg-gray-300 rounded-full peer-checked:bg-primary transition-all duration-300"></div>
-                      <div className="absolute top-0.5 left-0.5 w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full shadow-sm transition-all duration-300 peer-checked:translate-x-3 sm:peer-checked:translate-x-5"></div>
-                    </label>
                   </td>
                 </tr>
               ))
@@ -204,9 +187,9 @@ function ProductList() {
             onChange={(e) => setPerPage(Number(e.target.value))}
             className="border border-gray-400 text-gray-600 px-2 py-1 rounded-sm text-sm sm:text-base"
           >
-            <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={20}>20</option>
+            <option value={30}>30</option>
           </select>
         </div>
         <div className="flex items-center overflow-x-auto w-full sm:w-auto justify-center sm:justify-start">
@@ -257,11 +240,19 @@ function ProductList() {
         onClose={() => setIsModalOpen(false)}
         product={selectedProduct}
       />
-      {/* <EditProductModal
-        isOpen={editModal}
-        onClose={() => setEditModal(false)}
-        product={selectedProduct}
-      /> */}
+      <AddProductModal isOpen={addModal} onClose={() => setAddModal(false)} />
+
+      <AddVariantModal
+        isOpen={showAddVariant}
+        onClose={() => setShowAddVariant(false)}
+        productId={selectedProduct?._id}
+      />
+
+      <VariantListModal
+        isOpen={showVariantList}
+        onClose={() => setShowVariantList(false)}
+        variants={selectedProduct?.variants}
+      />
     </div>
   );
 }

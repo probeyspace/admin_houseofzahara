@@ -6,7 +6,6 @@ import { useCategory } from "../../Hooks/useCategory";
 import api from "../../Api/api";
 import EditCategoryModal from "./EditCategoryModal";
 import { allCategory } from "../../store/slices/categorySlice";
-import { fetchAllCategory } from "../../services/category";
 
 function CategoryList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -34,9 +33,8 @@ function CategoryList() {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
         await api.delete(`/categories/${id}`);
-        // Refresh category list after deletion
         const updatedCategories = categories.filter(
-          (category) => category.id !== id
+          (category) => category._id !== id
         );
         dispatch(allCategory(updatedCategories));
       } catch (error) {
@@ -85,7 +83,10 @@ function CategoryList() {
           </thead>
           <tbody>
             {paginatedCategories?.map((category, index) => (
-              <tr key={category.id} className="hover:bg-gray-100 text-gray-500">
+              <tr
+                key={category._id}
+                className="hover:bg-gray-100 text-gray-500"
+              >
                 <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-2 ">{category.name}</td>
                 <td className="p-2 ">{category.description}</td>
@@ -103,7 +104,7 @@ function CategoryList() {
                     <FaEdit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(category.id)}
+                    onClick={() => handleDelete(category._id)}
                     className="text-primary hover:text-primary/80 cursor-pointer"
                   >
                     <FaTrash size={18} />

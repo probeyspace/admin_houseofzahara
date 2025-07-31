@@ -11,16 +11,16 @@ const productSlice = createSlice({
       state.push(action.payload);
     },
     deleteProduct: (state, action) => {
-      return state.filter((p) => p.id !== action.payload);
+      return state.filter((p) => p._id !== action.payload);
     },
     updateProductData: (state, action) => {
-      const index = state.findIndex((p) => p.id === action.payload.id);
+      const index = state.findIndex((p) => p._id === action.payload.id);
       if (index !== -1) {
         state[index] = action.payload;
       }
     },
     verifyProduct: (state, action) => {
-      const index = state.findIndex((p) => p.id === action.payload.id);
+      const index = state.findIndex((p) => p._id === action.payload.id);
       if (index !== -1) {
         state[index].isVerified = action.payload.isVerified;
       }

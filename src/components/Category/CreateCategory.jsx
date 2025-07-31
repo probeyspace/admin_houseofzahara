@@ -25,37 +25,30 @@ const CreateCategory = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoading(true);
-
     if (!categoryName || !description) {
       toast.error("Category name and description are required");
       return;
     }
-
     const formData = new FormData();
     formData.append("name", categoryName);
     formData.append("description", description);
     if (image) formData.append("image", image);
-
     try {
       const newCategory = await createCategory(formData);
-      if (newCategory) {
-        toast.success("Category created successfully");
-        setCategoryName("");
-        setDescription("");
-        setImage(null);
-        setPreview(null);
-        setLoading(false);
-        dispatch(allCategory([...categories, newCategory]));
-      } else {
-        toast.warn("Category name should be unique");
-        setLoading(false);
-      }
+      toast.success("Category created successfully");
+      setCategoryName("");
+      setDescription("");
+      setImage(null);
+      setPreview(null);
+      dispatch(allCategory([...categories, newCategory]));
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error creating category:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to create category."
+      );
+    } finally {
       setLoading(false);
-      toast.error("Error creating category");
     }
   };
 
@@ -122,7 +115,7 @@ const CreateCategory = () => {
         <div>
           <button
             type="submit"
-            className=" bg-primary hover:scale-105 transition duration-300 text-white px-4 py-2 rounded-md font-medium cursor-pointer"
+            className=" bg-primary hover:scale-105 transition duration-300 text-dark px-4 py-2 rounded-md font-medium cursor-pointer"
           >
             {!loading ? (
               "Create Category"

@@ -51,7 +51,7 @@ function ViewProductModal({ isOpen, onClose, product }) {
                 {/* Product Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                   <p>
-                    <strong>ID:</strong> {product.id}
+                    <strong>ID:</strong> {product._id}
                   </p>
                   <p>
                     <strong>Name:</strong> {product.name}
@@ -60,121 +60,34 @@ function ViewProductModal({ isOpen, onClose, product }) {
                     <strong>Brand:</strong> {product.brandName}
                   </p>
                   <p>
-                    <strong>Category:</strong> {product.category?.name || "N/A"}
+                    <strong>Category:</strong>{" "}
+                    {product.categoryId?.name || "N/A"}
                   </p>
-                  <p>
-                    <strong>Material:</strong> {product.material}
-                  </p>
-                  <p>
-                    <strong>Style:</strong> {product.style}
-                  </p>
-                  <p>
-                    <strong>Region:</strong> {product.artisanRegion}
-                  </p>
-                  <p>
-                    <strong>Dimension:</strong> {product.dimension}
-                  </p>
-                  <p>
-                    <strong>Weight:</strong> {product.weight}g
-                  </p>
-                  <p>
-                    <strong>Exchangeable:</strong>{" "}
-                    {product.isExchangeable ? "Yes" : "No"}
-                  </p>
-                  <p>
-                    <strong>Refundable:</strong>{" "}
-                    {product.isRefundable ? "Yes" : "No"}
+                  <p className="md:col-span-2">
+                    <strong>Description:</strong> {product.description}
                   </p>
                   <p>
                     <strong>Created At:</strong>{" "}
                     {new Date(product.createdAt).toLocaleDateString()}
                   </p>
-                  <p className="md:col-span-2">
-                    <strong>Description:</strong> {product.description}
-                  </p>
                 </div>
 
-                {/* Tags */}
-                {product.tags?.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold mb-2">Tags</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag) => (
-                        <span
-                          key={tag.id}
-                          className="bg-gray-100 border border-gray-300 text-sm px-3 py-1 rounded"
-                        >
-                          {tag.name}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Colors */}
-                {product.colors?.length > 0 && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold mb-2">Color Variants</h4>
-                    <div className="space-y-2">
-                      {product.colors.map((c) => (
-                        <div
-                          key={c.id}
-                          className="flex flex-wrap items-center gap-4 border border-gray-200 p-2 rounded"
-                        >
-                          <span>
-                            <strong>Color:</strong> {c.color}
-                          </span>
-                          <span>
-                            <strong>SKU:</strong> {c.sku}
-                          </span>
-                          <span>
-                            <strong>Stock:</strong> {c.stock}
-                          </span>
-                          <span>
-                            <strong>Price:</strong> ₹{c.price}
-                          </span>
-                          <span>
-                            <strong>Discount:</strong> ₹{c.discountPrice}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <strong>Hex:</strong>
-                            <span
-                              className="w-4 h-4 rounded-full border"
-                              style={{ backgroundColor: c.hex }}
-                            />
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* Images */}
-                {product.images?.length > 0 && (
+                {product.thumbnailImages?.length > 0 && (
                   <div className="mt-4">
-                    <h4 className="font-semibold mb-2">Product Images</h4>
-                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-3">
-                      {product.images.map((img) => (
+                    <h4 className="font-semibold mb-2">
+                      Product Thumbnail Images for Product Card
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {product.thumbnailImages.map((img) => (
                         <img
                           key={img.id}
                           src={img.url}
                           alt={img.altText || "Product Image"}
-                          className="w-full h-32 object-cover rounded shadow-sm"
+                          className="w-[150px] h-[150px] object-cover rounded shadow-sm"
                         />
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Video */}
-                {product.videoUrl && (
-                  <div className="mt-6">
-                    <h4 className="font-semibold mb-2">Product Video</h4>
-                    <video
-                      controls
-                      src={product.videoUrl}
-                      className="w-full rounded shadow"
-                    />
                   </div>
                 )}
               </Dialog.Panel>

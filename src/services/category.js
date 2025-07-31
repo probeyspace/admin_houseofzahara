@@ -15,7 +15,7 @@ export const createCategory = async (categoryData) => {
     const response = await api.post("/categories", categoryData);
     return response.data.data;
   } catch (error) {
-    console.log(error?.response?.data?.message);
+    throw error;
   }
 };
 

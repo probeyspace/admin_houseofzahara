@@ -16,7 +16,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
-  console.log(categories);
   const dispatch = useDispatch();
 
   const handleChange = (e) => {

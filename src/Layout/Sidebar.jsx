@@ -23,14 +23,6 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       to: "/products",
       text: "Products",
       icon: <BsEyeglasses />,
-      // subItems: [
-      //   { to: "/products", icon: <BsEyeglasses />, text: "Product List" },
-      //   {
-      //     to: "/product/create",
-      //     icon: <FaPlus className="text-sm" />,
-      //     text: "Add Product",
-      //   },
-      // ],
     },
     {
       icon: <BiCategory />,

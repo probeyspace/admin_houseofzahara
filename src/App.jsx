@@ -3,7 +3,6 @@ import "./App.css";
 import LoginPage from "./Pages/LoginPage";
 import { useCurrentUser } from "./Hooks/useCurrentUser";
 import Layout from "./Layout/Layout";
-import CreateProduct from "./components/Products/CreateProduct";
 import CreateCategory from "./components/Category/CreateCategory";
 import ProductPage from "./Pages/ProductPage";
 import AddCouponForm from "./components/Coupons/AddCouponForm";
@@ -38,7 +37,6 @@ function App() {
           <Route element={<Layout />}>
             <Route index element={<DashboardPage />} />
             <Route path="products" element={<ProductPage />} />
-            <Route path="product/create" element={<CreateProduct />} />
             <Route path="category" element={<CategoryList />} />
             <Route path="category/create" element={<CreateCategory />} />
             <Route path="users" element={<UsersList />} />
