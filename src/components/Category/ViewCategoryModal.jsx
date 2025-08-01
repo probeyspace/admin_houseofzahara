@@ -29,7 +29,7 @@ const ViewCategoryModal = ({ isOpen, onClose, category }) => {
 
         <button
           onClick={onClose}
-          className="mt-6 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
+          className="mt-6 bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
         >
           Close
         </button>

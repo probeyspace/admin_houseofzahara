@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { createVariant } from "../../services/products";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { addVariant } from "../../store/slices/productSlice";
+import SvgSpinner from "../../common/SvgSpinner";
 
-function AddVariantModal({ isOpen, onClose, productId }) {
+function AddVariantModal({ isOpen, onClose, product }) {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     shade: "",
     size: "",
@@ -18,6 +22,8 @@ function AddVariantModal({ isOpen, onClose, productId }) {
     isActive: true,
     images: [],
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
@@ -40,14 +46,18 @@ function AddVariantModal({ isOpen, onClose, productId }) {
         formData.append(key, value);
       }
     });
-
+    setLoading(true);
     try {
-      const response = await createVariant(productId, formData);
+      const response = await createVariant(product._id, formData);
       toast.success(response?.message || "Variant added successfully!");
+      //update state of the product add variant
+      dispatch(addVariant(response.data));
       onClose();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Error adding variant");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -57,7 +67,7 @@ function AddVariantModal({ isOpen, onClose, productId }) {
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-2xl p-6 rounded-xl relative">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">
-          Add Variant
+          Add Variant for {product.name}
         </h2>
         <form
           onSubmit={handleSubmit}
@@ -116,10 +126,11 @@ function AddVariantModal({ isOpen, onClose, productId }) {
               Cancel
             </button>
             <button
+              disabled={loading}
               type="submit"
               className="bg-primary text-dark px-4 py-2 rounded hover:bg-primary/80 cursor-pointer"
             >
-              Save
+              {loading ? <SvgSpinner /> : "Add Variant"}
             </button>
           </div>
         </form>

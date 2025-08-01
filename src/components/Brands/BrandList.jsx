@@ -114,7 +114,7 @@ function BrandList() {
                     <FaEye size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(brand.id)}
+                    onClick={() => handleDelete(brand._id)}
                     className="text-primary hover:text-primary/80 cursor-pointer"
                   >
                     <FaTrash size={18} />

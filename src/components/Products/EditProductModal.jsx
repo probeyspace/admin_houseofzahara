@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { createProduct } from "../../services/products";
+import { updateProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
-import { addProductData } from "../../store/slices/productSlice";
+import { updateProductData } from "../../store/slices/productSlice";
 
-const AddProductModal = ({ isOpen, onClose }) => {
+const EditProductModal = ({ isOpen, onClose, productData }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -16,8 +16,21 @@ const AddProductModal = ({ isOpen, onClose }) => {
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
-  console.log(categories);
   const dispatch = useDispatch();
+
+  // Populate existing product data when modal opens
+  useEffect(() => {
+    if (productData) {
+      setFormData({
+        name: productData.name || "",
+        description: productData.description || "",
+        brandName: productData.brandName || "",
+        productType: productData.productType || "",
+        categoryId: productData.categoryId || "",
+        thumbnails: [], // user will reupload if needed
+      });
+    }
+  }, [productData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,13 +61,13 @@ const AddProductModal = ({ isOpen, onClose }) => {
     });
 
     try {
-      const response = await createProduct(data);
-      dispatch(addProductData(response.data));
-      toast.success(response?.message || "Product created successfully.");
+      const response = await updateProduct(productData._id, data);
+      dispatch(updateProductData(response.data)); // Redux update
+      toast.success(response?.message || "Product updated successfully.");
       onClose();
     } catch (error) {
       toast.error(
-        error?.response?.data?.message || "Failed to create product."
+        error?.response?.data?.message || "Failed to update product."
       );
     }
 
@@ -66,7 +79,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full">
-        <h2 className="text-xl font-bold mb-4">Add Product</h2>
+        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -117,14 +130,14 @@ const AddProductModal = ({ isOpen, onClose }) => {
           </select>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Thumbnail Images (Max 2)
+              Replace Thumbnails (optional, max 2)
             </label>
             <input
               type="file"
               multiple
               accept="image/*"
               onChange={handleFileChange}
-              className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
+              className="border border-gray-300 px-3 py-2 rounded-md w-full"
             />
           </div>
 
@@ -134,7 +147,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
               className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer"
               disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Create Product"}
+              {loading ? <SvgSpinner /> : "Update Product"}
             </button>
             <button
               type="button"
@@ -150,4 +163,4 @@ const AddProductModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default AddProductModal;
+export default EditProductModal;

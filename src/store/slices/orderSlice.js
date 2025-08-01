@@ -9,7 +9,7 @@ const orderSlice = createSlice({
     },
 
     changeStatus: (state, action) => {
-      const order = state.find((order) => order.id === action.payload.id);
+      const order = state.find((order) => order._id === action.payload._id);
       if (order) {
         order.status = action.payload.status;
       }

@@ -4,7 +4,6 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
   const orderCount = user.orders?.length || 0; // Get order count or default to 0 if user has no orders
   const wishlistCount = user.wishlist?.length || 0; // Get wishlist count or default to 0 if user has no wishlist items
   const addressCount = user.addresses?.length || 0;
-  const reviewsCount = user.reviews?.length || 0;
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm z-50">
       <div className="bg-white p-5 rounded-lg shadow-lg w-96">
@@ -48,9 +47,6 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
             <span className="font-semibold">Wishlist:</span> {wishlistCount}
           </p>
           <p>
-            <span className="font-semibold">Reviews:</span> {reviewsCount}
-          </p>
-          <p>
             <span className="font-semibold">Addresses:</span> {addressCount}
           </p>
         </div>
@@ -58,7 +54,7 @@ const ViewUserModal = ({ isOpen, onClose, user }) => {
         <div className="mt-2 flex justify-end">
           <button
             onClick={onClose}
-            className="bg-primary hover:bg-primary/80 text-white px-4 py-1 rounded-lg cursor-pointer"
+            className="bg-primary hover:bg-primary/80 text-dark px-4 py-1 rounded-lg cursor-pointer"
           >
             Close
           </button>

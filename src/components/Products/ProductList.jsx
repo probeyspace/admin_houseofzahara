@@ -4,12 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
 import ViewProductModal from "./ViewProductModal";
 import { deleteProduct } from "../../store/slices/productSlice";
-// import EditProductModal from "./EditProductModal";
 import { deleteProductById } from "../../services/products";
 import { toast } from "react-toastify";
 import AddProductModal from "./AddProductModal";
 import AddVariantModal from "./AddVariantModal";
 import VariantListModal from "./VariantListModal";
+import EditProductModal from "./EditProductModal";
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -19,10 +19,10 @@ function ProductList() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [addModal, setAddModal] = useState(false);
-  // const [showAddVariant, setShowAddVariant] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showVariantList, setShowVariantList] = useState(false);
   const [showAddVariant, setShowAddVariant] = useState(false);
-  // useProducts();
+  useProducts();
   const products = useSelector((store) => store.products);
 
   const handleView = (product) => {
@@ -50,6 +50,11 @@ function ProductList() {
   const openVariantListModal = (product) => {
     setSelectedProduct(product);
     setShowVariantList(true);
+  };
+
+  const openEditModal = (product) => {
+    setSelectedProduct(product);
+    setShowEditModal(true);
   };
 
   // Pagination Logic
@@ -101,7 +106,7 @@ function ProductList() {
             {paginatedProducts?.length > 0 ? (
               paginatedProducts?.map((product, index) => (
                 <tr
-                  key={product.id}
+                  key={product._id}
                   className="hover:bg-gray-100 text-gray-500"
                 >
                   <td className="p-2 sm:p-3">
@@ -119,6 +124,7 @@ function ProductList() {
 
                   <td className="p-2 sm:p-3 space-x-2 sm:space-x-3">
                     <button
+                      title="Add Variant"
                       onClick={() => openAddVariantModal(product)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="View product variants"
@@ -129,6 +135,7 @@ function ProductList() {
                       />
                     </button>
                     <button
+                      title="Variants List"
                       onClick={() => openVariantListModal(product)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="View product variants"
@@ -139,6 +146,7 @@ function ProductList() {
 
                   <td className="p-2 sm:p-3 flex space-x-2 sm:space-x-3">
                     <button
+                      title="View Product"
                       onClick={() => handleView(product)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="View product"
@@ -146,13 +154,15 @@ function ProductList() {
                       <FaEye size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     <button
-                      onClick={() => handleEdit(product)}
+                      title="Edit Product"
+                      onClick={() => openEditModal(product)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="Edit product"
                     >
                       <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     <button
+                      title="Delete Product"
                       onClick={() => handleDelete(product._id)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       aria-label="Delete product"
@@ -242,10 +252,16 @@ function ProductList() {
       />
       <AddProductModal isOpen={addModal} onClose={() => setAddModal(false)} />
 
+      <EditProductModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        productData={selectedProduct}
+      />
+
       <AddVariantModal
         isOpen={showAddVariant}
         onClose={() => setShowAddVariant(false)}
-        productId={selectedProduct?._id}
+        product={selectedProduct}
       />
 
       <VariantListModal

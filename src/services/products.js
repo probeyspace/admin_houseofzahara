@@ -39,6 +39,28 @@ export const createVariant = async (productId, variantData) => {
   }
 };
 
+export const deleteVariantById = async (variantId) => {
+  try {
+    const response = await api.delete(`/products/variant/${variantId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editVariantById = async (id, data) => {
+  try {
+    const response = await api.put(`/products/variant/${id}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateProduct = async (id, productData) => {
   try {
     const response = await api.put(`/products/${id}`, productData);

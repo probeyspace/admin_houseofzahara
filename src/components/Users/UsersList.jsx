@@ -26,8 +26,8 @@ function UsersList() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const res = await api.delete(`/users/delete-user/${id}`);
-        const updatedUsers = users.filter((user) => user.id !== id);
+        const res = await api.delete(`/users/${id}`);
+        const updatedUsers = users.filter((user) => user._id !== id);
         dispatch(setUsers(updatedUsers));
         toast.success(res?.data?.message || "User deleted successfully!");
       } catch (error) {
@@ -78,13 +78,13 @@ function UsersList() {
                 <td className="p-3 flex space-x-3">
                   <button
                     onClick={() => handleView(user)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEye size={20} />
                   </button>
                   <button
-                    onClick={() => handleDelete(user.id)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    onClick={() => handleDelete(user._id)}
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaTrash size={20} />
                   </button>

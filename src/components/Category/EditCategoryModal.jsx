@@ -136,7 +136,7 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
             </button>
             <button
               type="submit"
-              className="bg-primary hover:scale-105 cursor-pointer transition duration-300 text-white px-4 py-2 rounded-md font-medium"
+              className="bg-primary hover:scale-105 cursor-pointer transition duration-300 text-dark px-4 py-2 rounded-md font-medium"
             >
               {loading ? <SvgSpinner /> : "Update Category"}
             </button>

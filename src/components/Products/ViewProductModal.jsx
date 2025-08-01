@@ -81,10 +81,10 @@ function ViewProductModal({ isOpen, onClose, product }) {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {product.thumbnailImages.map((img) => (
                         <img
-                          key={img.id}
+                          key={img._id}
                           src={img.url}
                           alt={img.altText || "Product Image"}
-                          className="w-[150px] h-[150px] object-cover rounded shadow-sm"
+                          className="w-[150px] h-[150px] object-contain rounded shadow-sm"
                         />
                       ))}
                     </div>
