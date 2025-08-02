@@ -27,14 +27,7 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     {
       icon: <BiCategory />,
       text: "Categories",
-      subItems: [
-        { to: "/category", icon: <BiCategory />, text: "Category List" },
-        {
-          to: "/category/create",
-          icon: <TbCategoryPlus />,
-          text: "Add Category",
-        },
-      ],
+      to: "/category",
     },
 
     {
@@ -85,13 +78,13 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       icon: <FaCommentDots />,
       text: "Reviews",
     },
-    {
-      to: "/searched",
-      icon: <MdSearch />,
-      text: "Searched Logs",
-    },
+    // {
+    //   to: "/searched",
+    //   icon: <MdSearch />,
+    //   text: "Searched Logs",
+    // },
 
-    { to: "/blogs", icon: <MdArticle />, text: "Blogs" },
+    // { to: "/blogs", icon: <MdArticle />, text: "Blogs" },
     {
       to: "/brands",
       icon: <BiCategory />,

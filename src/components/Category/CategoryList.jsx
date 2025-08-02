@@ -6,12 +6,13 @@ import { useCategory } from "../../Hooks/useCategory";
 import api from "../../Api/api";
 import EditCategoryModal from "./EditCategoryModal";
 import { allCategory } from "../../store/slices/categorySlice";
+import CreateCategoryModal from "./CreateCategoryModal";
 
 function CategoryList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
-
+  const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModal, setEditModel] = useState(false);
@@ -67,6 +68,14 @@ function CategoryList() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+        <div>
+          <button
+            className="bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
+            onClick={() => setModalOpen(true)}
+          >
+            Add Category
+          </button>
         </div>
       </div>
 
@@ -184,6 +193,10 @@ function CategoryList() {
           setSelectedCategory(null);
         }}
         category={selectedCategory}
+      />
+      <CreateCategoryModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
       />
     </div>
   );

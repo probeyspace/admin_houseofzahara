@@ -1,31 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { updateCategory } from "../../services/category";
+import { createCategory } from "../../services/category";
 import SvgSpinner from "../../common/SvgSpinner";
 import { toast } from "react-toastify";
-import { useCategory } from "../../Hooks/useCategory";
-import { useDispatch } from "react-redux";
-import { updateLocalCategory } from "../../store/slices/categorySlice";
+import { allCategory } from "../../store/slices/categorySlice";
+import { useDispatch, useSelector } from "react-redux";
 
-const EditCategoryModal = ({ isOpen, onClose, category }) => {
+const CreateCategoryModal = ({ isOpen, onClose }) => {
   const [categoryName, setCategoryName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  useCategory();
-  // Reset values when modal opens or closes
-  useEffect(() => {
-    if (isOpen && category) {
-      setCategoryName(category.name || "");
-      setDescription(category.description || "");
-      setPreview(category.image || null);
-      setImage(null); // Reset image selection on open
-    }
-  }, [isOpen, category]);
 
-  if (!isOpen) return null;
+  const dispatch = useDispatch();
+  const categories = useSelector((store) => store.category);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -38,47 +27,53 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     if (!categoryName || !description) {
-      toast.error("Category name, description, and image are required.");
+      toast.error("Category name and description are required");
       setLoading(false);
       return;
     }
-
     const formData = new FormData();
     formData.append("name", categoryName);
     formData.append("description", description);
     if (image) formData.append("image", image);
 
     try {
-      const updatedCategory = await updateCategory(category._id, formData);
-      dispatch(updateLocalCategory(updatedCategory));
-      toast.success("Category updated successfully");
-      handleClose(); // this is not async, so no need for await
+      const newCategory = await createCategory(formData);
+      toast.success("Category created successfully");
+      setCategoryName("");
+      setDescription("");
+      setImage(null);
+      setPreview(null);
+      dispatch(allCategory([...categories, newCategory]));
+      onClose(); // close modal after success
     } catch (error) {
-      console.error(
-        error?.response?.data?.message || "Error updating category"
+      toast.error(
+        error?.response?.data?.message || "Failed to create category."
       );
-      toast.error(error?.response?.data?.message || "Error updating category");
     } finally {
-      setLoading(false); // always stop loading
+      setLoading(false);
     }
   };
 
-  const handleClose = () => {
-    setCategoryName("");
-    setDescription("");
-    setPreview(null);
-    setImage(null);
-    onClose(); // Close modal and reset selected category
-  };
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Edit Category</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+      <div className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-3 text-gray-500 hover:text-gray-700 cursor-pointer text-3xl"
+        >
+          &times;
+        </button>
+
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Create Category
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Category Name */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
               Category Name
@@ -89,9 +84,11 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
               onChange={(e) => setCategoryName(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+              placeholder="Enter category name"
             />
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
               Description
@@ -99,24 +96,25 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+              placeholder="Enter category description"
               rows="4"
             ></textarea>
           </div>
 
+          {/* Image Upload */}
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Upload Image <span className="text-red-500">*</span>
+              Upload Image (Optional)
             </label>
             <div className="flex items-center gap-4">
               <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-md flex items-center gap-2">
-                <FaCloudUploadAlt /> Upload Image
+                <FaCloudUploadAlt />
+                Upload Image
                 <input
                   type="file"
+                  className="hidden"
                   onChange={handleImageChange}
-                  required={!preview} // only required if no image already
-                  className="absolute opacity-0 w-0 h-0"
                 />
               </label>
               {preview && (
@@ -129,19 +127,14 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
             </div>
           </div>
 
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={handleClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded-md font-medium cursor-pointer hover:bg-gray-600 transition duration-300"
-            >
-              Cancel
-            </button>
+          {/* Submit Button */}
+          <div className="text-right">
             <button
               type="submit"
-              className="bg-primary hover:scale-105 cursor-pointer transition duration-300 text-dark px-4 py-2 rounded-md font-medium"
+              className="bg-primary cursor-pointer hover:scale-105 transition duration-300 text-dark px-4 py-2 rounded-md font-medium"
+              disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Update Category"}
+              {!loading ? "Create Category" : <SvgSpinner />}
             </button>
           </div>
         </form>
@@ -150,4 +143,4 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
   );
 };
 
-export default EditCategoryModal;
+export default CreateCategoryModal;

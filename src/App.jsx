@@ -3,7 +3,6 @@ import "./App.css";
 import LoginPage from "./Pages/LoginPage";
 import { useCurrentUser } from "./Hooks/useCurrentUser";
 import Layout from "./Layout/Layout";
-import CreateCategory from "./components/Category/CreateCategory";
 import ProductPage from "./Pages/ProductPage";
 import AddCouponForm from "./components/Coupons/AddCouponForm";
 import UsersList from "./components/Users/UsersList";
@@ -17,14 +16,14 @@ import CreateTestimonial from "./components/Testimonials/CreateTestimonial";
 import TestimonialList from "./components/Testimonials/TestimonialList";
 import ContactList from "./components/Contact/ContactList";
 import ReviewsList from "./components/Reviews/ReviewsList";
-import Articles from "./components/Articles/Articles";
 import BrandPage from "./Pages/BrandPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoute";
 import SubscriberList from "./components/Subscribers/SubscriberList";
-import BlogList from "./components/Blogs/Blogslist";
-import SearchedLogs from "./components/Searched/SearchedLogs";
+// import BlogList from "./components/Blogs/Blogslist";
+// import Articles from "./components/Articles/Articles";
+// import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
   useCurrentUser();
   return (
@@ -38,7 +37,6 @@ function App() {
             <Route index element={<DashboardPage />} />
             <Route path="products" element={<ProductPage />} />
             <Route path="category" element={<CategoryList />} />
-            <Route path="category/create" element={<CreateCategory />} />
             <Route path="users" element={<UsersList />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="coupon" element={<CouponsList />} />
@@ -50,10 +48,10 @@ function App() {
             <Route path="contacts" element={<ContactList />} />
             <Route path="subscribers" element={<SubscriberList />} />
             <Route path="reviews" element={<ReviewsList />} />
-            <Route path="searched" element={<SearchedLogs />} />
-            <Route path="articles" element={<Articles />} />
+            {/* <Route path="searched" element={<SearchedLogs />} /> */}
+            {/* <Route path="blogs" element={<BlogList />} /> */}
+            {/* <Route path="articles" element={<Articles />} /> */}
             <Route path="brands" element={<BrandPage />} />
-            <Route path="blogs" element={<BlogList />} />
           </Route>
         </Route>
       </Routes>
