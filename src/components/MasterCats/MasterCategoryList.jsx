@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import ViewCategoryModal from "./ViewCategoryModal";
-import { useCategory } from "../../Hooks/useCategory";
-import api from "../../Api/api";
-import EditCategoryModal from "./EditCategoryModal";
-import { allCategory } from "../../store/slices/categorySlice";
-import CreateCategoryModal from "./CreateCategoryModal";
+import { deleteMasterCategory } from "../../services/masterCategory";
+import EditMasterCategory from "./EditMasterCategory";
+import CreateMasterCategory from "./CreateMasterCategory";
+import ViewMasterCategory from "./ViewMasterCategory";
+import { deleteMaster } from "../../store/slices/masterSlice";
+import { toast } from "react-toastify";
 
-function CategoryList() {
+function MasterCategoryList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(5);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModal, setEditModel] = useState(false);
 
-  useCategory();
-  const categories = useSelector((store) => store.category); // Get categories from Redux store
   const dispatch = useDispatch();
+  const masterCategories = useSelector((store) => store.masterCategory);
+
   const handleEdit = (category) => {
     setSelectedCategory(category);
     setEditModel(true);
@@ -33,19 +33,16 @@ function CategoryList() {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await api.delete(`/categories/${id}`);
-        const updatedCategories = categories.filter(
-          (category) => category._id !== id
-        );
-        dispatch(allCategory(updatedCategories));
+        const res = await deleteMasterCategory(id);
+        toast.success(res?.message || "Master Category deleted successfully!");
+        dispatch(deleteMaster(id));
       } catch (error) {
         console.error("Error deleting category:", error);
       }
     }
   };
 
-  // Filter categories based on search
-  const filteredCategories = categories?.filter((category) =>
+  const filteredCategories = masterCategories?.filter((category) =>
     category?.name?.toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
@@ -55,6 +52,9 @@ function CategoryList() {
     (page - 1) * perPage,
     page * perPage
   );
+
+  if (!masterCategories) return <div>Loading...</div>;
+  if (masterCategories.length === 0) return <div>No categories found.</div>;
 
   return (
     <div className="max-w-6xl mx-auto p-3 bg-white shadow-md rounded-lg">
@@ -74,7 +74,7 @@ function CategoryList() {
             className="bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
             onClick={() => setModalOpen(true)}
           >
-            Add Category
+            Add Master Category
           </button>
         </div>
       </div>
@@ -86,7 +86,6 @@ function CategoryList() {
             <tr className="text-left">
               <th className="p-2">ID</th>
               <th className="p-2">Name</th>
-              <th className="p-2">Master Category</th>
               <th className="p-2">Description</th>
               <th className="p-2 ">Actions</th>
             </tr>
@@ -99,7 +98,6 @@ function CategoryList() {
               >
                 <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-2 ">{category.name}</td>
-                <td className="p-2 ">{category.masterCategory?.name}</td>
                 <td className="p-2 ">{category.description}</td>
                 <td className="p-2 flex space-x-3">
                   <button
@@ -180,28 +178,34 @@ function CategoryList() {
           </button>
         </div>
       </div>
-
-      {/* View Category Modal */}
-      <ViewCategoryModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        category={selectedCategory}
-      />
+      {/* 
+   
       {/* Edit Category Modal */}
-      <EditCategoryModal
+      <EditMasterCategory
         isOpen={editModal}
         onClose={() => {
           setEditModel(false);
           setSelectedCategory(null);
         }}
-        category={selectedCategory}
+        masterCategory={selectedCategory}
       />
-      <CreateCategoryModal
+      <CreateMasterCategory
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={async () => {
+          setModalOpen(false);
+        }}
+      />
+
+      <ViewMasterCategory
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedCategory(null);
+        }}
+        masterCategory={selectedCategory}
       />
     </div>
   );
 }
 
-export default CategoryList;
+export default MasterCategoryList;

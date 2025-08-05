@@ -1,43 +1,41 @@
 import { useState } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import ViewCategoryModal from "./ViewCategoryModal";
 import { useCategory } from "../../Hooks/useCategory";
-import api from "../../Api/api";
-import EditCategoryModal from "./EditCategoryModal";
-import { allCategory } from "../../store/slices/categorySlice";
-import CreateCategoryModal from "./CreateCategoryModal";
+import { deleteSubCategory } from "../../store/slices/subCategorySlice";
+import { deleteSubCategoryById } from "../../services/subCategories";
+import CreateSubCategory from "./CreateSubCategory";
+import ViewSubCategoryModal from "./ViewSubCategoryModal";
+import EditSubCategoryModal from "./EditSubCategoryModal";
+// import EditCategoryModal from "./EditCategoryModal";
 
-function CategoryList() {
+function SubCategoryList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(5);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModal, setEditModel] = useState(false);
 
   useCategory();
-  const categories = useSelector((store) => store.category); // Get categories from Redux store
+  const subCategories = useSelector((store) => store.subCategory); // Get categories from Redux store
   const dispatch = useDispatch();
-  const handleEdit = (category) => {
-    setSelectedCategory(category);
+  const handleEdit = (subCategory) => {
+    setSelectedCategory(subCategory);
     setEditModel(true);
   };
 
-  const handleView = (category) => {
-    setSelectedCategory(category);
+  const handleView = (subCategory) => {
+    setSelectedCategory(subCategory);
     setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this category?")) {
       try {
-        await api.delete(`/categories/${id}`);
-        const updatedCategories = categories.filter(
-          (category) => category._id !== id
-        );
-        dispatch(allCategory(updatedCategories));
+        await deleteSubCategoryById(id);
+        dispatch(deleteSubCategory(id));
       } catch (error) {
         console.error("Error deleting category:", error);
       }
@@ -45,13 +43,13 @@ function CategoryList() {
   };
 
   // Filter categories based on search
-  const filteredCategories = categories?.filter((category) =>
+  const filteredSubCategories = subCategories?.filter((category) =>
     category?.name?.toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   // Pagination Logic
-  const totalPages = Math.ceil(filteredCategories?.length / perPage);
-  const paginatedCategories = filteredCategories?.slice(
+  const totalPages = Math.ceil(filteredSubCategories?.length / perPage);
+  const paginatedSubCategories = filteredSubCategories?.slice(
     (page - 1) * perPage,
     page * perPage
   );
@@ -74,7 +72,7 @@ function CategoryList() {
             className="bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
             onClick={() => setModalOpen(true)}
           >
-            Add Category
+            Add SubCategory
           </button>
         </div>
       </div>
@@ -86,36 +84,36 @@ function CategoryList() {
             <tr className="text-left">
               <th className="p-2">ID</th>
               <th className="p-2">Name</th>
-              <th className="p-2">Master Category</th>
+              <th className="p-2">Category</th>
               <th className="p-2">Description</th>
               <th className="p-2 ">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {paginatedCategories?.map((category, index) => (
+            {paginatedSubCategories?.map((subCategory, index) => (
               <tr
-                key={category._id}
+                key={subCategory._id}
                 className="hover:bg-gray-100 text-gray-500"
               >
                 <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
-                <td className="p-2 ">{category.name}</td>
-                <td className="p-2 ">{category.masterCategory?.name}</td>
-                <td className="p-2 ">{category.description}</td>
+                <td className="p-2 ">{subCategory.name}</td>
+                <td className="p-2 ">{subCategory.category?.name}</td>
+                <td className="p-2 ">{subCategory.description}</td>
                 <td className="p-2 flex space-x-3">
                   <button
-                    onClick={() => handleView(category)}
+                    onClick={() => handleView(subCategory)}
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEye size={18} />
                   </button>
                   <button
-                    onClick={() => handleEdit(category)}
+                    onClick={() => handleEdit(subCategory)}
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEdit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(category._id)}
+                    onClick={() => handleDelete(subCategory._id)}
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaTrash size={18} />
@@ -182,21 +180,21 @@ function CategoryList() {
       </div>
 
       {/* View Category Modal */}
-      <ViewCategoryModal
+      <ViewSubCategoryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        category={selectedCategory}
+        subCategory={selectedCategory}
       />
-      {/* Edit Category Modal */}
-      <EditCategoryModal
+
+      <EditSubCategoryModal
         isOpen={editModal}
         onClose={() => {
           setEditModel(false);
           setSelectedCategory(null);
         }}
-        category={selectedCategory}
+        subCategory={selectedCategory}
       />
-      <CreateCategoryModal
+      <CreateSubCategory
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
       />
@@ -204,4 +202,4 @@ function CategoryList() {
   );
 }
 
-export default CategoryList;
+export default SubCategoryList;

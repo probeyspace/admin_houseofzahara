@@ -26,8 +26,18 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     },
     {
       icon: <BiCategory />,
+      text: "MasterCategories",
+      to: "/master",
+    },
+    {
+      icon: <BiCategory />,
       text: "Categories",
       to: "/category",
+    },
+    {
+      icon: <BiCategory />,
+      text: "Subcategories",
+      to: "/subcategory",
     },
 
     {

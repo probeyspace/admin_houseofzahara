@@ -21,6 +21,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoute";
 import SubscriberList from "./components/Subscribers/SubscriberList";
+import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
+import SubCategoryList from "./components/SubCategory/SubCategoryList";
 // import BlogList from "./components/Blogs/Blogslist";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
@@ -36,7 +38,9 @@ function App() {
           <Route element={<Layout />}>
             <Route index element={<DashboardPage />} />
             <Route path="products" element={<ProductPage />} />
+            <Route path="master" element={<MasterCategoryList />} />
             <Route path="category" element={<CategoryList />} />
+            <Route path="subcategory" element={<SubCategoryList />} />
             <Route path="users" element={<UsersList />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="coupon" element={<CouponsList />} />

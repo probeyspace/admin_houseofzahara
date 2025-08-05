@@ -7,10 +7,14 @@ import useUsers from "../Hooks/useUsers";
 import { useCategory } from "../Hooks/useCategory";
 import useProducts from "../Hooks/useProducts";
 import useOrders from "../Hooks/useOrders";
+import { useMasterCategory } from "../Hooks/useMasterCategory";
+import { useSubCategory } from "../Hooks/useSubcategory";
 const DashboardPage = () => {
   useUsers();
   useCategory();
   useProducts();
+  useMasterCategory();
+  useSubCategory();
   // useOrders();
   const orders = useSelector((state) => state.orders);
   const products = useSelector((store) => store.products);

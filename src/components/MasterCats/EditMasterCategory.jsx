@@ -4,30 +4,28 @@ import { updateCategory } from "../../services/category";
 import SvgSpinner from "../../common/SvgSpinner";
 import { toast } from "react-toastify";
 import { useCategory } from "../../Hooks/useCategory";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateLocalCategory } from "../../store/slices/categorySlice";
+import { updateMasterCategory } from "../../services/masterCategory";
+import { updateLocalMasterCategory } from "../../store/slices/masterSlice";
 
-const EditCategoryModal = ({ isOpen, onClose, category }) => {
+const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
   const [categoryName, setCategoryName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedMasterCategory, setSelectedMasterCategory] = useState(null);
   const dispatch = useDispatch();
-  useCategory();
 
-  const masterCategories = useSelector((store) => store.masterCategory);
   // Reset values when modal opens or closes
   useEffect(() => {
-    if (isOpen && category) {
-      setCategoryName(category.name || "");
-      setDescription(category.description || "");
-      setSelectedMasterCategory(category.masterCategory._id || "");
-      setPreview(category.image || null);
+    if (isOpen && masterCategory) {
+      setCategoryName(masterCategory.name || "");
+      setDescription(masterCategory.description || "");
+      setPreview(masterCategory.image || null);
       setImage(null); // Reset image selection on open
     }
-  }, [isOpen, category]);
+  }, [isOpen, masterCategory]);
 
   if (!isOpen) return null;
 
@@ -44,7 +42,7 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
     setLoading(true);
 
     if (!categoryName || !description) {
-      toast.error("Category name, description, and image are required.");
+      toast.error("name and description required.");
       setLoading(false);
       return;
     }
@@ -52,18 +50,18 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
     const formData = new FormData();
     formData.append("name", categoryName);
     formData.append("description", description);
-    formData.append("masterCategory", selectedMasterCategory);
     if (image) formData.append("image", image);
 
     try {
-      const updatedCategory = await updateCategory(category._id, formData);
-      dispatch(updateLocalCategory(updatedCategory));
+      const updatedCategory = await updateMasterCategory(
+        masterCategory._id,
+        formData
+      );
+      dispatch(updateLocalMasterCategory(updatedCategory));
       toast.success("Category updated successfully");
       handleClose(); // this is not async, so no need for await
     } catch (error) {
-      console.error(
-        error?.response?.data?.message || "Error updating category"
-      );
+      console.error(error);
       toast.error(error?.response?.data?.message || "Error updating category");
     } finally {
       setLoading(false); // always stop loading
@@ -81,12 +79,14 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-md max-w-md w-full">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Edit Category</h2>
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">
+          Edit Master Category
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Category Name
+              Master Category Name
             </label>
             <input
               type="text"
@@ -95,27 +95,6 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
             />
-          </div>
-
-          {/* Master Category ... */}
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-1">
-              Master Category
-            </label>
-            <select
-              value={selectedMasterCategory}
-              onChange={(e) => setSelectedMasterCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-            >
-              <option className="text-gray-400" value="">
-                Select Master Category
-              </option>
-              {masterCategories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
           </div>
 
           <div>
@@ -141,6 +120,7 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
                 <input
                   type="file"
                   onChange={handleImageChange}
+                  required={!preview} // only required if no image already
                   className="absolute opacity-0 w-0 h-0"
                 />
               </label>
@@ -175,4 +155,4 @@ const EditCategoryModal = ({ isOpen, onClose, category }) => {
   );
 };
 
-export default EditCategoryModal;
+export default EditMasterCategory;

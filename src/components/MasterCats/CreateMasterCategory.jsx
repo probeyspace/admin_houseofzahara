@@ -1,22 +1,20 @@
 import { useState } from "react";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { createCategory } from "../../services/category";
 import SvgSpinner from "../../common/SvgSpinner";
 import { toast } from "react-toastify";
-import { allCategory } from "../../store/slices/categorySlice";
 import { useDispatch, useSelector } from "react-redux";
+import { createMasterCategory } from "../../services/masterCategory";
+import { addMaster } from "../../store/slices/masterSlice";
 
-const CreateCategoryModal = ({ isOpen, onClose }) => {
+const CreateMasterCategory = ({ isOpen, onClose }) => {
   const [categoryName, setCategoryName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [selectedMasterCategory, setSelectedMasterCategory] = useState(null);
 
   const dispatch = useDispatch();
   const categories = useSelector((store) => store.category);
-  const masterCategories = useSelector((store) => store.masterCategory);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -37,17 +35,16 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
     const formData = new FormData();
     formData.append("name", categoryName);
     formData.append("description", description);
-    formData.append("masterCategory", selectedMasterCategory);
     if (image) formData.append("image", image);
 
     try {
-      const newCategory = await createCategory(formData);
-      toast.success("Category created successfully");
+      const newCategory = await createMasterCategory(formData);
+      toast.success("Master Category created successfully");
       setCategoryName("");
       setDescription("");
       setImage(null);
       setPreview(null);
-      dispatch(allCategory([...categories, newCategory]));
+      dispatch(addMaster(newCategory));
       onClose(); // close modal after success
     } catch (error) {
       toast.error(
@@ -72,15 +69,14 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
-          Create Category
+          Create Master Category
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Category Name */}
-
           <div>
             <label className="block text-gray-700 font-medium mb-1">
-              Category Name
+              Master Category Name
             </label>
             <input
               type="text"
@@ -88,29 +84,8 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
               onChange={(e) => setCategoryName(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-              placeholder="Enter category name"
+              placeholder="Enter name"
             />
-          </div>
-
-          {/* Master Category ... */}
-          <div className="mb-4">
-            <label className="block text-gray-700 font-medium mb-1">
-              Master Category
-            </label>
-            <select
-              value={selectedMasterCategory}
-              onChange={(e) => setSelectedMasterCategory(e.target.value)}
-              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-            >
-              <option className="text-gray-400" value="">
-                Select Master Category
-              </option>
-              {masterCategories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Description */}
@@ -122,7 +97,7 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
-              placeholder="Enter category description"
+              placeholder="Enter description"
               rows="4"
             ></textarea>
           </div>
@@ -159,7 +134,7 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
               className="bg-primary cursor-pointer hover:scale-105 transition duration-300 text-dark px-4 py-2 rounded-md font-medium"
               disabled={loading}
             >
-              {!loading ? "Create Category" : <SvgSpinner />}
+              {!loading ? "Create Master Category" : <SvgSpinner />}
             </button>
           </div>
         </form>
@@ -168,4 +143,4 @@ const CreateCategoryModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default CreateCategoryModal;
+export default CreateMasterCategory;

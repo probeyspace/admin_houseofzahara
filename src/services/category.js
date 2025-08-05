@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import api from "../Api/api";
 
 export const fetchAllCategory = async () => {
@@ -6,7 +5,7 @@ export const fetchAllCategory = async () => {
     const response = await api.get("/categories");
     return response.data.data;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 
@@ -24,6 +23,6 @@ export const updateCategory = async (id, updatedCategoryData) => {
     const response = await api.put(`/categories/${id}`, updatedCategoryData);
     return response.data.data;
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };

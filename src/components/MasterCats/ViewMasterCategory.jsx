@@ -1,32 +1,30 @@
 import React from "react";
 
-const ViewCategoryModal = ({ isOpen, onClose, category }) => {
+const ViewMasterCategory = ({ isOpen, onClose, masterCategory }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-        <h2 className="text-xl font-bold mb-4">Category Details</h2>
+        <h2 className="text-xl font-bold mb-4">MasterCategory Details</h2>
         <div className="space-y-4 flex gap-2">
           <div>
             <p className="mb-2">
-              <span className="font-semibold">Name:</span> {category?.name}
+              <span className="font-semibold">Name:</span>{" "}
+              {masterCategory?.name}
             </p>
-            <p className="mb-2">
-              <span className="font-semibold">Master Category:</span>{" "}
-              {category?.masterCategory?.name}
-            </p>
+
             <p className="mb-2">
               <span className="font-semibold">Description:</span>{" "}
-              {category?.description}
+              {masterCategory?.description}
             </p>
           </div>
 
           <div>
             <img
-              src={category?.image}
-              alt="category"
-              className="w-32 h-32 object-cover rounded-lg"
+              src={masterCategory?.image}
+              alt="masterCategory"
+              className="w-40 h-40 object-cover rounded-lg"
             />
           </div>
         </div>
@@ -42,4 +40,4 @@ const ViewCategoryModal = ({ isOpen, onClose, category }) => {
   );
 };
 
-export default ViewCategoryModal;
+export default ViewMasterCategory;
