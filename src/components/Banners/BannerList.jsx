@@ -5,6 +5,7 @@ import ViewBannerModal from "./ViewBannerModal";
 import { useBanner } from "../../Hooks/useBanner";
 import api from "../../Api/api";
 import EditBannerModal from "./EditBannerModal";
+import BannerModal from "./BannerModal";
 
 function BannerList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,6 +17,7 @@ function BannerList() {
   const [selectedBanner, setSelectedBanner] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [addModal, setAddModal] = useState(false);
   const { banners, setBanners, fetchBanner } = useBanner();
 
   const handleEdit = (banner) => {
@@ -65,41 +67,35 @@ function BannerList() {
   return (
     <div className="max-w-6xl mx-auto p-2 sm:p-4 bg-white shadow-md rounded-lg">
       {/* Filters */}
-      <div className="flex flex-col md:flex-row gap-2 sm:gap-4 mb-4">
+      <div className="flex flex-col md:flex-row gap-2 justify-between sm:gap-4 mb-4">
         {/* Search by Title */}
-        <input
-          type="text"
-          className="border border-gray-400 p-2 rounded-lg w-full md:w-64"
-          placeholder="Search by Title..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-
-        {/* Filter by Status */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-400 p-2 rounded-lg w-full md:w-64"
-        >
-          <option value="">All Statuses</option>
-          <option value="ACTIVE">Active</option>
-          <option value="INACTIVE">Inactive</option>
-        </select>
-
-        {/* Filter by Date Range */}
-        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+        <div className="flex flex-col md:flex-row gap-2">
           <input
-            type="date"
-            className="border border-gray-400 p-2 rounded-lg w-full md:w-48"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            type="text"
+            className="border border-gray-400 p-2 rounded-lg w-full md:w-64"
+            placeholder="Search by Title..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <input
-            type="date"
-            className="border border-gray-400 p-2 rounded-lg w-full md:w-48"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+
+          {/* Filter by Status */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="border border-gray-400 p-2 rounded-lg w-full md:w-64"
+          >
+            <option value="">All Statuses</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+          </select>
+        </div>
+        <div>
+          <button
+            className="bg-primary text-dark px-5 py-2.5 rounded-lg hover:bg-primary/80 cursor-pointer"
+            onClick={() => setAddModal(true)}
+          >
+            Add Banner
+          </button>
         </div>
       </div>
 
@@ -242,6 +238,8 @@ function BannerList() {
         bannerData={selectedBanner}
         fetchBanner={fetchBanner}
       />
+
+      <BannerModal show={addModal} onClose={() => setAddModal(false)} />
     </div>
   );
 }

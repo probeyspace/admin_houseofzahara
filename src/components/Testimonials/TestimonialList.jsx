@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
-import { useSelector } from "react-redux";
 import ViewTestimonialModal from "./ViewTestimonialModal";
 import { useTestimonial } from "../../Hooks/useTestimonial";
 import api from "../../Api/api";
 import EditTestimonialModal from "./EditTestimonialModal";
+import TestimonialModal from "./TestimonialModal";
 
 function TestimonialList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -14,6 +14,7 @@ function TestimonialList() {
   const [selectedTestimonial, setSelectedTestimonial] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const { testimonials, setTestimonials, fetchTestimonials } = useTestimonial();
 
   const handleEdit = (testimonial) => {
@@ -65,6 +66,15 @@ function TestimonialList() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+
+        <div>
+          <button
+            className="bg-primary text-dark px-5 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
+            onClick={() => setShowModal(true)}
+          >
+            Add Testimonial
+          </button>
         </div>
       </div>
 
@@ -191,6 +201,7 @@ function TestimonialList() {
         testimonial={selectedTestimonial}
         fetchTestimonials={fetchTestimonials}
       />
+      <TestimonialModal show={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

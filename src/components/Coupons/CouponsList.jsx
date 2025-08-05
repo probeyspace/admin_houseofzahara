@@ -3,6 +3,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { useCoupons } from "../../Hooks/useCoupons";
 import api from "../../Api/api";
 import EditCouponModal from "./EditCouponModal.jsx";
+import AddCouponModal from "./AddCouponModal.jsx";
 
 function CouponsList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,7 +12,7 @@ function CouponsList() {
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const { coupons, setCoupons, fetchCoupons } = useCoupons();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [showModal, setShowModal] = useState(false);
   const handleEdit = (coupon) => {
     setSelectedCoupon(coupon);
     setIsModalOpen(true);
@@ -53,6 +54,15 @@ function CouponsList() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+        </div>
+
+        <div>
+          <button
+            className="bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
+            onClick={() => setShowModal(true)}
+          >
+            Add Coupon
+          </button>
         </div>
       </div>
 
@@ -170,6 +180,8 @@ function CouponsList() {
         couponData={selectedCoupon}
         onUpdate={fetchCoupons}
       />
+
+      <AddCouponModal show={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

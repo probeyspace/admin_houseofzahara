@@ -96,7 +96,13 @@ function ProductList() {
               <th className="p-2 sm:p-3 text-sm sm:text-base">Name</th>
 
               <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
+                Master Category
+              </th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
                 Category
+              </th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
+                SubCategory
               </th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
@@ -119,7 +125,13 @@ function ProductList() {
                   </td>
 
                   <td className="p-2 sm:p-3 hidden sm:table-cell">
-                    {product.categoryId?.name}
+                    {product.masterCategory?.name}
+                  </td>
+                  <td className="p-2 sm:p-3 hidden sm:table-cell">
+                    {product.category?.name}
+                  </td>
+                  <td className="p-2 sm:p-3 hidden sm:table-cell">
+                    {product.subcategory?.name}
                   </td>
 
                   <td className="p-2 sm:p-3 space-x-2 sm:space-x-3">

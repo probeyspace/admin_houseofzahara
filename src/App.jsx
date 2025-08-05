@@ -4,15 +4,13 @@ import LoginPage from "./Pages/LoginPage";
 import { useCurrentUser } from "./Hooks/useCurrentUser";
 import Layout from "./Layout/Layout";
 import ProductPage from "./Pages/ProductPage";
-import AddCouponForm from "./components/Coupons/AddCouponForm";
 import UsersList from "./components/Users/UsersList";
 import DashboardPage from "./Pages/DashboardPage";
 import CategoryList from "./components/Category/CategoryList";
 import CouponsList from "./components/Coupons/CouponsList";
 import OrderList from "./components/Orders/OrdersList";
-import BannerForm from "./components/Banners/BannerForm";
 import BannerList from "./components/Banners/BannerList";
-import CreateTestimonial from "./components/Testimonials/CreateTestimonial";
+import CreateTestimonial from "./components/Testimonials/TestimonialModal";
 import TestimonialList from "./components/Testimonials/TestimonialList";
 import ContactList from "./components/Contact/ContactList";
 import ReviewsList from "./components/Reviews/ReviewsList";
@@ -43,12 +41,9 @@ function App() {
             <Route path="subcategory" element={<SubCategoryList />} />
             <Route path="users" element={<UsersList />} />
             <Route path="orders" element={<OrderList />} />
-            <Route path="coupon" element={<CouponsList />} />
-            <Route path="coupon/create" element={<AddCouponForm />} />
+            <Route path="coupons" element={<CouponsList />} />
             <Route path="banners" element={<BannerList />} />
-            <Route path="banner/create" element={<BannerForm />} />
             <Route path="testimonials" element={<TestimonialList />} />
-            <Route path="testimonial/create" element={<CreateTestimonial />} />
             <Route path="contacts" element={<ContactList />} />
             <Route path="subscribers" element={<SubscriberList />} />
             <Route path="reviews" element={<ReviewsList />} />

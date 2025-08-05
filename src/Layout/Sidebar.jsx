@@ -26,7 +26,7 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     },
     {
       icon: <BiCategory />,
-      text: "MasterCategories",
+      text: "Master Categories",
       to: "/master",
     },
     {
@@ -49,39 +49,18 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     {
       icon: <BiCategory />,
       text: "Coupons",
-      subItems: [
-        { to: "/coupon", icon: <BiCategory />, text: "Coupon List" },
-        {
-          to: "/coupon/create",
-          icon: <TbCategoryPlus />,
-          text: "Add Coupon",
-        },
-      ],
+      to: "/coupons",
     },
     {
       icon: <BiCategory />,
       text: "Banners",
-      subItems: [
-        { to: "/banners", icon: <BiCategory />, text: "Banner List" },
-        {
-          to: "/banner/create",
-          icon: <TbCategoryPlus />,
-          text: "Add Banner",
-        },
-      ],
+      to: "/banners",
     },
 
     {
       icon: <BiCategory />,
       text: "Testimonials",
-      subItems: [
-        { to: "/testimonials", icon: <BiCategory />, text: "Testimonial List" },
-        {
-          to: "/testimonial/create",
-          icon: <TbCategoryPlus />,
-          text: "Add Testimonial",
-        },
-      ],
+      to: "/testimonials",
     },
     {
       to: "/reviews",
