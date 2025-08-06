@@ -1,13 +1,21 @@
 import { useState } from "react";
-import { createVariant } from "../../services/products";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { addVariant } from "../../store/slices/productSlice";
 import SvgSpinner from "../../common/SvgSpinner";
+import { createVariant } from "../../services/products";
+import { addVariant } from "../../store/slices/productSlice";
 
 function AddVariantModal({ isOpen, onClose, product }) {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
+    price: "",
+    discountPrice: "",
+    stock: "",
+    sku: "",
+    isActive: true,
+    images: [],
     shade: "",
     size: "",
     finish: "",
@@ -16,46 +24,75 @@ function AddVariantModal({ isOpen, onClose, product }) {
     spf: "",
     fragrance: "",
     packaging: "",
-    price: "",
-    stock: "",
-    sku: "",
-    isActive: true,
-    images: [],
+    volume: "",
+    weight: "",
+    color: "",
+    material: "",
+    expiryDate: "",
+    attributes: "[]", // stringified for submission
+    attributesObj: {}, // for dynamic rendering
   });
-
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked, files } = e.target;
     if (type === "checkbox") {
-      setForm({ ...form, [name]: checked });
+      setForm((prev) => ({ ...prev, [name]: checked }));
     } else if (type === "file") {
-      setForm({ ...form, images: Array.from(files) });
+      setForm((prev) => ({ ...prev, images: Array.from(files) }));
     } else {
-      setForm({ ...form, [name]: value });
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => {
-      if (key === "images") {
-        value.forEach((file) => formData.append("images", file));
-      } else {
-        formData.append(key, value);
-      }
+
+    // Basic fields
+    formData.append("price", form.price);
+    formData.append("discountPrice", form.discountPrice);
+    formData.append("stock", form.stock);
+    formData.append("sku", form.sku);
+    formData.append("isActive", form.isActive);
+
+    // Specs (as flat fields, backend builds the object)
+    const specsFields = [
+      "shade",
+      "size",
+      "finish",
+      "skinType",
+      "formulation",
+      "spf",
+      "fragrance",
+      "packaging",
+      "volume",
+      "weight",
+      "color",
+      "material",
+      "expiryDate",
+    ];
+    specsFields.forEach((field) => {
+      if (form[field]) formData.append(field, form[field]);
     });
+
+    // Optional attributes (JSON string expected)
+    if (form.attributes) {
+      formData.append("attributes", form.attributes);
+    }
+
+    // Images
+    form.images.forEach((file) => {
+      formData.append("images", file);
+    });
+
     setLoading(true);
     try {
       const response = await createVariant(product._id, formData);
-      toast.success(response?.message || "Variant added successfully!");
-      //update state of the product add variant
       dispatch(addVariant(response.data));
+      toast.success(response?.message || "Variant added successfully!");
       onClose();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Error adding variant");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -67,14 +104,19 @@ function AddVariantModal({ isOpen, onClose, product }) {
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-2xl p-6 rounded-xl relative">
         <h2 className="text-xl font-semibold mb-4 text-gray-700">
-          Add Variant for {product.name}
+          Add Variant for {product?.name}
         </h2>
+
         <form
           onSubmit={handleSubmit}
           className="space-y-4 max-h-[80vh] overflow-y-auto pr-2"
         >
           <div className="grid grid-cols-2 gap-4">
             {[
+              "price",
+              "discountPrice",
+              "stock",
+              "sku",
               "shade",
               "size",
               "finish",
@@ -83,10 +125,10 @@ function AddVariantModal({ isOpen, onClose, product }) {
               "spf",
               "fragrance",
               "packaging",
-              "price",
-              "discountPrice",
-              "stock",
-              "sku",
+              "volume",
+              "weight",
+              "color",
+              "material",
             ].map((field) => (
               <input
                 key={field}
@@ -95,10 +137,59 @@ function AddVariantModal({ isOpen, onClose, product }) {
                 onChange={handleChange}
                 className="border border-gray-300 rounded p-2"
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                required={field !== "spf" && field !== "fragrance"}
               />
             ))}
+
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-600 mx-1">Expiry Date</span>
+              <input
+                type="date"
+                name="expiryDate"
+                value={form.expiryDate}
+                onChange={handleChange}
+                className="border border-gray-300 rounded p-2"
+              />
+            </div>
           </div>
+
+          {/* Attributes field (JSON string) */}
+          <div className="space-y-2">
+            <label className="block font-medium text-sm text-gray-700">
+              Additional Info
+            </label>
+            {[
+              { key: "Usage", label: "Usage Instructions" },
+              { key: "Ingredients", label: "Ingredients" },
+              { key: "Highlights", label: "Highlights" },
+            ].map(({ key, label }) => (
+              <div key={key}>
+                <label className="text-sm text-gray-600">{label}</label>
+                <input
+                  type="text"
+                  name={`attribute-${key}`}
+                  value={form.attributesObj?.[key] || ""}
+                  onChange={(e) => {
+                    const newAttributes = { ...(form.attributesObj || {}) };
+                    newAttributes[key] = e.target.value;
+                    setForm((prev) => ({
+                      ...prev,
+                      attributesObj: newAttributes,
+                      attributes: JSON.stringify(
+                        Object.entries(newAttributes).map(([k, v]) => ({
+                          key: k,
+                          value: v,
+                        }))
+                      ),
+                    }));
+                  }}
+                  className="w-full border p-2 rounded"
+                  placeholder={`Enter ${label}`}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* isActive toggle */}
           <div className="flex items-center gap-2">
             <label className="text-sm text-gray-600">Active</label>
             <input
@@ -109,14 +200,18 @@ function AddVariantModal({ isOpen, onClose, product }) {
               className="h-5 w-4 cursor-pointer"
             />
           </div>
+
+          {/* Image Upload */}
           <input
             type="file"
             name="images"
             multiple
             accept="image/*"
             onChange={handleChange}
-            className="border border-gray-300 rounded p-2 cursor-pointer"
+            className="border border-gray-300 rounded p-2 w-full cursor-pointer"
           />
+
+          {/* Submit & Cancel */}
           <div className="flex justify-end gap-3">
             <button
               type="button"

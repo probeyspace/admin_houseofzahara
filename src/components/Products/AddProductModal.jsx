@@ -80,7 +80,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full h-full overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Add Product</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input

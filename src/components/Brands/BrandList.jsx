@@ -79,7 +79,7 @@ function BrandList() {
           </thead>
           <tbody>
             {paginatedBrands?.map((brand, index) => (
-              <tr key={brand.id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={brand._id} className="hover:bg-gray-100 text-gray-500">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{brand.name}</td>
                 <td className="p-2 sm:p-3 hidden md:table-cell">
