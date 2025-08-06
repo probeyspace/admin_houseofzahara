@@ -11,31 +11,47 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     description: "",
     brandName: "",
     productType: "",
-    categoryId: "",
+    masterCategory: "",
+    category: "",
+    subcategory: "",
     thumbnails: [],
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
+  const subcategories = useSelector((state) => state.subCategory);
+  const masterCategories = useSelector((state) => state.masterCategory);
   const dispatch = useDispatch();
 
   // Populate existing product data when modal opens
   useEffect(() => {
-    if (productData) {
+    if (isOpen && productData) {
       setFormData({
         name: productData.name || "",
         description: productData.description || "",
         brandName: productData.brandName || "",
         productType: productData.productType || "",
-        categoryId: productData.categoryId || "",
-        thumbnails: [], // user will reupload if needed
+        masterCategory:
+          productData.masterCategory?._id || productData.masterCategory || "",
+        category: productData.category?._id || productData.category || "",
+        subcategory:
+          productData.subcategory?._id || productData.subcategory || "",
+        thumbnails: [],
       });
     }
-  }, [productData]);
+  }, [isOpen, productData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+
+  const filteredCategories = categories.filter(
+    (cat) => cat.masterCategory?._id === formData.masterCategory
+  );
+
+  const filteredSubcategories = subcategories.filter(
+    (sub) => sub.category?._id === formData.category
+  );
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -55,7 +71,9 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("description", formData.description);
     data.append("brandName", formData.brandName);
     data.append("productType", formData.productType);
-    data.append("categoryId", formData.categoryId);
+    data.append("masterCategory", formData.masterCategory);
+    data.append("category", formData.category);
+    data.append("subcategory", formData.subcategory);
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
@@ -69,9 +87,9 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       toast.error(
         error?.response?.data?.message || "Failed to update product."
       );
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   if (!isOpen) return null;
@@ -79,7 +97,28 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full">
-        <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+        <div className="relative">
+          <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+          <button
+            onClick={onClose}
+            className="absolute top-1 right-1 text-gray-500 hover:text-gray-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"  
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -115,19 +154,50 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             className="w-full border p-2 rounded"
           />
           <select
-            name="categoryId"
-            value={formData.categoryId}
+            name="masterCategory"
+            value={formData.masterCategory}
             onChange={handleChange}
             className="w-full border p-2 rounded"
             required
           >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
+            <option value="">Select Master Category</option>
+            {masterCategories.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}
           </select>
+
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">Select Category</option>
+            {filteredCategories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="subcategory"
+            value={formData.subcategory}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">Select Subcategory</option>
+            {filteredSubcategories.map((sub) => (
+              <option key={sub._id} value={sub._id}>
+                {sub.name}
+              </option>
+            ))}
+          </select>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Replace Thumbnails (optional, max 2)

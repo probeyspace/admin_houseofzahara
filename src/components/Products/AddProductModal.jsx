@@ -11,11 +11,24 @@ const AddProductModal = ({ isOpen, onClose }) => {
     description: "",
     brandName: "",
     productType: "",
-    categoryId: "",
+    masterCategory: "",
+    category: "",
+    subcategory: "",
     thumbnails: [],
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
+  const subcategories = useSelector((state) => state.subCategory);
+  const masterCategories = useSelector((state) => state.masterCategory);
+
+  const filteredCategories = categories.filter(
+    (cat) => cat.masterCategory?._id === formData.masterCategory
+  );
+
+  const filteredSubcategories = subcategories.filter(
+    (sub) => sub.category?._id === formData.category
+  );
+
   const dispatch = useDispatch();
 
   const handleChange = (e) => {
@@ -41,7 +54,10 @@ const AddProductModal = ({ isOpen, onClose }) => {
     data.append("description", formData.description);
     data.append("brandName", formData.brandName);
     data.append("productType", formData.productType);
-    data.append("categoryId", formData.categoryId);
+    data.append("masterCategory", formData.masterCategory);
+    data.append("category", formData.category);
+    data.append("subcategory", formData.subcategory);
+
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
@@ -101,19 +117,50 @@ const AddProductModal = ({ isOpen, onClose }) => {
             className="w-full border p-2 rounded"
           />
           <select
-            name="categoryId"
-            value={formData.categoryId}
+            name="masterCategory"
+            value={formData.masterCategory}
             onChange={handleChange}
             className="w-full border p-2 rounded"
             required
           >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
+            <option value="">Select Master Category</option>
+            {masterCategories.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}
           </select>
+
+          <select
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">Select Category</option>
+            {filteredCategories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            name="subcategory"
+            value={formData.subcategory}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">Select SubCategory</option>
+            {filteredSubcategories.map((sub) => (
+              <option key={sub._id} value={sub._id}>
+                {sub.name}
+              </option>
+            ))}
+          </select>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Thumbnail Images (Max 2)

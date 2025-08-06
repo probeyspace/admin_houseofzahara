@@ -31,10 +31,10 @@ function ViewProductModal({ isOpen, onClose, product }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-6 relative">
+              <Dialog.Panel className="w-full max-w-3xl bg-white rounded-lg shadow-lg p-4 md:p-7 relative">
                 {/* Close Button */}
                 <button
-                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 cursor-pointer"
                   onClick={onClose}
                 >
                   <FaTimes size={18} />
@@ -45,30 +45,43 @@ function ViewProductModal({ isOpen, onClose, product }) {
                   as="h2"
                   className="text-xl font-bold text-gray-800 mb-4"
                 >
-                  Product Details
+                  Product Name: {product.name}
                 </Dialog.Title>
 
                 {/* Product Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                  <p className="md:col-span-2">
+                    <strong>Description:</strong> {product.description}
+                  </p>
+
                   <p>
                     <strong>ID:</strong> {product._id}
-                  </p>
-                  <p>
-                    <strong>Name:</strong> {product.name}
                   </p>
                   <p>
                     <strong>Brand:</strong> {product.brandName}
                   </p>
                   <p>
-                    <strong>Category:</strong>{" "}
-                    {product.categoryId?.name || "N/A"}
+                    <strong>Master Category:</strong>{" "}
+                    {product.masterCategory?.name || "N/A"}
                   </p>
-                  <p className="md:col-span-2">
-                    <strong>Description:</strong> {product.description}
+                  <p>
+                    <strong>Category:</strong> {product.category?.name || "N/A"}
                   </p>
+                  <p>
+                    <strong>SubCategory:</strong>{" "}
+                    {product.subcategory?.name || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Variants:</strong> {product.variants?.length || 0}
+                  </p>
+
                   <p>
                     <strong>Created At:</strong>{" "}
                     {new Date(product.createdAt).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Update At:</strong>{" "}
+                    {new Date(product.updatedAt).toLocaleDateString()}
                   </p>
                 </div>
 
