@@ -33,7 +33,7 @@ function TestimonialList() {
         await api.delete(`testimonials/${id}`); // Replace with your API endpoint
         // Update the testimonials state USING the setTestimonials function
         const updatedTestimonials = testimonials.filter(
-          (testimonial) => testimonial.id !== id
+          (testimonial) => testimonial._id !== id
         );
         setTestimonials(updatedTestimonials);
       } catch (error) {
@@ -94,7 +94,7 @@ function TestimonialList() {
           <tbody>
             {paginatedTestimonials?.map((testimonial, index) => (
               <tr
-                key={testimonial.id}
+                key={testimonial._id}
                 className="hover:bg-gray-100 text-gray-500"
               >
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
@@ -111,19 +111,19 @@ function TestimonialList() {
                 <td className="p-3 flex space-x-3">
                   <button
                     onClick={() => handleView(testimonial)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEye size={18} />
                   </button>
                   <button
                     onClick={() => handleEdit(testimonial)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEdit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(testimonial.id)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    onClick={() => handleDelete(testimonial._id)}
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaTrash size={18} />
                   </button>
@@ -201,7 +201,11 @@ function TestimonialList() {
         testimonial={selectedTestimonial}
         fetchTestimonials={fetchTestimonials}
       />
-      <TestimonialModal show={showModal} onClose={() => setShowModal(false)} />
+      <TestimonialModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchTestimonials}
+      />
     </div>
   );
 }

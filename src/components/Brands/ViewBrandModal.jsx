@@ -6,7 +6,7 @@ const ViewBrandModal = ({ isOpen, onClose, brand }) => {
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm shadow-md flex items-center justify-center z-50">
-      <div className="rounded-lg p-6 w-full max-w-md  bg-white">
+      <div className="rounded-lg p-6 w-full max-w-md relative bg-white">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -23,7 +23,7 @@ const ViewBrandModal = ({ isOpen, onClose, brand }) => {
             <img
               src={brand.imageUrl}
               alt={brand.name}
-              className="w-full h-48 object-cover rounded-lg"
+              className="w-30 h-30 object-cover rounded-lg"
             />
           </div>
         )}
@@ -50,7 +50,7 @@ const ViewBrandModal = ({ isOpen, onClose, brand }) => {
               <Link
                 to={brand.website}
                 target="_blank"
-                className="text-primary hover:underline"
+                className="text-dark hover:underline"
               >
                 {brand.website || "N/A"}
               </Link>

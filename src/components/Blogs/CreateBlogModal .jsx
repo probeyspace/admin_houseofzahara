@@ -115,7 +115,7 @@ function CreateBlogModal({ isOpen, onClose, fetchBlogs }) {
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}

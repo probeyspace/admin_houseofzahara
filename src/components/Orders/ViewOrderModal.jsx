@@ -26,7 +26,7 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
         {/* Order Details */}
         <div className="space-y-2 text-gray-700">
           <p>
-            <span className="font-medium">Order ID:</span> {order.id}
+            <span className="font-medium">Order ID:</span> {order._id}
           </p>
           <p>
             <span className="font-medium">Order Date:</span>{" "}
@@ -74,7 +74,7 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
           <div className="space-y-4">
             {order.items?.map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 border rounded-lg hover:shadow-md transition-shadow duration-200 bg-gray-50"
               >
                 <div className="w-full">

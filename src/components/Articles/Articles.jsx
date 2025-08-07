@@ -42,7 +42,7 @@ const Articles = () => {
     if (window.confirm("Are you sure you want to delete this article?")) {
       try {
         await api.delete(`/articles/${id}`);
-        setArticles(articles.filter((a) => a.id !== id));
+        setArticles(articles.filter((a) => a._id !== id));
       } catch (err) {
         console.error("Error deleting article:", err);
       }
@@ -110,7 +110,7 @@ const Articles = () => {
           </thead>
           <tbody>
             {paginatedArticles.map((article, index) => (
-              <tr key={article.id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={article._id} className="hover:bg-gray-100 text-gray-500">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{article.title}</td>
                 <td className="p-3">{article.author}</td>
@@ -125,7 +125,7 @@ const Articles = () => {
                     <FaEye size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(article.id)}
+                    onClick={() => handleDelete(article._id)}
                     className="text-red-600 hover:text-red-800 cursor-pointer"
                   >
                     <FaTrash size={18} />

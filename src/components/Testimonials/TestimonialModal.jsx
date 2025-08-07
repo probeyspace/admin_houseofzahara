@@ -4,7 +4,7 @@ import SvgSpinner from "../../common/SvgSpinner";
 import api from "../../Api/api";
 import { toast } from "react-toastify";
 
-const TestimonialModal = ({ show, onClose }) => {
+const TestimonialModal = ({ show, onClose, onSuccess }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
@@ -50,6 +50,7 @@ const TestimonialModal = ({ show, onClose }) => {
       setRating(0);
       setImage(null);
       setPreview(null);
+      onSuccess();
       onClose(); // Close modal
     } catch (error) {
       console.error("Error:", error);
@@ -167,7 +168,7 @@ const TestimonialModal = ({ show, onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-primary hover:scale-105 transition duration-300 text-dark px-6 py-2 rounded-md font-medium"
+              className="bg-primary cursor-pointer hover:scale-105 transition duration-300 text-dark px-6 py-2 rounded-md font-medium"
             >
               {!loading ? "Create Testimonial" : <SvgSpinner />}
             </button>

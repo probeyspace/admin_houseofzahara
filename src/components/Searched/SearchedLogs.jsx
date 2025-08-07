@@ -54,7 +54,7 @@ const SearchedLogs = () => {
     const worksheet = XLSX.utils.json_to_sheet(
       logs.map((log, index) => ({
         "S.No": index + 1,
-        "Log ID": log.id,
+        "Log ID": log._id,
         "Searched Text": log.text,
       }))
     );
@@ -179,7 +179,7 @@ const SearchedLogs = () => {
                 ))
               : logs.map((log, index) => (
                   <tr
-                    key={log.id}
+                    key={log._id}
                     className="hover:bg-gray-100 text-gray-500 text-sm"
                   >
                     <td className="p-3">{index + 1}</td>
@@ -188,7 +188,7 @@ const SearchedLogs = () => {
                       <button
                         title="Delete Log"
                         className="text-primary hover:text-primary/50 cursor-pointer"
-                        onClick={() => handleDelete(log.id)}
+                        onClick={() => handleDelete(log._id)}
                       >
                         <BiTrash size={20} />
                       </button>

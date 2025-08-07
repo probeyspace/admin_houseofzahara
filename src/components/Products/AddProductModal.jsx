@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { addProductData } from "../../store/slices/productSlice";
+import { useBrand } from "../../Hooks/useBrand";
 
 const AddProductModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
   const categories = useSelector((state) => state.category);
   const subcategories = useSelector((state) => state.subCategory);
   const masterCategories = useSelector((state) => state.masterCategory);
+  const { brands } = useBrand();
 
   const filteredCategories = categories.filter(
     (cat) => cat.masterCategory?._id === formData.masterCategory
@@ -99,15 +101,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           ></textarea>
-          <input
-            type="text"
-            name="brandName"
-            placeholder="Brand Name"
-            value={formData.brandName}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
+
           <input
             type="text"
             name="productType"
@@ -116,6 +110,22 @@ const AddProductModal = ({ isOpen, onClose }) => {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
+
+          <select
+            name="brandName"
+            value={formData.brandName}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+            required
+          >
+            <option value="">Select Brand</option>
+            {brands?.map((brand) => (
+              <option key={brand._id} value={brand.name}>
+                {brand.name}
+              </option>
+            ))}
+          </select>
+
           <select
             name="masterCategory"
             value={formData.masterCategory}

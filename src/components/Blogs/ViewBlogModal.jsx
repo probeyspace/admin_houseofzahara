@@ -51,7 +51,7 @@ function ViewBlogModal({ isOpen, onClose, blog }) {
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {blog.images.map((img) => (
                 <img
-                  key={img.id}
+                  key={img._id}
                   src={img.url}
                   alt={img.altText || "Blog Image"}
                   className="w-full h-32 object-cover rounded"

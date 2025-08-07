@@ -50,7 +50,7 @@ function EditBlogModal({ isOpen, onClose, blog, fetchBlogs }) {
     images.forEach((img) => formData.append("images", img));
 
     try {
-      const res = await updateBlogs(blog.id, formData);
+      const res = await updateBlogs(blog._id, formData);
       await fetchBlogs();
       toast.success(res?.message || "Blog updated successfully!");
       onClose();
@@ -121,7 +121,7 @@ function EditBlogModal({ isOpen, onClose, blog, fetchBlogs }) {
           >
             <option value="">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
+              <option key={cat._id} value={cat._id}>
                 {cat.name}
               </option>
             ))}
@@ -159,7 +159,7 @@ function EditBlogModal({ isOpen, onClose, blog, fetchBlogs }) {
               <div className="flex gap-2 mt-2">
                 {blog.images.map((img) => (
                   <img
-                    key={img.id}
+                    key={img._id}
                     src={img.url}
                     alt={img.altText || "Blog image"}
                     className="w-16 h-16 object-cover rounded"

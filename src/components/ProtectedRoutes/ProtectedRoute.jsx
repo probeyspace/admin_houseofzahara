@@ -8,7 +8,7 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" />;
   }
   if (!allowedRoles.includes(user.role)) {
-    console.log("Access denied: User role not allowed.");
+    // console.log("Access denied: User role not allowed.");
     return <Navigate to="/login" />;
   }
 

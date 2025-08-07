@@ -24,7 +24,9 @@ function ContactList() {
     if (window.confirm("Are you sure you want to delete this contact?")) {
       try {
         await api.delete(`/contact/${id}`);
-        const updatedContacts = contacts.filter((contact) => contact.id !== id);
+        const updatedContacts = contacts.filter(
+          (contact) => contact._id !== id
+        );
         setData(updatedContacts);
         toast.success("Contact deleted successfully!");
       } catch (error) {
@@ -74,7 +76,7 @@ function ContactList() {
               {paginatedContacts?.length > 0 ? (
                 paginatedContacts.map((contact, index) => (
                   <tr
-                    key={contact.id}
+                    key={contact._id}
                     className="hover:bg-gray-100 text-gray-500"
                   >
                     <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
@@ -84,13 +86,13 @@ function ContactList() {
                     <td className="p-2 flex space-x-3">
                       <button
                         onClick={() => handleView(contact)}
-                        className="text-primary hover:text-primary/80 cursor-pointer"
+                        className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       >
                         <FaEye size={18} />
                       </button>
                       <button
-                        onClick={() => handleDelete(contact.id)}
-                        className="text-primary hover:text-primary/80 cursor-pointer"
+                        onClick={() => handleDelete(contact._id)}
+                        className="text-gray-600 hover:text-gray-800 cursor-pointer"
                       >
                         <FaTrash size={18} />
                       </button>

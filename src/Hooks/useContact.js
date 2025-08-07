@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../Api/api";
 
 export const useContact = () => {
-  const [data, setData] = useState(null);
-  const [subscribers, setSubscribers] = useState(null);
+  const [data, setData] = useState([]);
+  const [subscribers, setSubscribers] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -23,7 +23,7 @@ export const useContact = () => {
       }
     };
     fetchData();
-    fetchSubscribers();
+    // fetchSubscribers();
   }, []);
 
   return { contacts: data, setData, subscribers, setSubscribers };

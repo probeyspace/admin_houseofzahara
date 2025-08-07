@@ -28,23 +28,25 @@ const ViewTestimonialModal = ({ isOpen, onClose, testimonial }) => {
           </h2>
 
           {/* Description */}
-          <div>
+          <div className="mb-4 flex gap-3">
             <label className="block text-gray-700 font-medium mb-1">
-              Description
+              Description:
             </label>
             <p className="text-gray-600">{testimonial.description}</p>
           </div>
 
           {/* City */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-1">City</label>
+          <div className="mb-4 flex gap-3">
+            <label className="block text-gray-700 font-medium mb-1">
+              City:
+            </label>
             <p className="text-gray-600">{testimonial.city}</p>
           </div>
 
           {/* Rating */}
-          <div>
+          <div className="mb-4 flex gap-3">
             <label className="block text-gray-700 font-medium mb-1">
-              Rating
+              Rating:
             </label>
             <div className="flex">
               {Array.from({ length: testimonial.rating }, (_, i) => (
@@ -57,14 +59,11 @@ const ViewTestimonialModal = ({ isOpen, onClose, testimonial }) => {
 
           {/* Image (if available) */}
           {testimonial.imageUrl && (
-            <div>
-              <label className="block text-gray-700 font-medium mb-1">
-                Image
-              </label>
+            <div className="w-full h-60">
               <img
                 src={testimonial.imageUrl}
                 alt={testimonial.name}
-                className="w-full h-48 object-cover rounded-md"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
           )}

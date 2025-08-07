@@ -19,8 +19,8 @@ const EditOrderModal = ({ isOpen, onClose, order, onSave }) => {
 
     setLoading(true);
     try {
-      await onSave(order.id, status);
-      dispatch(changeStatus({ id: order.id, status }));
+      await onSave(order._id, status);
+      dispatch(changeStatus({ id: order._id, status }));
 
       onClose(); // Close the modal after saving
     } catch (error) {
@@ -48,7 +48,7 @@ const EditOrderModal = ({ isOpen, onClose, order, onSave }) => {
             <label className="block text-sm font-medium text-gray-700">
               Order ID
             </label>
-            <p className="mt-1 text-gray-600">{order?.id}</p>
+            <p className="mt-1 text-gray-600">{order?._id}</p>
           </div>
 
           <div>

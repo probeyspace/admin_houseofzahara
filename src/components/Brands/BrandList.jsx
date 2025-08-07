@@ -47,7 +47,7 @@ function BrandList() {
         <h1 className="text-2xl font-bold text-gray-800">Brands</h1>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
+          className="bg-primary text-dark px-4 py-2 rounded-lg hover:bg-primary/80 cursor-pointer"
         >
           Create Brand
         </button>
@@ -90,7 +90,7 @@ function BrandList() {
                     href={brand.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-primary hover:underline cursor-pointer"
+                    className="text-gray-600 hover:underline cursor-pointer"
                   >
                     {brand.website || "N/A"}
                   </a>
@@ -109,13 +109,13 @@ function BrandList() {
                 <td className="p-3 flex space-x-3">
                   <button
                     onClick={() => handleView(brand)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaEye size={18} />
                   </button>
                   <button
                     onClick={() => handleDelete(brand._id)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaTrash size={18} />
                   </button>

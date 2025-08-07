@@ -101,7 +101,7 @@ function BlogList() {
           </thead>
           <tbody>
             {paginatedBlogs?.map((blog, index) => (
-              <tr key={blog.id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={blog._id} className="hover:bg-gray-100 text-gray-500">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{blog.title}</td>
                 <td className="p-3 hidden md:table-cell">{blog.author}</td>
@@ -130,7 +130,7 @@ function BlogList() {
                     <FaEdit size={18} />
                   </button>
                   <button
-                    onClick={() => handleDelete(blog.id)}
+                    onClick={() => handleDelete(blog._id)}
                     className="text-primary hover:text-primary/80 cursor-pointer"
                   >
                     <FaTrash size={18} />

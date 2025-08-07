@@ -16,7 +16,7 @@ function SubscriberList() {
     if (window.confirm("Are you sure you want to delete this subscriber?")) {
       try {
         await api.delete(`/contact/${id}`);
-        const updated = subscribers.filter((s) => s.id !== id);
+        const updated = subscribers.filter((s) => s._id !== id);
         setSubscribers(updated);
         toast.success("Subscriber deleted successfully!");
       } catch (error) {
@@ -34,7 +34,9 @@ function SubscriberList() {
     (page - 1) * perPage,
     page * perPage
   );
-  if (!subscribers) return <div>Loading...</div>;
+  if (!subscribers) return <div className="text-center my-10">Loading...</div>;
+  if (subscribers.length === 0)
+    return <div className="text-center my-10">No subscribers found</div>;
 
   return (
     <div className="max-w-7xl mx-auto p-4 bg-white shadow-md rounded-lg">
@@ -63,7 +65,7 @@ function SubscriberList() {
             {paginated.length > 0 ? (
               paginated.map((subscriber, index) => (
                 <tr
-                  key={subscriber.id}
+                  key={subscriber._id}
                   className="hover:bg-gray-100 text-gray-500 text-left"
                 >
                   <td className="p-3 text-left">
@@ -72,7 +74,7 @@ function SubscriberList() {
                   <td className="p-3 text-left">{subscriber.email}</td>
                   <td className="p-3 text-left">
                     <button
-                      onClick={() => handleDelete(subscriber.id)}
+                      onClick={() => handleDelete(subscriber._id)}
                       className="text-primary hover:text-primary/80 cursor-pointer"
                     >
                       <FaTrash size={18} />

@@ -10,7 +10,6 @@ import CategoryList from "./components/Category/CategoryList";
 import CouponsList from "./components/Coupons/CouponsList";
 import OrderList from "./components/Orders/OrdersList";
 import BannerList from "./components/Banners/BannerList";
-import CreateTestimonial from "./components/Testimonials/TestimonialModal";
 import TestimonialList from "./components/Testimonials/TestimonialList";
 import ContactList from "./components/Contact/ContactList";
 import ReviewsList from "./components/Reviews/ReviewsList";
@@ -18,11 +17,11 @@ import BrandPage from "./Pages/BrandPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoute";
-import SubscriberList from "./components/Subscribers/SubscriberList";
 import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
 import SubCategoryList from "./components/SubCategory/SubCategoryList";
 // import BlogList from "./components/Blogs/Blogslist";
 // import Articles from "./components/Articles/Articles";
+// import SubscriberList from "./components/Subscribers/SubscriberList";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
   useCurrentUser();
@@ -45,12 +44,12 @@ function App() {
             <Route path="banners" element={<BannerList />} />
             <Route path="testimonials" element={<TestimonialList />} />
             <Route path="contacts" element={<ContactList />} />
-            <Route path="subscribers" element={<SubscriberList />} />
+            <Route path="brands" element={<BrandPage />} />
             <Route path="reviews" element={<ReviewsList />} />
+            {/* <Route path="subscribers" element={<SubscriberList />} /> */}
             {/* <Route path="searched" element={<SearchedLogs />} /> */}
             {/* <Route path="blogs" element={<BlogList />} /> */}
             {/* <Route path="articles" element={<Articles />} /> */}
-            <Route path="brands" element={<BrandPage />} />
           </Route>
         </Route>
       </Routes>

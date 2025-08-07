@@ -88,7 +88,7 @@ function CouponsList() {
             </thead>
             <tbody>
               {paginatedCoupons?.map((coupon, index) => (
-                <tr key={coupon.id} className="hover:bg-gray-100 text-gray-500">
+                <tr key={coupon._id} className="hover:bg-gray-100 text-gray-500">
                   <td className="p-2 text-sm sm:text-base">
                     {index + 1 + (page - 1) * perPage}
                   </td>

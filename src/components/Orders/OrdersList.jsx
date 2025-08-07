@@ -45,7 +45,7 @@ function OrderList() {
   const filteredOrders = orders?.filter((order) => {
     const search = searchTerm?.toLowerCase();
 
-    const matchesOrderId = order?.id?.toLowerCase().includes(search);
+    const matchesOrderId = order?._id?.toLowerCase().includes(search);
     const matchesCustomerName = order?.user?.name
       ?.toLowerCase()
       .includes(search);
@@ -71,7 +71,7 @@ function OrderList() {
     const data = filteredOrders.flatMap((order, index) =>
       order.items.map((item, idx) => ({
         "S.No": index + 1,
-        "Order ID": order.id,
+        "Order ID": order._id,
         "Customer Name": order.user?.name || "N/A",
         "Customer Email": order.user?.email || "N/A",
         "Order Status": order.status,
@@ -127,6 +127,12 @@ function OrderList() {
 
     saveAs(blob, "orders.xlsx");
   };
+
+  return (
+    <div>
+      <h2 className="text-3xl font-semibold mb-4 text-center">coming soon</h2>
+    </div>
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-4 bg-white shadow-md rounded-lg overflow-x-auto">
@@ -191,9 +197,9 @@ function OrderList() {
           </thead>
           <tbody>
             {filteredOrders?.map((order, index) => (
-              <tr key={order.id} className="hover:bg-gray-50 text-gray-700">
+              <tr key={order._id} className="hover:bg-gray-50 text-gray-700">
                 <td className="p-3">{index + 1}</td>
-                <td className="p-3 font-medium">{order.id.slice(0, 8)}...</td>
+                <td className="p-3 font-medium">{order._id.slice(0, 8)}...</td>
                 <td className="p-3">{order?.user?.name || "Unknown"}</td>
                 <td className="p-3">
                   {new Date(order.createdAt).toLocaleDateString()}

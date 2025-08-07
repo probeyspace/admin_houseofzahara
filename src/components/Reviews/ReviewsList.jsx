@@ -37,7 +37,7 @@ const ReviewsList = () => {
       await api.delete(`/reviews/${id}`);
       setReviews(
         reviews.filter((review) => {
-          return review.id !== id;
+          return review._id !== id;
         })
       );
     } catch (error) {
@@ -97,20 +97,22 @@ const ReviewsList = () => {
         <table className="w-full rounded-lg shadow-md">
           <thead className="bg-gray-200 text-slate-600">
             <tr className="text-left">
+              <th className="p-3">#</th>
               <th className="p-3">Product Name</th>
-              <th className="p-3">User Name</th>
+              <th className="p-3">User</th>
               <th className="p-3">Rating</th>
               <th className="p-3">Comment</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredReviews.map((review) => (
+            {filteredReviews.map((review, index) => (
               <tr
-                key={review.id}
+                key={review._id}
                 className="hover:bg-gray-100 text-gray-500 text-sm border-t"
               >
-                <td className="p-3">{review.product?.name || "N/A"}</td>
+                <td className="p-3">{index + 1}</td>
+                <td className="p-3">{review.productId?.name || "N/A"}</td>
                 <td className="p-3">{review.user?.name}</td>
                 <td className="p-3">{"⭐".repeat(review.rating)}</td>
                 <td className="p-3 max-w-xs break-words whitespace-pre-wrap">
@@ -119,8 +121,8 @@ const ReviewsList = () => {
                 <td className="p-3 text-center">
                   <button
                     title="Delete Log"
-                    className="text-primary hover:text-primary/50 cursor-pointer"
-                    onClick={() => handleDelete(review.id)}
+                    className="text-gray-600 hover:text-red-800 cursor-pointer"
+                    onClick={() => handleDelete(review._id)}
                   >
                     <BiTrash size={20} />
                   </button>

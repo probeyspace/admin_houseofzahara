@@ -71,7 +71,7 @@ function UsersList() {
           </thead>
           <tbody>
             {paginatedUsers?.map((user, index) => (
-              <tr key={user.id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={user._id} className="hover:bg-gray-100 text-gray-500">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{user.name}</td>
                 <td className="p-3">{user.email}</td>
