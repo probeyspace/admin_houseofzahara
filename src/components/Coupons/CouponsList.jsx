@@ -10,21 +10,23 @@ function CouponsList() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
-  const { coupons, setCoupons, fetchCoupons } = useCoupons();
+  const { loading, coupons, setCoupons, fetchCoupons } = useCoupons();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
   const handleEdit = (coupon) => {
     setSelectedCoupon(coupon);
     setIsModalOpen(true);
   };
 
-  const handleDelete = async (code) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this coupon?")) {
       try {
-        await api.delete(`/promoCode/${code}`);
-        const updatedCoupons = coupons.filter((coupon) => coupon.code !== code);
+        await api.delete(`/promoCode/${id}`);
+        const updatedCoupons = coupons.filter((coupon) => coupon._id !== id);
         setCoupons(updatedCoupons);
       } catch (error) {
+        toast.error(error?.response?.data?.message || "Delete failed");
         console.error("Error deleting coupon:", error);
       }
     }
@@ -67,53 +69,64 @@ function CouponsList() {
       </div>
 
       {/* Coupons Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-2 text-sm sm:text-base">ID</th>
-              <th className="p-2 text-sm sm:text-base">Code</th>
-              <th className="p-2 text-sm sm:text-base">Discount</th>
-              <th className="p-2 text-sm sm:text-base hidden sm:table-cell">
-                Expiry Date
-              </th>
-              <th className="p-2 text-sm sm:text-base">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedCoupons?.map((coupon, index) => (
-              <tr key={coupon.id} className="hover:bg-gray-100 text-gray-500">
-                <td className="p-2 text-sm sm:text-base">
-                  {index + 1 + (page - 1) * perPage}
-                </td>
-                <td className="p-2 text-sm sm:text-base font-medium">
-                  {coupon.code}
-                </td>
-                <td className="p-2 text-sm sm:text-base">₹{coupon.discount}</td>
-                <td className="p-2 text-sm sm:text-base hidden sm:table-cell">
-                  {new Date(coupon.expiry).toLocaleDateString()}
-                </td>
-                <td className="p-2 flex space-x-2 sm:space-x-3">
-                  <button
-                    onClick={() => handleEdit(coupon)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
-                    aria-label="Edit coupon"
-                  >
-                    <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(coupon.code)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
-                    aria-label="Delete coupon"
-                  >
-                    <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                </td>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full rounded-lg shadow-md">
+            <thead className="bg-gray-200 text-slate-600">
+              <tr className="text-left">
+                <th className="p-2 text-sm sm:text-base">ID</th>
+                <th className="p-2 text-sm sm:text-base">Code</th>
+                <th className="p-2 text-sm sm:text-base">Discount Type</th>
+                <th className="p-2 text-sm sm:text-base">Discount</th>
+                <th className="p-2 text-sm sm:text-base hidden sm:table-cell">
+                  Expiry Date
+                </th>
+                <th className="p-2 text-sm sm:text-base">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {paginatedCoupons?.map((coupon, index) => (
+                <tr key={coupon.id} className="hover:bg-gray-100 text-gray-500">
+                  <td className="p-2 text-sm sm:text-base">
+                    {index + 1 + (page - 1) * perPage}
+                  </td>
+                  <td className="p-2 text-sm sm:text-base font-medium">
+                    {coupon.code}
+                  </td>
+                  <td className="p-2 text-sm sm:text-base">
+                    {coupon.discountType}
+                  </td>
+                  <td className="p-2 text-sm sm:text-base">
+                    {coupon.discountValue}
+                    {coupon.discountType === "Percentage" ? "%" : ""}
+                  </td>
+                  <td className="p-2 text-sm sm:text-base hidden sm:table-cell">
+                    {new Date(coupon.expiresAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-2 flex space-x-2 sm:space-x-3">
+                    <button
+                      onClick={() => handleEdit(coupon)}
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                      aria-label="Edit coupon"
+                    >
+                      <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(coupon._id)}
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                      aria-label="Delete coupon"
+                    >
+                      <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
@@ -146,7 +159,7 @@ function CouponsList() {
               onClick={() => setPage(i + 1)}
               className={`px-2 sm:px-3 py-1 mx-1 transition rounded-full text-sm sm:text-base min-w-[2rem] ${
                 page === i + 1
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-dark"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -175,13 +188,17 @@ function CouponsList() {
 
       {/* Edit Coupon Modal */}
       <EditCouponModal
-        isOpen={isModalOpen}
+        show={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        couponData={selectedCoupon}
+        coupon={selectedCoupon}
         onUpdate={fetchCoupons}
       />
 
-      <AddCouponModal show={showModal} onClose={() => setShowModal(false)} />
+      <AddCouponModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onUpdate={fetchCoupons}
+      />
     </div>
   );
 }

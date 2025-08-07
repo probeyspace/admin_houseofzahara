@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../../Api/api";
 import { toast } from "react-toastify";
 
@@ -51,8 +51,7 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
       if (formData.image) {
         formDataToSend.append("image", formData.image);
       }
-      const id = bannerData.id;
-      await api.put(`/banner/${id}`, formDataToSend);
+      await api.put(`/banner/${bannerData._id}`, formDataToSend);
       toast.success("Banner updated successfully!");
       fetchBanner(); // Refresh banners list
       onClose(); // Close the modal
@@ -143,7 +142,7 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
             <button
               type="submit"
               disabled={loading}
-              className="bg-primary hover:bg-primary/80 cursor-pointer text-white px-4 py-2 rounded-md"
+              className="bg-primary hover:bg-primary/80 cursor-pointer text-dark px-4 py-2 rounded-md"
             >
               {loading ? "Updating..." : "Update Banner"}
             </button>

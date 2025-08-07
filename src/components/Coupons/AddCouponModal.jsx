@@ -2,17 +2,18 @@ import { useState } from "react";
 import api from "../../Api/api";
 import { toast } from "react-toastify";
 
-const AddCouponModal = ({ show, onClose }) => {
+const AddCouponModal = ({ show, onClose, onUpdate }) => {
   const [formData, setFormData] = useState({
     code: "",
-    discount: "",
-    expiry: "",
-    minOrder: "",
+    discountType: "Percentage", // Default value
+    discountValue: "",
+    minOrderValue: "",
+    expiresAt: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -21,11 +22,18 @@ const AddCouponModal = ({ show, onClose }) => {
     try {
       const response = await api.post("/promoCode", formData);
       toast.success(response.data.message || "Coupon created successfully");
-      setFormData({ code: "", discount: "", expiry: "", minOrder: "" });
+      setFormData({
+        code: "",
+        discountType: "Percentage",
+        discountValue: "",
+        minOrderValue: "",
+        expiresAt: "",
+      });
+      onUpdate();
       onClose(); // Close modal after submission
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create coupon");
+      toast.error(error?.response?.data?.message || "Failed to create coupon");
     }
   };
 
@@ -60,13 +68,45 @@ const AddCouponModal = ({ show, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Discount
+              Discount Type
+            </label>
+            <select
+              name="discountType"
+              value={formData.discountType}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            >
+              <option value="Percentage">Percentage</option>
+              <option value="Fixed">Fixed</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Discount Value
             </label>
             <input
               type="number"
-              name="discount"
-              value={formData.discount}
+              name="discountValue"
+              value={formData.discountValue}
               onChange={handleChange}
+              min={0}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Minimum Order Value
+            </label>
+            <input
+              type="number"
+              name="minOrderValue"
+              value={formData.minOrderValue}
+              onChange={handleChange}
+              min={0}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
@@ -78,31 +118,18 @@ const AddCouponModal = ({ show, onClose }) => {
             </label>
             <input
               type="date"
-              name="expiry"
-              value={formData.expiry}
+              name="expiresAt"
+              value={formData.expiresAt}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Minimum Order Amount
-            </label>
-            <input
-              type="number"
-              name="minOrder"
-              value={formData.minOrder}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-
           <div className="text-center">
             <button
               type="submit"
-              className="bg-primary text-dark py-2 px-6 rounded hover:scale-105 transition transform duration-300"
+              className="bg-primary text-dark py-2 px-6 rounded hover:scale-105 cursor-pointer transition transform duration-300"
             >
               Create Coupon
             </button>

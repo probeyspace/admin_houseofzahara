@@ -85,7 +85,7 @@ function MasterCategoryList() {
           <thead className="bg-gray-200 text-slate-600">
             <tr className="text-left">
               <th className="p-2">ID</th>
-              <th className="p-2">Name</th>
+              <th className="p-2">MasterCategory</th>
               <th className="p-2">Description</th>
               <th className="p-2 ">Actions</th>
             </tr>
@@ -153,7 +153,7 @@ function MasterCategoryList() {
               onClick={() => setPage(i + 1)}
               className={`px-3 py-1 mx-1 transition rounded-full ${
                 page === i + 1
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-dark"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >

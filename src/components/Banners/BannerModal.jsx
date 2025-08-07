@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../../Api/api";
 import { toast } from "react-toastify";
 
-const BannerModal = ({ show, onClose }) => {
+const BannerModal = ({ show, onClose, fetchBanner }) => {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -52,6 +52,7 @@ const BannerModal = ({ show, onClose }) => {
         isActive: false,
         image: null,
       });
+      fetchBanner();
       onClose(); // Close modal
     } catch (error) {
       console.error("Error creating banner:", error);
@@ -67,7 +68,7 @@ const BannerModal = ({ show, onClose }) => {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-black text-3xl font-bold"
+          className="absolute top-3 right-5 text-gray-500 hover:text-black text-3xl font-bold cursor-pointer"
         >
           &times;
         </button>
@@ -138,11 +139,11 @@ const BannerModal = ({ show, onClose }) => {
             />
           </div>
 
-          <div className="text-center">
+          <div className="text-right">
             <button
               type="submit"
               disabled={loading}
-              className="bg-primary text-dark py-2 px-6 rounded-md hover:scale-105 transition-transform duration-300"
+              className="bg-primary cursor-pointer text-dark py-2 px-6 rounded-md hover:scale-105 transition-transform duration-300"
             >
               {loading ? "Creating..." : "Create Banner"}
             </button>

@@ -154,7 +154,7 @@ function BrandList() {
               onClick={() => setPage(i + 1)}
               className={`px-3 py-1 mx-1 transition rounded-full ${
                 page === i + 1
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-dark"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >

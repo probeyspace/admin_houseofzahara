@@ -1,51 +1,60 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import api from "../../Api/api";
 import { toast } from "react-toastify";
 
-const EditCouponModal = ({ isOpen, onClose, couponData, onUpdate }) => {
+const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
   const [formData, setFormData] = useState({
     code: "",
-    discount: "",
-    expiry: "",
-    minOrder: "",
+    discountType: "Percentage",
+    discountValue: "",
+    minOrderValue: "",
+    expiresAt: "",
   });
 
   useEffect(() => {
-    if (couponData) {
+    if (coupon) {
       setFormData({
-        code: couponData.code,
-        discount: couponData.discount,
-        expiry: couponData.expiry.split("T")[0], // Format for date input
-        minOrder: couponData.minOrder,
+        code: coupon.code || "",
+        discountType: coupon.discountType || "Percentage",
+        discountValue: coupon.discountValue || "",
+        minOrderValue: coupon.minOrderValue || "",
+        expiresAt: coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : "",
       });
     }
-  }, [couponData]);
+  }, [coupon]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const id = couponData.id;
-    console.log(couponData);
+
     try {
-      await api.put(`/promoCode/${id}`, formData);
-      toast.success("Coupon updated successfully");
-      onUpdate(); // Refresh the coupon list
-      onClose(); // Close the modal
+      const response = await api.put(`/promoCode/${coupon._id}`, formData);
+      toast.success(response.data.message || "Coupon updated successfully");
+      onUpdate();
+      onClose();
     } catch (error) {
-      console.error("Error updating coupon:", error);
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to update coupon");
     }
   };
 
-  if (!isOpen) return null;
+  if (!show) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-md w-96">
-        <h2 className="text-xl font-bold mb-4 text-center">Edit Coupon</h2>
+    <div className="fixed inset-0 z-50 backdrop-blur-sm bg-black/30 flex items-center justify-center">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md relative p-6">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-600 hover:text-black text-3xl font-bold"
+        >
+          &times;
+        </button>
+
+        <h2 className="text-2xl font-bold mb-6 text-center">Edit Coupon</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -56,59 +65,75 @@ const EditCouponModal = ({ isOpen, onClose, couponData, onUpdate }) => {
               name="code"
               value={formData.code}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md"
-              disabled
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Discount
-            </label>
-            <input
-              type="number"
-              name="discount"
-              value={formData.discount}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Discount Type
+            </label>
+            <select
+              name="discountType"
+              value={formData.discountType}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            >
+              <option value="Percentage">Percentage</option>
+              <option value="Fixed">Fixed</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Discount Value
+            </label>
+            <input
+              type="number"
+              name="discountValue"
+              value={formData.discountValue}
+              onChange={handleChange}
+              min={0}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Minimum Order Value
+            </label>
+            <input
+              type="number"
+              name="minOrderValue"
+              value={formData.minOrderValue}
+              onChange={handleChange}
+              min={0}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              required
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Expiry Date
             </label>
             <input
               type="date"
-              name="expiry"
-              value={formData.expiry}
+              name="expiresAt"
+              value={formData.expiresAt}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Minimum Order Amount
-            </label>
-            <input
-              type="number"
-              name="minOrder"
-              value={formData.minOrder}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md"
-            />
-          </div>
-          <div className="flex justify-between">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-500 text-white py-2 px-4 rounded-md"
-            >
-              Cancel
-            </button>
+
+          <div className="text-center">
             <button
               type="submit"
-              className="bg-primary text-white py-2 px-4 rounded-md hover:scale-105 transition"
+              className="bg-primary cursor-pointer text-dark py-2 px-6 rounded hover:scale-105 transition transform duration-300"
             >
               Update Coupon
             </button>

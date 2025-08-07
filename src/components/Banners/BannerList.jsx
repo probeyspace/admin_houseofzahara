@@ -34,7 +34,7 @@ function BannerList() {
     if (window.confirm("Are you sure you want to delete this banner?")) {
       try {
         await api.delete(`/banner/${id}`);
-        const updatedBanners = banners.filter((banner) => banner.id !== id);
+        const updatedBanners = banners.filter((banner) => banner._id !== id);
         setBanners(updatedBanners);
       } catch (error) {
         console.error("Error deleting banner:", error);
@@ -114,7 +114,7 @@ function BannerList() {
           </thead>
           <tbody>
             {paginatedBanners?.map((banner, index) => (
-              <tr key={banner.id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={banner._id} className="hover:bg-gray-100 text-gray-500">
                 <td className="p-2 sm:p-3">
                   {index + 1 + (page - 1) * perPage}
                 </td>
@@ -142,24 +142,24 @@ function BannerList() {
                 <td className="p-2 sm:p-3 flex space-x-2 sm:space-x-3">
                   <button
                     onClick={() => handleView(banner)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                     aria-label="View"
                   >
-                    <FaEye size={16} className="sm:w-4 sm:h-4" />
+                    <FaEye size={18} className="sm:w-4 sm:h-4" />
                   </button>
                   <button
                     onClick={() => handleEdit(banner)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                     aria-label="Edit"
                   >
-                    <FaEdit size={16} className="sm:w-4 sm:h-4" />
+                    <FaEdit size={18} className="sm:w-4 sm:h-4" />
                   </button>
                   <button
-                    onClick={() => handleDelete(banner.id)}
-                    className="text-primary hover:text-primary/80 cursor-pointer"
+                    onClick={() => handleDelete(banner._id)}
+                    className="text-gray-600 hover:text-gray-800 cursor-pointer"
                     aria-label="Delete"
                   >
-                    <FaTrash size={16} className="sm:w-4 sm:h-4" />
+                    <FaTrash size={18} className="sm:w-4 sm:h-4" />
                   </button>
                 </td>
               </tr>
@@ -199,7 +199,7 @@ function BannerList() {
               onClick={() => setPage(i + 1)}
               className={`px-2 sm:px-3 py-1 mx-1 transition rounded-full text-sm sm:text-base ${
                 page === i + 1
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-dark"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -239,7 +239,11 @@ function BannerList() {
         fetchBanner={fetchBanner}
       />
 
-      <BannerModal show={addModal} onClose={() => setAddModal(false)} />
+      <BannerModal
+        show={addModal}
+        onClose={() => setAddModal(false)}
+        fetchBanner={fetchBanner}
+      />
     </div>
   );
 }

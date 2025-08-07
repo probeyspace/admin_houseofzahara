@@ -83,8 +83,9 @@ function SubCategoryList() {
           <thead className="bg-gray-200 text-slate-600">
             <tr className="text-left">
               <th className="p-2">ID</th>
-              <th className="p-2">Name</th>
+              <th className="p-2">Subcategory</th>
               <th className="p-2">Category</th>
+              <th className="p-2">MasterCategory</th>
               <th className="p-2">Description</th>
               <th className="p-2 ">Actions</th>
             </tr>
@@ -98,6 +99,9 @@ function SubCategoryList() {
                 <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-2 ">{subCategory.name}</td>
                 <td className="p-2 ">{subCategory.category?.name}</td>
+                <td className="p-2 ">
+                  {subCategory.category?.masterCategory?.name}
+                </td>
                 <td className="p-2 ">{subCategory.description}</td>
                 <td className="p-2 flex space-x-3">
                   <button
@@ -153,7 +157,7 @@ function SubCategoryList() {
               onClick={() => setPage(i + 1)}
               className={`px-3 py-1 mx-1 transition rounded-full ${
                 page === i + 1
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-dark"
                   : "text-gray-700 hover:bg-gray-200"
               }`}
             >
