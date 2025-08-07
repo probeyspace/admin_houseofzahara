@@ -4,9 +4,8 @@ import MonthlySalesReport from "../components/Dashboard/MonthlySalesReport";
 import WeeklySalesReport from "../components/Dashboard/WeeklySalesReport";
 import YearlySalesReport from "../components/Dashboard/YearlySalesReport";
 import useUsers from "../Hooks/useUsers";
-import { useCategory } from "../Hooks/useCategory";
 import useProducts from "../Hooks/useProducts";
-import useOrders from "../Hooks/useOrders";
+import { useCategory } from "../Hooks/useCategory";
 import { useMasterCategory } from "../Hooks/useMasterCategory";
 import { useSubCategory } from "../Hooks/useSubcategory";
 const DashboardPage = () => {
@@ -74,11 +73,13 @@ const DashboardPage = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* <WeeklySalesReport /> */}
-        {/* <YearlySalesReport /> */}
+        <WeeklySalesReport />
+        <YearlySalesReport />
       </div>
 
-      <div className="mt-8">{/* <MonthlySalesReport /> */}</div>
+      <div className="mt-8">
+        <MonthlySalesReport />
+      </div>
     </>
   );
 };

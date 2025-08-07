@@ -1,6 +1,7 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import { FaTimes } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 function ViewProductModal({ isOpen, onClose, product }) {
   if (!product) return null;
@@ -93,12 +94,19 @@ function ViewProductModal({ isOpen, onClose, product }) {
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {product.thumbnailImages.map((img) => (
-                        <img
-                          key={img._id}
-                          src={img.url}
-                          alt={img.altText || "Product Image"}
-                          className="w-[150px] h-[150px] object-contain rounded shadow-sm"
-                        />
+                        <Link
+                          key={img}
+                          to={`https://celestiq.probeyservices.tech/product/${product._id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img
+                            key={img._id}
+                            src={img.url}
+                            alt={img.altText || "Product Image"}
+                            className="w-[150px] h-[150px] object-contain rounded shadow-sm"
+                          />
+                        </Link>
                       ))}
                     </div>
                   </div>

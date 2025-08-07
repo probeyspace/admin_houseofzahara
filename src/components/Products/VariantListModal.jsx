@@ -262,6 +262,7 @@ function VariantListModal({ isOpen, onClose, variants }) {
               setEditData((prev) => ({ ...prev, images: e.target.files }))
             }
             className="mt-2"
+            required
           />
 
           <div className="flex gap-3 pt-2">

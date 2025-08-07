@@ -27,7 +27,7 @@ const MonthlySalesReport = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="sales" fill="#902414" name="Revenue" />
+          <Bar dataKey="sales" fill="#614713" name="Revenue" />
         </BarChart>
       </ResponsiveContainer>
     </div>

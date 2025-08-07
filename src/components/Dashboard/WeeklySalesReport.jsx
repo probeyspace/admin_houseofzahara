@@ -26,7 +26,7 @@ const WeeklySalesReport = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="revenue" fill="#902414" name="Revenue" />
+          <Bar dataKey="revenue" fill="#614713" name="Revenue" />
         </BarChart>
       </ResponsiveContainer>
     </div>

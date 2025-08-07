@@ -26,7 +26,7 @@ const YearlySalesReport = () => {
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey="sales" stroke="#902414" name="Sales" />
+          <Line type="monotone" dataKey="sales" stroke="#614713" name="Sales" />
         </LineChart>
       </ResponsiveContainer>
     </div>
