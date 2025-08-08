@@ -7,7 +7,7 @@ import useUsers from "../Hooks/useUsers";
 import useProducts from "../Hooks/useProducts";
 import { useCategory } from "../Hooks/useCategory";
 import { useMasterCategory } from "../Hooks/useMasterCategory";
-import { useSubCategory } from "../Hooks/useSubcategory";
+import { useSubCategory } from "../Hooks/useSubCategory";
 const DashboardPage = () => {
   useUsers();
   useCategory();

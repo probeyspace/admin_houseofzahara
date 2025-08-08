@@ -90,6 +90,7 @@ function AddVariantModal({ isOpen, onClose, product }) {
       const response = await createVariant(product._id, formData);
       dispatch(addVariant(response.data));
       toast.success(response?.message || "Variant added successfully!");
+      setForm({});
       onClose();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Error adding variant");
