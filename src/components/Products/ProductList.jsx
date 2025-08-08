@@ -120,7 +120,7 @@ function ProductList() {
                   </td>
                   <td className="p-2 sm:p-3 font-medium">
                     {product.name.length > 15
-                      ? product.name.substring(0, 25)
+                      ? product.name.substring(0, 23) + "..."
                       : product.name}
                   </td>
 

@@ -82,14 +82,15 @@ const Login = () => {
               />
             </label>
 
-            {/* <div className="mt-4 flex flex-col items-start justify-between md:flex-row">
+            <div className="mt-2 flex flex-col items-end justify-between md:flex-row">
               <a
-                href="#"
-                className="mt-2 text-sm text-yellow-600 hover:underline md:mt-0"
+                href={`${import.meta.env.VITE_URL}/login?isForgot=true`}
+                target="_blank"
+                className="mt-2 text-sm text-gray-600 hover:underline md:mt-0"
               >
                 Forgot Password?
               </a>
-            </div> */}
+            </div>
 
             <button className="mt-6 w-full rounded-lg bg-primary p-2 text-dark hover:bg-primary/80 cursor-pointer">
               Log In
