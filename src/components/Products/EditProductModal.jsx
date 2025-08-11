@@ -15,6 +15,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     category: "",
     subcategory: "",
     thumbnails: [],
+    attributes: "[]", // stringified for submission
+    attributesObj: {}, // for dynamic rendering
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
@@ -24,6 +26,16 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
   // Populate existing product data when modal opens
   useEffect(() => {
+    // Convert attributes array to key-value map for input prefill
+    const attributesObj = {};
+    if (productData?.attributes?.length > 0) {
+      productData?.attributes.forEach((attr) => {
+        if (attr.key && attr.value) {
+          attributesObj[attr.key] = attr.value;
+        }
+      });
+    }
+
     if (isOpen && productData) {
       setFormData({
         name: productData.name || "",
@@ -36,6 +48,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
         subcategory:
           productData.subcategory?._id || productData.subcategory || "",
         thumbnails: [],
+        attributes: JSON.stringify(productData.attributes || []), // ✅ stringify here
+        attributesObj: attributesObj, // for dynamic rendering
       });
     }
   }, [isOpen, productData]);
@@ -74,6 +88,12 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("masterCategory", formData.masterCategory);
     data.append("category", formData.category);
     data.append("subcategory", formData.subcategory);
+
+    // Optional attributes (JSON string expected)
+    if (formData.attributes) {
+      data.append("attributes", formData.attributes);
+    }
+
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
@@ -96,7 +116,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full max-h-[90vh] overflow-y-auto">
         <div className="relative">
           <h2 className="text-xl font-bold mb-4">Edit Product</h2>
           <button
@@ -104,7 +124,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             className="absolute top-1 right-1 text-gray-500 hover:text-gray-700"
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"  
+              xmlns="http://www.w3.org/2000/svg"
               className="h-6 w-6"
               fill="none"
               viewBox="0 0 24 24"
@@ -135,6 +155,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             value={formData.description}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            rows={4}
           ></textarea>
           <input
             type="text"
@@ -197,6 +218,43 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
               </option>
             ))}
           </select>
+
+          {/* Attributes field (JSON string) */}
+          <div className="space-y-2">
+            <label className="block font-medium text-sm text-gray-700">
+              Additional Info
+            </label>
+            {[
+              { key: "Usage", label: "Usage Instructions" },
+              { key: "Ingredients", label: "Ingredients" },
+              { key: "Highlights", label: "Highlights" },
+            ].map(({ key, label }) => (
+              <div key={key}>
+                <label className="text-sm text-gray-600">{label}</label>
+                <input
+                  type="text"
+                  name={`attribute-${key}`}
+                  value={formData.attributesObj?.[key] || ""}
+                  onChange={(e) => {
+                    const newAttributes = { ...(formData.attributesObj || {}) };
+                    newAttributes[key] = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      attributesObj: newAttributes,
+                      attributes: JSON.stringify(
+                        Object.entries(newAttributes).map(([k, v]) => ({
+                          key: k,
+                          value: v,
+                        }))
+                      ),
+                    }));
+                  }}
+                  className="w-full border p-2 rounded"
+                  placeholder={`Enter ${label}`}
+                />
+              </div>
+            ))}
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

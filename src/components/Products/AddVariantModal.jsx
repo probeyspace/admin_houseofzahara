@@ -29,8 +29,6 @@ function AddVariantModal({ isOpen, onClose, product }) {
     color: "",
     material: "",
     expiryDate: "",
-    attributes: "[]", // stringified for submission
-    attributesObj: {}, // for dynamic rendering
   });
 
   const handleChange = (e) => {
@@ -74,11 +72,6 @@ function AddVariantModal({ isOpen, onClose, product }) {
     specsFields.forEach((field) => {
       if (form[field]) formData.append(field, form[field]);
     });
-
-    // Optional attributes (JSON string expected)
-    if (form.attributes) {
-      formData.append("attributes", form.attributes);
-    }
 
     // Images
     form.images.forEach((file) => {
@@ -151,43 +144,6 @@ function AddVariantModal({ isOpen, onClose, product }) {
                 className="border border-gray-300 rounded p-2"
               />
             </div>
-          </div>
-
-          {/* Attributes field (JSON string) */}
-          <div className="space-y-2">
-            <label className="block font-medium text-sm text-gray-700">
-              Additional Info
-            </label>
-            {[
-              { key: "Usage", label: "Usage Instructions" },
-              { key: "Ingredients", label: "Ingredients" },
-              { key: "Highlights", label: "Highlights" },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <label className="text-sm text-gray-600">{label}</label>
-                <input
-                  type="text"
-                  name={`attribute-${key}`}
-                  value={form.attributesObj?.[key] || ""}
-                  onChange={(e) => {
-                    const newAttributes = { ...(form.attributesObj || {}) };
-                    newAttributes[key] = e.target.value;
-                    setForm((prev) => ({
-                      ...prev,
-                      attributesObj: newAttributes,
-                      attributes: JSON.stringify(
-                        Object.entries(newAttributes).map(([k, v]) => ({
-                          key: k,
-                          value: v,
-                        }))
-                      ),
-                    }));
-                  }}
-                  className="w-full border p-2 rounded"
-                  placeholder={`Enter ${label}`}
-                />
-              </div>
-            ))}
           </div>
 
           {/* isActive toggle */}

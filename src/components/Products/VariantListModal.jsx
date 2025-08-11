@@ -39,21 +39,8 @@ function VariantListModal({ isOpen, onClose, variants }) {
       sku: variant.sku,
       isActive: variant.isActive ?? true,
       images: [], // Let user optionally reupload images
-      attributes: variant.attributes || [],
       ...variant.specs, // Flatten specs like shade, size, etc.
     };
-
-    // Convert attributes array to key-value map for input prefill
-    const attributesObj = {};
-    if (cleanedVariant.attributes?.length > 0) {
-      cleanedVariant.attributes.forEach((attr) => {
-        if (attr.key && attr.value) {
-          attributesObj[attr.key] = attr.value;
-        }
-      });
-    }
-
-    cleanedVariant.attributesObj = attributesObj;
 
     setSelectedVariant(variant);
     setEditData(cleanedVariant);
@@ -92,9 +79,7 @@ function VariantListModal({ isOpen, onClose, variants }) {
       formData.append("stock", editData.stock);
       formData.append("sku", editData.sku);
       formData.append("isActive", editData.isActive);
-
       formData.append("specs", JSON.stringify(specs));
-      formData.append("attributes", JSON.stringify(editData.attributes || []));
 
       if (
         editData.images instanceof FileList ||
@@ -200,45 +185,6 @@ function VariantListModal({ isOpen, onClose, variants }) {
               onChange={handleInputChange}
               className="border border-gray-300 rounded p-2"
             />
-          </div>
-
-          {/* Attributes field (JSON string) */}
-          <div className="space-y-2">
-            <label className="block font-medium text-sm text-gray-700">
-              Additional Info(Optional)
-            </label>
-            {[
-              { key: "Usage", label: "Usage Instructions" },
-              { key: "Ingredients", label: "Ingredients" },
-              { key: "Highlights", label: "Highlights" },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <label className="text-sm text-gray-600">{label}</label>
-                <input
-                  type="text"
-                  name={`attribute-${key}`}
-                  value={editData.attributesObj?.[key] || ""}
-                  onChange={(e) => {
-                    const newAttributes = { ...(editData.attributesObj || {}) };
-                    newAttributes[key] = e.target.value;
-                    const mappedAttributes = Object.entries(newAttributes).map(
-                      ([k, v]) => ({
-                        key: k,
-                        value: v,
-                      })
-                    );
-
-                    setEditData((prev) => ({
-                      ...prev,
-                      attributesObj: newAttributes,
-                      attributes: mappedAttributes, // store as array, not string!
-                    }));
-                  }}
-                  className="w-full border p-2 rounded"
-                  placeholder={`Enter ${label}`}
-                />
-              </div>
-            ))}
           </div>
 
           <label className="flex items-center gap-2 mt-2">

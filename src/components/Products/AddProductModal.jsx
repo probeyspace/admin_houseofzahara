@@ -16,6 +16,8 @@ const AddProductModal = ({ isOpen, onClose }) => {
     category: "",
     subcategory: "",
     thumbnails: [],
+    attributes: "[]", // stringified for submission
+    attributesObj: {}, // for dynamic rendering
   });
   const [loading, setLoading] = useState(false);
   const categories = useSelector((state) => state.category);
@@ -60,6 +62,11 @@ const AddProductModal = ({ isOpen, onClose }) => {
     data.append("category", formData.category);
     data.append("subcategory", formData.subcategory);
 
+    // Optional attributes (JSON string expected)
+    if (formData.attributes) {
+      data.append("attributes", formData.attributes);
+    }
+
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
@@ -100,8 +107,8 @@ const AddProductModal = ({ isOpen, onClose }) => {
             value={formData.description}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            rows={4}
           ></textarea>
-
           <input
             type="text"
             name="productType"
@@ -110,7 +117,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-
           <select
             name="brandName"
             value={formData.brandName}
@@ -125,7 +131,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
               </option>
             ))}
           </select>
-
           <select
             name="masterCategory"
             value={formData.masterCategory}
@@ -140,7 +145,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
               </option>
             ))}
           </select>
-
           <select
             name="category"
             value={formData.category}
@@ -155,7 +159,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
               </option>
             ))}
           </select>
-
           <select
             name="subcategory"
             value={formData.subcategory}
@@ -171,6 +174,43 @@ const AddProductModal = ({ isOpen, onClose }) => {
             ))}
           </select>
 
+          {/* Attributes field (JSON string) */}
+          <div className="space-y-2">
+            <label className="block font-medium text-sm text-gray-700">
+              Additional Info
+            </label>
+            {[
+              { key: "Usage", label: "Usage Instructions" },
+              { key: "Ingredients", label: "Ingredients" },
+              { key: "Highlights", label: "Highlights" },
+            ].map(({ key, label }) => (
+              <div key={key}>
+                <label className="text-sm text-gray-600">{label}</label>
+                <input
+                  type="text"
+                  name={`attribute-${key}`}
+                  value={formData.attributesObj?.[key] || ""}
+                  onChange={(e) => {
+                    const newAttributes = { ...(formData.attributesObj || {}) };
+                    newAttributes[key] = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      attributesObj: newAttributes,
+                      attributes: JSON.stringify(
+                        Object.entries(newAttributes).map(([k, v]) => ({
+                          key: k,
+                          value: v,
+                        }))
+                      ),
+                    }));
+                  }}
+                  className="w-full border p-2 rounded"
+                  placeholder={`Enter ${label}`}
+                />
+              </div>
+            ))}
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Thumbnail Images (Max 2)
@@ -183,7 +223,6 @@ const AddProductModal = ({ isOpen, onClose }) => {
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
             />
           </div>
-
           <div className="flex gap-2">
             <button
               type="submit"
