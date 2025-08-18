@@ -61,7 +61,6 @@ function OrderList() {
   });
 
   const uniqueStatuses = [...new Set(orders?.map((order) => order.status))];
-
   const exportToExcel = () => {
     if (!filteredOrders.length) {
       toast.warning("No orders to export.");
@@ -75,18 +74,24 @@ function OrderList() {
         "Customer Name": order.user?.name || "N/A",
         "Customer Email": order.user?.email || "N/A",
         "Order Status": order.status,
-        "Payment Method": order.Payment?.[0]?.method || "N/A",
-        "Payment Status": order.Payment?.[0]?.status || "N/A",
-        "Total Price": order.totalPrice,
-        Discount: order.discount,
+        "Payment Method": order.payment?.paymentMethod || "N/A",
+        "Payment Status": order.payment?.paymentStatus || "N/A",
+        "Total Price": order.totalPrice?.$numberDecimal || order.totalPrice,
+        "Shipment Fee": order.shipment,
+        Discount: order.discount?.$numberDecimal || order.discount || 0,
+
+        // Product + Variant Details
         "Product Name": item.product?.name || "N/A",
-        Brand: item.product?.brandName || "N/A",
+        SKU: item.variant?.sku || "N/A",
         Qty: item.quantity,
-        Color: item.color?.color || "N/A",
-        SKU: item.color?.sku || "N/A",
-        Price: item.price,
-        "Discounted Price":
-          item.color?.discountPrice || item.color?.price || "N/A",
+        "Item Price": item.price?.$numberDecimal || item.price || "N/A",
+        "Variant Size": item.variant?.specs?.size || "N/A",
+        "Skin Type": item.variant?.specs?.skinType || "N/A",
+        Packaging: item.variant?.specs?.packaging || "N/A",
+        "Expiry Date": item.variant?.specs?.expiryDate
+          ? new Date(item.variant.specs.expiryDate).toLocaleDateString()
+          : "N/A",
+
         "Created At": new Date(order.createdAt).toLocaleString(),
       }))
     );
@@ -104,12 +109,13 @@ function OrderList() {
       { wch: 15 }, // Total Price
       { wch: 10 }, // Discount
       { wch: 40 }, // Product Name
-      { wch: 20 }, // Brand
+      { wch: 15 }, // SKU
       { wch: 5 }, // Qty
-      { wch: 15 }, // Color
-      { wch: 10 }, // SKU
-      { wch: 15 }, // Price
-      { wch: 20 }, // Discounted Price
+      { wch: 15 }, // Item Price
+      { wch: 15 }, // Variant Size
+      { wch: 20 }, // Skin Type
+      { wch: 20 }, // Packaging
+      { wch: 15 }, // Expiry Date
       { wch: 25 }, // Created At
     ];
 
@@ -129,13 +135,7 @@ function OrderList() {
   };
 
   return (
-    <div>
-      <h2 className="text-3xl font-semibold mb-4 text-center">coming soon</h2>
-    </div>
-  );
-
-  return (
-    <div className="max-w-7xl mx-auto p-4 bg-white shadow-md rounded-lg overflow-x-auto">
+    <div className="max-w-7xl mx-auto p-4 bg-white shadow-md rounded-lg">
       {/* Filters */}
       <div className="flex flex-col sm:flex-row sm:items-end gap-3 mb-4">
         <input
@@ -183,7 +183,7 @@ function OrderList() {
 
       {/* Orders Table */}
       <div className="overflow-x-auto">
-        <table className="w-full text-sm rounded-lg shadow-md">
+        <table className="table-auto min-w-max w-full text-sm rounded-lg shadow-md">
           <thead className="bg-gray-100 text-gray-600">
             <tr className="text-left">
               <th className="p-3">#</th>
@@ -199,7 +199,9 @@ function OrderList() {
             {filteredOrders?.map((order, index) => (
               <tr key={order._id} className="hover:bg-gray-50 text-gray-700">
                 <td className="p-3">{index + 1}</td>
-                <td className="p-3 font-medium">{order._id.slice(0, 8)}...</td>
+                <td className="p-3 font-medium truncate max-w-[120px]">
+                  {order._id}
+                </td>
                 <td className="p-3">{order?.user?.name || "Unknown"}</td>
                 <td className="p-3">
                   {new Date(order.createdAt).toLocaleDateString()}
@@ -208,9 +210,9 @@ function OrderList() {
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       order.status === "PROCESSING"
-                        ? "bg-blue-100 text-primary/70"
+                        ? "bg-blue-100 text-blue-600"
                         : order.status === "CANCELLED"
-                        ? "bg-red-100 text-primary"
+                        ? "bg-red-100 text-red-600"
                         : order.status === "PENDING"
                         ? "bg-yellow-100 text-yellow-600"
                         : order.status === "SHIPPED"
@@ -223,8 +225,9 @@ function OrderList() {
                     {order.status}
                   </span>
                 </td>
-
-                <td className="p-3">₹{order.totalPrice}</td>
+                <td className="p-3">
+                  ₹{order.totalPrice?.$numberDecimal || order.totalPrice}
+                </td>
                 <td className="p-3 flex gap-3">
                   <button
                     onClick={() => handleView(order)}
