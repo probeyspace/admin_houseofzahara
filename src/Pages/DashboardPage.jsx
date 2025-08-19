@@ -54,7 +54,7 @@ const DashboardPage = () => {
           title="Processing Orders"
           value={pendingProcessingOrders.length || 0}
           percentage={(100 / totalOrders) * pendingProcessingOrders?.length}
-          processingRevenue={processingOrdersRevenue}
+          processingRevenue={processingOrdersRevenue.toFixed(2)}
           revenuePercentage={(processingOrdersRevenue / grossRevenue) * 100}
           color="#7d1e0c"
         />
@@ -63,7 +63,7 @@ const DashboardPage = () => {
           title="Cancelled Orders"
           value={cancelledOrders?.length || 0}
           percentage={(100 / totalOrders) * cancelledOrders?.length}
-          cancelledRevenue={cancelledOrdersRevenue}
+          cancelledRevenue={cancelledOrdersRevenue.toFixed(2)}
           revenuePercentage={(cancelledOrdersRevenue / grossRevenue) * 100}
           color="#7d1e0c"
         />
@@ -72,7 +72,7 @@ const DashboardPage = () => {
           title="Delivered & Paid (Actual Revenue)"
           value={deliveredOrders?.length || 0}
           percentage={(100 / totalOrders) * deliveredOrders?.length}
-          processingRevenue={deliveredOrdersRevenue}
+          processingRevenue={deliveredOrdersRevenue.toFixed(2)}
           revenuePercentage={(deliveredOrdersRevenue / grossRevenue) * 100}
           color="#7d1e0c"
         />
@@ -80,7 +80,7 @@ const DashboardPage = () => {
           to={"/orders"}
           title="Total Orders"
           value={orders?.length}
-          processingRevenue={grossRevenue}
+          processingRevenue={grossRevenue.toFixed(2)}
           color="#7d1e0c"
         />
         <MetricsCard
