@@ -2,10 +2,21 @@ import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
-
+import useUsers from "../Hooks/useUsers";
+import useProducts from "../Hooks/useProducts";
+import { useCategory } from "../Hooks/useCategory";
+import { useMasterCategory } from "../Hooks/useMasterCategory";
+import { useSubCategory } from "../Hooks/useSubCategory";
+import useOrders from "../Hooks/useOrders";
 const Layout = () => {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  useUsers();
+  useCategory();
+  useProducts();
+  useMasterCategory();
+  useSubCategory();
+  useOrders();
 
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setMobileSidebarOpen((prev) => !prev);
   };
@@ -23,7 +34,7 @@ const Layout = () => {
         <Navbar toggleSidebar={toggleSidebar} />
 
         {/* Scrollable content area */}
-        <div className="p-6 overflow-auto bg-[#EAF1F3] h-screen">
+        <div className="p-5 overflow-auto bg-[#EAF1F3] h-screen">
           <Outlet />
         </div>
       </div>

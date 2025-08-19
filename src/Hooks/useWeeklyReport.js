@@ -8,13 +8,11 @@ export const useWeeklyReport = () => {
     const fetchData = async () => {
       try {
         const response = await api.get("/reports/weekly");
-
         setData(response.data.data);
       } catch (error) {
         console.error("Error fetching weekly report:", error);
       }
     };
-
     fetchData();
   }, []);
 

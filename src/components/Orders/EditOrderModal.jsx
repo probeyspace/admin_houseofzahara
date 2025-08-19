@@ -82,14 +82,14 @@ const EditOrderModal = ({ isOpen, onClose, order, onSave }) => {
         <div className="mt-6 flex justify-end space-x-4">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+            className="px-4 py-2 bg-gray-200 rounded-md text-gray-700 hover:bg-gray-300 transition-colors cursor-pointer duration-200"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-4 py-2 bg-primary text-white rounded-md flex items-center hover:bg-blue-600 transition-colors duration-200"
+            className="px-4 py-2 bg-primary text-dark  hover:bg-primary/80 rounded-md flex items-center cursor-pointer transition-colors duration-200"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-white"></div>

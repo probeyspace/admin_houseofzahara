@@ -3,71 +3,96 @@ import MetricsCard from "../components/Dashboard/MatrixCard";
 import MonthlySalesReport from "../components/Dashboard/MonthlySalesReport";
 import WeeklySalesReport from "../components/Dashboard/WeeklySalesReport";
 import YearlySalesReport from "../components/Dashboard/YearlySalesReport";
-import useUsers from "../Hooks/useUsers";
-import useProducts from "../Hooks/useProducts";
-import { useCategory } from "../Hooks/useCategory";
-import { useMasterCategory } from "../Hooks/useMasterCategory";
-import { useSubCategory } from "../Hooks/useSubCategory";
+
 const DashboardPage = () => {
-  useUsers();
-  useCategory();
-  useProducts();
-  useMasterCategory();
-  useSubCategory();
-  // useOrders();
   const orders = useSelector((state) => state.orders);
   const products = useSelector((store) => store.products);
-  const pendingOrders = orders.filter((order) => order.status === "PENDING");
-  // processing order
-  const processingOrders = orders.filter(
-    (order) => order.status === "PROCESSING"
+  const users = useSelector((store) => store.users);
+  const totalOrders = orders?.length;
+
+  //pending processing orders
+  const pendingProcessingOrders = orders.filter(
+    (order) =>
+      order.status === "PENDING" ||
+      order.status === "PROCESSING" ||
+      order.status === "SHIPPED"
   );
-  const processingOrdersRevenue = processingOrders.reduce(
-    (total, order) => total + order.totalPrice,
+  const processingOrdersRevenue = pendingProcessingOrders.reduce(
+    (total, order) => total + parseFloat(order.totalPrice?.$numberDecimal || 0),
+    0
+  );
+  //cancelled orders
+  const cancelledOrders = orders.filter(
+    (order) => order.status === "CANCELLED"
+  );
+  const cancelledOrdersRevenue = cancelledOrders.reduce(
+    (total, order) => total + parseFloat(order.totalPrice?.$numberDecimal || 0),
     0
   );
 
-  const totalOrders = orders?.length;
-  const percentageOfPendingOrders =
-    (pendingOrders?.length / totalOrders) * 100 || 0;
-
-  // in this revenue should be only for delivered orders status not every order
+  // ✅ Only delivered & paid orders count as actual revenue
   const deliveredOrders = orders.filter(
-    (order) => order.status === "DELIVERED"
+    (order) =>
+      order.status === "DELIVERED" && order.payment?.paymentStatus === "SUCCESS"
   );
   const deliveredOrdersRevenue = deliveredOrders.reduce(
-    (total, order) => total + order.totalPrice,
+    (total, order) => total + parseFloat(order.totalPrice?.$numberDecimal || 0),
     0
   );
-  // const revenue = orders.reduce((total, order) => total + order.totalPrice, 0);
+
+  // total orders revenue
+  const grossRevenue = orders.reduce(
+    (total, order) => total + parseFloat(order.totalPrice?.$numberDecimal || 0),
+    0
+  );
 
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <MetricsCard
-          to={"/orders"}
-          title="Pending Orders"
-          value={pendingOrders.length || 0}
-          percentage={percentageOfPendingOrders}
-          color="#7d1e0c"
-        />
-        <MetricsCard
-          to={"/orders"}
-          title="ORDERS"
-          value={orders?.length}
-          color="#7d1e0c"
-        />
-        <MetricsCard
-          to={"/orders"}
-          title="Actual Revenue"
-          value={deliveredOrdersRevenue}
+          to={"/orders?status=PROCESSING"}
+          title="Processing Orders"
+          value={pendingProcessingOrders.length || 0}
+          percentage={(100 / totalOrders) * pendingProcessingOrders?.length}
           processingRevenue={processingOrdersRevenue}
+          revenuePercentage={(processingOrdersRevenue / grossRevenue) * 100}
+          color="#7d1e0c"
+        />
+        <MetricsCard
+          to={"/orders?status=CANCELLED"}
+          title="Cancelled Orders"
+          value={cancelledOrders?.length || 0}
+          percentage={(100 / totalOrders) * cancelledOrders?.length}
+          cancelledRevenue={cancelledOrdersRevenue}
+          revenuePercentage={(cancelledOrdersRevenue / grossRevenue) * 100}
+          color="#7d1e0c"
+        />
+        <MetricsCard
+          to={"/orders?status=DELIVERED"}
+          title="Delivered & Paid (Actual Revenue)"
+          value={deliveredOrders?.length || 0}
+          percentage={(100 / totalOrders) * deliveredOrders?.length}
+          processingRevenue={deliveredOrdersRevenue}
+          revenuePercentage={(deliveredOrdersRevenue / grossRevenue) * 100}
+          color="#7d1e0c"
+        />
+        <MetricsCard
+          to={"/orders"}
+          title="Total Orders"
+          value={orders?.length}
+          processingRevenue={grossRevenue}
           color="#7d1e0c"
         />
         <MetricsCard
           to={"/products"}
-          title="PRODUCTS"
+          title="Total Products"
           value={products?.length}
+          color="#3BC0C3"
+        />
+        <MetricsCard
+          to={"/users"}
+          title="Total Users"
+          value={users?.length - 1} //exclude admin
           color="#3BC0C3"
         />
       </div>

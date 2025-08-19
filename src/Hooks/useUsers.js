@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import api from "../Api/api";
 import { setUsers } from "../store/slices/usersSlice";
@@ -14,6 +14,7 @@ export default function useUsers() {
         console.error("Error fetching users:", error);
       }
     };
+
     fetchUsers();
-  }, [dispatch]);
+  }, []);
 }
