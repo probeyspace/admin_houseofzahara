@@ -19,9 +19,9 @@ import "react-toastify/dist/ReactToastify.css";
 import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoute";
 import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
 import SubCategoryList from "./components/SubCategory/SubCategoryList";
+import SubscriberList from "./components/Subscribers/SubscriberList";
 // import BlogList from "./components/Blogs/Blogslist";
 // import Articles from "./components/Articles/Articles";
-// import SubscriberList from "./components/Subscribers/SubscriberList";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
   useCurrentUser();
@@ -46,7 +46,7 @@ function App() {
             <Route path="contacts" element={<ContactList />} />
             <Route path="brands" element={<BrandPage />} />
             <Route path="reviews" element={<ReviewsList />} />
-            {/* <Route path="subscribers" element={<SubscriberList />} /> */}
+            <Route path="subscribers" element={<SubscriberList />} />
             {/* <Route path="searched" element={<SearchedLogs />} /> */}
             {/* <Route path="blogs" element={<BlogList />} /> */}
             {/* <Route path="articles" element={<Articles />} /> */}

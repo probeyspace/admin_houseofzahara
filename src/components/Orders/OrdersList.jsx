@@ -19,6 +19,7 @@ function OrderList() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
 
   const orders = useSelector((store) => store.orders);
 
@@ -53,13 +54,20 @@ function OrderList() {
     const matchesSearch = matchesOrderId || matchesCustomerName;
 
     const matchesStatus = statusFilter ? order.status === statusFilter : true;
+
+    const matchesPaymentMethod = paymentMethodFilter
+      ? order.payment?.paymentMethod === paymentMethodFilter
+      : true;
+
     const matchesDateRange =
       (!startDate || new Date(order.createdAt) >= new Date(startDate)) &&
       (!endDate ||
         new Date(order.createdAt) <=
           new Date(new Date(endDate).setHours(23, 59, 59, 999)));
 
-    return matchesSearch && matchesStatus && matchesDateRange;
+    return (
+      matchesSearch && matchesStatus && matchesDateRange && matchesPaymentMethod
+    );
   });
 
   const uniqueStatuses = [...new Set(orders?.map((order) => order.status))];
@@ -182,6 +190,28 @@ function OrderList() {
                     status.slice(1).toLowerCase()}
                 </option>
               ))}
+            </select>
+          </div>
+          <div className="flex-1 min-w-[200px]">
+            <label
+              htmlFor="status-filter"
+              className="block text-xs font-medium text-gray-700 mb-1"
+            >
+              By Payment Method
+            </label>
+            <select
+              id="status-filter"
+              value={paymentMethodFilter}
+              onChange={(e) => setPaymentMethodFilter(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tZG93biI+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[center_right_0.5rem]"
+            >
+              <option value="">All Methods</option>
+              <option key="COD" value="CASH_ON_DELIVERY">
+                Cash on Delivery
+              </option>
+              <option key="Online" value="ONLINE">
+                Online
+              </option>
             </select>
           </div>
         </div>

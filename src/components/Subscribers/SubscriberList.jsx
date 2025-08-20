@@ -75,7 +75,7 @@ function SubscriberList() {
                   <td className="p-3 text-left">
                     <button
                       onClick={() => handleDelete(subscriber._id)}
-                      className="text-primary hover:text-primary/80 cursor-pointer"
+                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
                     >
                       <FaTrash size={18} />
                     </button>

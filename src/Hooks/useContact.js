@@ -16,14 +16,14 @@ export const useContact = () => {
     };
     const fetchSubscribers = async () => {
       try {
-        const response = await api.get("/contact/subscribers");
+        const response = await api.get("/contact/newsletter");
         setSubscribers(response?.data.data);
       } catch (error) {
         console.log(error);
       }
     };
     fetchData();
-    // fetchSubscribers();
+    fetchSubscribers();
   }, []);
 
   return { contacts: data, setData, subscribers, setSubscribers };
