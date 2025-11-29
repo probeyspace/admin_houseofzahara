@@ -96,7 +96,7 @@ function ViewProductModal({ isOpen, onClose, product }) {
                       {product.thumbnailImages.map((img) => (
                         <Link
                           key={img}
-                          to={`https://celestiq.probeyservices.tech/product/${product._id}`}
+                          to={`https://celestiqbeauty.com/product/${product.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

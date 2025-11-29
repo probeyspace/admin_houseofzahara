@@ -15,6 +15,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     category: "",
     subcategory: "",
     thumbnails: [],
+    video: null,
     attributes: "[]", // stringified for submission
     attributesObj: {}, // for dynamic rendering
   });
@@ -76,6 +77,15 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     setFormData((prev) => ({ ...prev, thumbnails: files }));
   };
 
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 50 * 1024 * 1024) {
+      toast.error("Video file size must be less than 50MB.");
+      return;
+    }
+    setFormData((prev) => ({ ...prev, video: file }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -97,6 +107,11 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
+
+    // Append video if provided
+    if (formData.video) {
+      data.append("video", formData.video);
+    }
 
     try {
       const response = await updateProduct(productData._id, data);
@@ -267,6 +282,35 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
               onChange={handleFileChange}
               className="border border-gray-300 px-3 py-2 rounded-md w-full"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Product Video (Optional)
+            </label>
+            {productData?.videoUrl && (
+              <div className="mb-2 text-sm text-gray-600 bg-gray-100 p-2 rounded">
+                Current:{" "}
+                <a
+                  href={productData.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  View Video
+                </a>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              onChange={handleVideoChange}
+              className="border border-gray-300 px-3 py-2 rounded-md w-full"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Upload new video to replace existing one (MP4, WebM, MOV | Max
+              50MB)
+            </p>
           </div>
 
           <div className="flex gap-2">

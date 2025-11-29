@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { FaEye, FaEdit, FaTrash, FaPlusCircle, FaListUl } from "react-icons/fa";
+import {
+  FaEye,
+  FaEdit,
+  FaTrash,
+  FaPlusCircle,
+  FaListUl,
+  FaQuestionCircle,
+  FaEnvelope,
+} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
 import ViewProductModal from "./ViewProductModal";
@@ -10,6 +18,8 @@ import AddProductModal from "./AddProductModal";
 import AddVariantModal from "./AddVariantModal";
 import VariantListModal from "./VariantListModal";
 import EditProductModal from "./EditProductModal";
+import FAQManagementModal from "./FAQManagementModal";
+import WriteUsModal from "./WriteUsModal";
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -22,6 +32,8 @@ function ProductList() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showVariantList, setShowVariantList] = useState(false);
   const [showAddVariant, setShowAddVariant] = useState(false);
+  const [showFAQModal, setShowFAQModal] = useState(false);
+  const [showWriteUsModal, setShowWriteUsModal] = useState(false);
   useProducts();
   const products = useSelector((store) => store.products);
 
@@ -55,6 +67,16 @@ function ProductList() {
   const openEditModal = (product) => {
     setSelectedProduct(product);
     setShowEditModal(true);
+  };
+
+  const openFAQModal = (product) => {
+    setSelectedProduct(product);
+    setShowFAQModal(true);
+  };
+
+  const openWriteUsModal = (product) => {
+    setSelectedProduct(product);
+    setShowWriteUsModal(true);
   };
 
   // Pagination Logic
@@ -181,6 +203,25 @@ function ProductList() {
                     >
                       <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
+                    <button
+                      title="Manage FAQs"
+                      onClick={() => openFAQModal(product)}
+                      className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                      aria-label="Manage FAQs"
+                    >
+                      <FaQuestionCircle
+                        size={16}
+                        className="w-4 h-4 sm:w-5 sm:h-5"
+                      />
+                    </button>
+                    <button
+                      title="View Inquiries"
+                      onClick={() => openWriteUsModal(product)}
+                      className="text-green-600 hover:text-green-800 cursor-pointer"
+                      aria-label="View Inquiries"
+                    >
+                      <FaEnvelope size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
                   </td>
                 </tr>
               ))
@@ -280,6 +321,18 @@ function ProductList() {
         isOpen={showVariantList}
         onClose={() => setShowVariantList(false)}
         variants={selectedProduct?.variants}
+      />
+
+      <FAQManagementModal
+        isOpen={showFAQModal}
+        onClose={() => setShowFAQModal(false)}
+        product={selectedProduct}
+      />
+
+      <WriteUsModal
+        isOpen={showWriteUsModal}
+        onClose={() => setShowWriteUsModal(false)}
+        product={selectedProduct}
       />
     </div>
   );

@@ -16,6 +16,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
     category: "",
     subcategory: "",
     thumbnails: [],
+    video: null,
     attributes: "[]", // stringified for submission
     attributesObj: {}, // for dynamic rendering
   });
@@ -49,6 +50,15 @@ const AddProductModal = ({ isOpen, onClose }) => {
     setFormData((prev) => ({ ...prev, thumbnails: files }));
   };
 
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size > 50 * 1024 * 1024) {
+      toast.error("Video file size must be less than 50MB.");
+      return;
+    }
+    setFormData((prev) => ({ ...prev, video: file }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -70,6 +80,11 @@ const AddProductModal = ({ isOpen, onClose }) => {
     formData.thumbnails.forEach((file) => {
       data.append("thumbnails", file);
     });
+
+    // Append video if provided
+    if (formData.video) {
+      data.append("video", formData.video);
+    }
 
     try {
       const response = await createProduct(data);
@@ -213,13 +228,28 @@ const AddProductModal = ({ isOpen, onClose }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Thumbnail Images (Max 2)
+              Thumbnail Images (Max 2) *
             </label>
             <input
               type="file"
               multiple
               accept="image/*"
               onChange={handleFileChange}
+              className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Product Video (Optional)
+              <span className="text-xs text-gray-500 ml-2">
+                MP4, WebM, MOV | Max 50MB
+              </span>
+            </label>
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime"
+              onChange={handleVideoChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
             />
           </div>

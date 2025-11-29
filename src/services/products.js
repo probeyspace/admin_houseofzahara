@@ -63,7 +63,11 @@ export const editVariantById = async (id, data) => {
 
 export const updateProduct = async (id, productData) => {
   try {
-    const response = await api.put(`/products/${id}`, productData);
+    const response = await api.put(`/products/${id}`, productData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return response.data;
   } catch (error) {
     throw error;
