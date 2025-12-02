@@ -19,6 +19,12 @@ const masterCategorySlice = createSlice({
     deleteMaster: (state, action) => {
       return state.filter((c) => c._id !== action.payload);
     },
+    toggleMaster: (state, action) => {
+      const index = state.findIndex((c) => c._id === action.payload);
+      if (index !== -1) {
+        state[index].isActive = !state[index].isActive;
+      }
+    },
   },
 });
 
@@ -27,6 +33,7 @@ export const {
   updateLocalMasterCategory,
   addMaster,
   deleteMaster,
+  toggleMaster,
 } = masterCategorySlice.actions;
 
 export default masterCategorySlice.reducer;

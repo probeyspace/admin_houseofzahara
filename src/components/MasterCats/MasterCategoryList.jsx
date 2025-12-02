@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteMasterCategory } from "../../services/masterCategory";
+import {
+  deleteMasterCategory,
+  toggleMasterCategory,
+} from "../../services/masterCategory";
 import EditMasterCategory from "./EditMasterCategory";
 import CreateMasterCategory from "./CreateMasterCategory";
 import ViewMasterCategory from "./ViewMasterCategory";
-import { deleteMaster } from "../../store/slices/masterSlice";
+import { deleteMaster, toggleMaster } from "../../store/slices/masterSlice";
 import { toast } from "react-toastify";
 
 function MasterCategoryList() {
@@ -28,6 +31,16 @@ function MasterCategoryList() {
   const handleView = (category) => {
     setSelectedCategory(category);
     setIsModalOpen(true);
+  };
+  const handleToggle = async (id) => {
+    try {
+      const res = await toggleMasterCategory(id);
+      toast.success(res?.message || "Master Category toggled successfully!");
+      dispatch(toggleMaster(id));
+    } catch (error) {
+      console.error("Error toggling category:", error);
+      toast.error("Failed to toggle category status");
+    }
   };
 
   const handleDelete = async (id) => {
@@ -87,6 +100,7 @@ function MasterCategoryList() {
               <th className="p-2">ID</th>
               <th className="p-2">MasterCategory</th>
               <th className="p-2">Description</th>
+              <th className="p-2">Status</th>
               <th className="p-2 ">Actions</th>
             </tr>
           </thead>
@@ -99,6 +113,19 @@ function MasterCategoryList() {
                 <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-2 ">{category.name}</td>
                 <td className="p-2 ">{category.description}</td>
+                <td className="p-2">
+                  <button
+                    title={category.isActive ? "Deactivate" : "Activate"}
+                    onClick={() => handleToggle(category._id)}
+                    className={`px-3 py-1 rounded text-sm font-medium cursor-pointer transition ${
+                      category.isActive
+                        ? "bg-green-100 text-green-700 hover:bg-green-200"
+                        : "bg-red-100 text-red-700 hover:bg-red-200"
+                    }`}
+                  >
+                    {category.isActive ? "Active" : "Inactive"}
+                  </button>
+                </td>
                 <td className="p-2 flex space-x-3">
                   <button
                     onClick={() => handleView(category)}

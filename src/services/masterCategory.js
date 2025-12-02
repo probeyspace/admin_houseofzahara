@@ -35,3 +35,11 @@ export const deleteMasterCategory = async (id) => {
     throw error;
   }
 };
+export const toggleMasterCategory = async (id) => {
+  try {
+    const response = await api.patch(`/master-categories/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
