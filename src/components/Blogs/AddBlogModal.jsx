@@ -2,11 +2,13 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { createBlog } from "../../services/blog";
 import SvgSpinner from "../../common/SvgSpinner";
+import QuillEditor from "../common/QuillEditor";
 
 const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
+    author: "",
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -15,6 +17,10 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleContentChange = (content) => {
+    setFormData((prev) => ({ ...prev, content }));
   };
 
   const handleImageChange = (e) => {
@@ -41,10 +47,16 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
       return;
     }
 
+    if (!formData.content || formData.content === "<p><br></p>") {
+      toast.warn("Please enter blog content");
+      return;
+    }
+
     setLoading(true);
     const data = new FormData();
     data.append("title", formData.title);
     data.append("content", formData.content);
+    data.append("author", formData.author);
     data.append("image", formData.image);
 
     try {
@@ -60,7 +72,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", content: "", image: null });
+    setFormData({ title: "", content: "", author: "", image: null });
     setImagePreview(null);
     onClose();
   };
@@ -69,7 +81,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[800px] max-w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Add New Blog</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -89,16 +101,27 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Content *
+              Author *
             </label>
-            <textarea
-              name="content"
-              placeholder="Enter blog content"
-              value={formData.content}
+            <input
+              type="text"
+              name="author"
+              placeholder="Enter author name"
+              value={formData.author}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              rows={8}
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Content *
+            </label>
+            <QuillEditor
+              value={formData.content}
+              onChange={handleContentChange}
+              placeholder="Write your blog content here..."
             />
           </div>
 

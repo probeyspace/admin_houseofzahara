@@ -13,7 +13,7 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[700px] max-w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[800px] max-w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800">{blog.title}</h2>
           <button
@@ -38,10 +38,10 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
         </div>
 
         {/* Blog Image */}
-        {blog.image && (
+        {blog.imageUrl && (
           <div className="mb-4">
             <img
-              src={blog.image}
+              src={blog.imageUrl}
               alt={blog.title}
               className="w-full h-64 object-cover rounded-lg"
             />
@@ -49,7 +49,18 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
         )}
 
         {/* Blog Meta Info */}
-        <div className="mb-4 text-sm text-gray-500">
+        <div className="mb-4 text-sm text-gray-600 space-y-1">
+          {blog.author && (
+            <p>
+              <span className="font-semibold">Author:</span> {blog.author}
+            </p>
+          )}
+          {blog.readingTime && (
+            <p>
+              <span className="font-semibold">Reading Time:</span>{" "}
+              {blog.readingTime} min
+            </p>
+          )}
           <p>
             <span className="font-semibold">Created:</span>{" "}
             {formatDate(blog.createdAt)}
@@ -65,9 +76,10 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
         {/* Blog Content */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold text-gray-700 mb-2">Content</h3>
-          <div className="text-gray-600 whitespace-pre-wrap bg-gray-50 p-4 rounded">
-            {blog.content}
-          </div>
+          <div
+            className="text-gray-600 bg-gray-50 p-4 rounded prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: blog.content }}
+          />
         </div>
 
         {/* Close Button */}

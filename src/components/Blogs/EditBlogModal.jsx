@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { updateBlog } from "../../services/blog";
 import SvgSpinner from "../../common/SvgSpinner";
+import QuillEditor from "../common/QuillEditor";
 
 const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
+    author: "",
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
@@ -17,15 +19,20 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
       setFormData({
         title: blog.title || "",
         content: blog.content || "",
+        author: blog.author || "",
         image: null,
       });
-      setImagePreview(blog.image || null);
+      setImagePreview(blog.imageUrl || null);
     }
   }, [blog]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleContentChange = (content) => {
+    setFormData((prev) => ({ ...prev, content }));
   };
 
   const handleImageChange = (e) => {
@@ -47,11 +54,18 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.content || formData.content === "<p><br></p>") {
+      toast.error("Please enter blog content");
+      return;
+    }
+
     setLoading(true);
 
     const data = new FormData();
     data.append("title", formData.title);
     data.append("content", formData.content);
+    data.append("author", formData.author);
 
     // Only append image if a new one was selected
     if (formData.image) {
@@ -71,7 +85,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", content: "", image: null });
+    setFormData({ title: "", content: "", author: "", image: null });
     setImagePreview(null);
     onClose();
   };
@@ -80,7 +94,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[800px] max-w-full max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Edit Blog</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -100,16 +114,27 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Content *
+              Author *
             </label>
-            <textarea
-              name="content"
-              placeholder="Enter blog content"
-              value={formData.content}
+            <input
+              type="text"
+              name="author"
+              placeholder="Enter author name"
+              value={formData.author}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              rows={8}
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Content *
+            </label>
+            <QuillEditor
+              value={formData.content}
+              onChange={handleContentChange}
+              placeholder="Write your blog content here..."
             />
           </div>
 

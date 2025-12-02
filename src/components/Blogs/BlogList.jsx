@@ -115,8 +115,14 @@ function BlogList() {
                 <tr className="text-left">
                   <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
                   <th className="p-2 sm:p-3 text-sm sm:text-base">Title</th>
+                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden lg:table-cell">
+                    Author
+                  </th>
                   <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
                     Image
+                  </th>
+                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden md:table-cell">
+                    Reading Time
                   </th>
                   <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
                     Created Date
@@ -139,14 +145,20 @@ function BlogList() {
                           ? blog.title.substring(0, 50) + "..."
                           : blog.title}
                       </td>
+                      <td className="p-2 sm:p-3 hidden lg:table-cell">
+                        {blog.author || "N/A"}
+                      </td>
                       <td className="p-2 sm:p-3 hidden sm:table-cell">
-                        {blog.image && (
+                        {blog.imageUrl && (
                           <img
-                            src={blog.image}
+                            src={blog.imageUrl}
                             alt={blog.title}
                             className="w-16 h-16 object-cover rounded"
                           />
                         )}
+                      </td>
+                      <td className="p-2 sm:p-3 hidden md:table-cell">
+                        {blog.readingTime ? `${blog.readingTime} min` : "N/A"}
                       </td>
                       <td className="p-2 sm:p-3 hidden sm:table-cell">
                         {formatDate(blog.createdAt)}
@@ -185,7 +197,7 @@ function BlogList() {
                 ) : (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="7"
                       className="p-2 sm:p-3 text-center text-gray-500"
                     >
                       No blogs found.
