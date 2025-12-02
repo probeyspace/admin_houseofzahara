@@ -67,13 +67,11 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       icon: <FaCommentDots />,
       text: "Reviews",
     },
-    // {
-    //   to: "/searched",
-    //   icon: <MdSearch />,
-    //   text: "Searched Logs",
-    // },
-
-    // { to: "/blogs", icon: <MdArticle />, text: "Blogs" },
+    {
+      to: "/blogs",
+      icon: <MdArticle />,
+      text: "Blogs",
+    },
     {
       to: "/brands",
       icon: <BiCategory />,

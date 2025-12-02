@@ -79,9 +79,20 @@ function ProductList() {
     setShowWriteUsModal(true);
   };
 
+  // Filter products based on search term
+  const filteredProducts = products?.filter((product) => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      product.name?.toLowerCase().includes(searchLower) ||
+      product.masterCategory?.name?.toLowerCase().includes(searchLower) ||
+      product.category?.name?.toLowerCase().includes(searchLower) ||
+      product.subcategory?.name?.toLowerCase().includes(searchLower)
+    );
+  });
+
   // Pagination Logic
-  const totalPages = Math.ceil(products?.length / perPage);
-  const paginatedProducts = products?.slice(
+  const totalPages = Math.ceil(filteredProducts?.length / perPage);
+  const paginatedProducts = filteredProducts?.slice(
     (page - 1) * perPage,
     page * perPage
   );
@@ -96,7 +107,10 @@ function ProductList() {
             className="border border-gray-400 p-2 rounded-lg w-full text-sm sm:text-base"
             placeholder="Search products..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1); // Reset to first page when searching
+            }}
           />
         </div>
         <div className="flex items-center space-x-2 w-full sm:w-auto">

@@ -20,7 +20,7 @@ import ProtectedRoute from "./components/ProtectedRoutes/ProtectedRoute";
 import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
 import SubCategoryList from "./components/SubCategory/SubCategoryList";
 import SubscriberList from "./components/Subscribers/SubscriberList";
-// import BlogList from "./components/Blogs/Blogslist";
+import BlogList from "./components/Blogs/BlogList";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
@@ -47,8 +47,8 @@ function App() {
             <Route path="brands" element={<BrandPage />} />
             <Route path="reviews" element={<ReviewsList />} />
             <Route path="subscribers" element={<SubscriberList />} />
-            {/* <Route path="searched" element={<SearchedLogs />} /> */}
-            {/* <Route path="blogs" element={<BlogList />} /> */}
+            <Route path="blogs" element={<BlogList />} />
+            {/* <Route path="searched" element={<SearchedLogs />} />  */}
             {/* <Route path="articles" element={<Articles />} /> */}
           </Route>
         </Route>

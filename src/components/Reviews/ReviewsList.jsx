@@ -112,7 +112,7 @@ const ReviewsList = () => {
                 className="hover:bg-gray-100 text-gray-500 text-sm border-t"
               >
                 <td className="p-3">{index + 1}</td>
-                <td className="p-3">{review.productId?.name || "N/A"}</td>
+                <td className="p-3">{review.product?.name || "N/A"}</td>
                 <td className="p-3">{review.user?.name}</td>
                 <td className="p-3">{"⭐".repeat(review.rating)}</td>
                 <td className="p-3 max-w-xs break-words whitespace-pre-wrap">

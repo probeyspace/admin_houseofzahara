@@ -1,68 +1,87 @@
-
-function ViewBlogModal({ isOpen, onClose, blog }) {
+const ViewBlogModal = ({ isOpen, onClose, blog }) => {
   if (!isOpen || !blog) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30 px-4">
-      <div className="bg-white w-full max-w-3xl rounded-lg shadow-xl p-6 relative overflow-y-auto max-h-[90vh]">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-        >
-          &times;
-        </button>
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-        {/* Blog Cover */}
-        <div className="mb-4">
-          <img
-            src={blog.coverImage}
-            alt="Cover"
-            className="w-full h-64 object-cover rounded-lg"
-          />
+  return (
+    <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[700px] max-w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800">{blog.title}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
 
-        {/* Blog Details */}
-        <h2 className="text-2xl font-bold text-gray-800 mb-1">{blog.title}</h2>
-        <p className="text-gray-600 mb-2">
-          <strong>Author:</strong> {blog.author}
-        </p>
-        {blog.blogCategory && (
-          <p className="text-gray-600 mb-2">
-            <strong>Category:</strong> {blog.blogCategory.name}
-          </p>
+        {/* Blog Image */}
+        {blog.image && (
+          <div className="mb-4">
+            <img
+              src={blog.image}
+              alt={blog.title}
+              className="w-full h-64 object-cover rounded-lg"
+            />
+          </div>
         )}
-        <p className="text-gray-700 mb-4">
-          <strong>Description:</strong> {blog.description}
-        </p>
-        <div className="text-gray-800 whitespace-pre-wrap mb-4">
-          <strong>Content:</strong>
-          <div className="mt-1 p-3 bg-gray-50 rounded border">
+
+        {/* Blog Meta Info */}
+        <div className="mb-4 text-sm text-gray-500">
+          <p>
+            <span className="font-semibold">Created:</span>{" "}
+            {formatDate(blog.createdAt)}
+          </p>
+          {blog.updatedAt && blog.updatedAt !== blog.createdAt && (
+            <p>
+              <span className="font-semibold">Last Updated:</span>{" "}
+              {formatDate(blog.updatedAt)}
+            </p>
+          )}
+        </div>
+
+        {/* Blog Content */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-700 mb-2">Content</h3>
+          <div className="text-gray-600 whitespace-pre-wrap bg-gray-50 p-4 rounded">
             {blog.content}
           </div>
         </div>
 
-        {/* Additional Images */}
-        {blog.images?.length > 0 && (
-          <div className="mt-4">
-            <h4 className="font-semibold text-gray-700 mb-2">
-              Additional Images:
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {blog.images.map((img) => (
-                <img
-                  key={img._id}
-                  src={img.url}
-                  alt={img.altText || "Blog Image"}
-                  className="w-full h-32 object-cover rounded"
-                />
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Close Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={onClose}
+            className="bg-gray-400 text-dark px-6 py-2 rounded cursor-pointer hover:bg-gray-500"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default ViewBlogModal;

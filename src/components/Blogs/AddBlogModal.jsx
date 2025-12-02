@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
-import { updateBlog } from "../../services/blog";
+import { createBlog } from "../../services/blog";
 import SvgSpinner from "../../common/SvgSpinner";
 
-const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
+const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -11,17 +11,6 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (blog) {
-      setFormData({
-        title: blog.title || "",
-        content: blog.content || "",
-        image: null,
-      });
-      setImagePreview(blog.image || null);
-    }
-  }, [blog]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +25,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         return;
       }
       setFormData((prev) => ({ ...prev, image: file }));
-      // Create preview for new image
+      // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -47,24 +36,24 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    if (!formData.image) {
+      toast.error("Please select an image");
+      return;
+    }
 
+    setLoading(true);
     const data = new FormData();
     data.append("title", formData.title);
     data.append("content", formData.content);
-
-    // Only append image if a new one was selected
-    if (formData.image) {
-      data.append("image", formData.image);
-    }
+    data.append("image", formData.image);
 
     try {
-      const response = await updateBlog(blog._id, data);
-      toast.success(response?.message || "Blog updated successfully!");
-      onBlogUpdated(); // Refresh the blog list
+      const response = await createBlog(data);
+      toast.success(response?.message || "Blog created successfully!");
+      onBlogAdded(); // Refresh the blog list
       handleClose();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to update blog");
+      toast.error(error?.response?.data?.message || "Failed to create blog");
     } finally {
       setLoading(false);
     }
@@ -81,7 +70,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4">Edit Blog</h2>
+        <h2 className="text-xl font-bold mb-4">Add New Blog</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -115,19 +104,17 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blog Image
+              Blog Image *
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
+              required
             />
             {imagePreview && (
               <div className="mt-2">
-                <p className="text-xs text-gray-500 mb-1">
-                  {formData.image ? "New Image Preview" : "Current Image"}
-                </p>
                 <img
                   src={imagePreview}
                   alt="Preview"
@@ -143,7 +130,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer"
               disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Update Blog"}
+              {loading ? <SvgSpinner /> : "Create Blog"}
             </button>
             <button
               type="button"
@@ -159,4 +146,4 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   );
 };
 
-export default EditBlogModal;
+export default AddBlogModal;

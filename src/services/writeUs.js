@@ -12,3 +12,15 @@ export const fetchWriteUsByProduct = async (productId, status = null) => {
     throw error;
   }
 };
+
+// Update WriteUs inquiry status
+export const updateWriteUsStatus = async (writeUsId, status) => {
+  try {
+    const response = await api.put(`/products/write-us/${writeUsId}`, {
+      status,
+    });
+    return response.data.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { fetchWriteUsByProduct } from "../../services/writeUs";
+import {
+  fetchWriteUsByProduct,
+  updateWriteUsStatus,
+} from "../../services/writeUs";
 import SvgSpinner from "../../common/SvgSpinner";
 
 const WriteUsModal = ({ isOpen, onClose, product }) => {
@@ -39,6 +42,17 @@ const WriteUsModal = ({ isOpen, onClose, product }) => {
       hour: "2-digit",
       minute: "2-digit",
     });
+  };
+
+  const handleStatusChange = async (writeUsId, newStatus) => {
+    try {
+      await updateWriteUsStatus(writeUsId, newStatus);
+      toast.success(`Status updated to ${newStatus}`);
+      // Reload inquiries to reflect the change
+      loadInquiries();
+    } catch (error) {
+      toast.error("Failed to update status");
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -96,7 +110,7 @@ const WriteUsModal = ({ isOpen, onClose, product }) => {
           <div className="flex gap-2">
             <button
               onClick={() => setStatusFilter("")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 cursor-pointer py-1 rounded ${
                 statusFilter === ""
                   ? "bg-primary text-dark"
                   : "bg-gray-200 text-gray-700"
@@ -106,7 +120,7 @@ const WriteUsModal = ({ isOpen, onClose, product }) => {
             </button>
             <button
               onClick={() => setStatusFilter("PENDING")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 cursor-pointer py-1 rounded ${
                 statusFilter === "PENDING"
                   ? "bg-primary text-dark"
                   : "bg-gray-200 text-gray-700"
@@ -114,19 +128,19 @@ const WriteUsModal = ({ isOpen, onClose, product }) => {
             >
               Pending
             </button>
-            <button
+            {/* <button
               onClick={() => setStatusFilter("REPLIED")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 cursor-pointer py-1 rounded ${
                 statusFilter === "REPLIED"
                   ? "bg-primary text-dark"
                   : "bg-gray-200 text-gray-700"
               }`}
             >
               Replied
-            </button>
+            </button> */}
             <button
               onClick={() => setStatusFilter("RESOLVED")}
-              className={`px-3 py-1 rounded ${
+              className={`px-3 cursor-pointer py-1 rounded ${
                 statusFilter === "RESOLVED"
                   ? "bg-primary text-dark"
                   : "bg-gray-200 text-gray-700"
@@ -184,6 +198,20 @@ const WriteUsModal = ({ isOpen, onClose, product }) => {
                       <p className="text-sm text-gray-700">
                         {inquiry.adminReply}
                       </p>
+                    </div>
+                  )}
+
+                  {/* Status Change Button */}
+                  {inquiry.status === "PENDING" && (
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        onClick={() =>
+                          handleStatusChange(inquiry._id, "RESOLVED")
+                        }
+                        className="px-4 cursor-pointer py-2 bg-green-500 text-white rounded hover:bg-green-600 transition text-sm font-medium"
+                      >
+                        Mark as Resolved
+                      </button>
                     </div>
                   )}
                 </div>
