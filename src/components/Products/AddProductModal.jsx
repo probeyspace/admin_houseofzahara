@@ -17,6 +17,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
     subcategory: "",
     thumbnails: [],
     video: null,
+    YTVideoUrl: "",
     attributes: "[]", // stringified for submission
     attributesObj: {}, // for dynamic rendering
   });
@@ -84,6 +85,11 @@ const AddProductModal = ({ isOpen, onClose }) => {
     // Append video if provided
     if (formData.video) {
       data.append("video", formData.video);
+    }
+
+    // Append YouTube URL for How to Use section
+    if (formData.YTVideoUrl) {
+      data.append("YTVideoUrl", formData.YTVideoUrl);
     }
 
     try {
@@ -251,6 +257,23 @@ const AddProductModal = ({ isOpen, onClose }) => {
               accept="video/mp4,video/webm,video/quicktime"
               onChange={handleVideoChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              YouTube Video URL (How to Use)
+              <span className="text-xs text-gray-500 ml-2">
+                Optional - Paste YouTube video link for usage instructions
+              </span>
+            </label>
+            <input
+              type="url"
+              name="YTVideoUrl"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={formData.YTVideoUrl}
+              onChange={handleChange}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
             />
           </div>
           <div className="flex gap-2">

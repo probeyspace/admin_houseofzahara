@@ -16,6 +16,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     subcategory: "",
     thumbnails: [],
     video: null,
+    YTVideoUrl: "",
     attributes: "[]", // stringified for submission
     attributesObj: {}, // for dynamic rendering
   });
@@ -49,6 +50,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
         subcategory:
           productData.subcategory?._id || productData.subcategory || "",
         thumbnails: [],
+        video: null,
+        YTVideoUrl: productData.YTVideoUrl || "",
         attributes: JSON.stringify(productData.attributes || []), // ✅ stringify here
         attributesObj: attributesObj, // for dynamic rendering
       });
@@ -111,6 +114,11 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     // Append video if provided
     if (formData.video) {
       data.append("video", formData.video);
+    }
+
+    // Append YouTube URL for How to Use section
+    if (formData.YTVideoUrl) {
+      data.append("YTVideoUrl", formData.YTVideoUrl);
     }
 
     try {
@@ -311,6 +319,36 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
               Upload new video to replace existing one (MP4, WebM, MOV | Max
               50MB)
             </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              YouTube Video URL (How to Use)
+              <span className="text-xs text-gray-500 ml-2">
+                Optional - Paste YouTube video link for usage instructions
+              </span>
+            </label>
+            {productData?.YTVideoUrl && (
+              <div className="mb-2 text-sm text-gray-600 bg-gray-100 p-2 rounded">
+                Current:{" "}
+                <a
+                  href={productData.YTVideoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  {productData.YTVideoUrl}
+                </a>
+              </div>
+            )}
+            <input
+              type="url"
+              name="YTVideoUrl"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={formData.YTVideoUrl}
+              onChange={handleChange}
+              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
+            />
           </div>
 
           <div className="flex gap-2">
