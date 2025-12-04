@@ -31,7 +31,7 @@ const MetricsCard = ({
           <div className="flex justify-between">
             <div className="flex gap-2">
               <p className="text-3xl font-bold mt-2">
-                {title === "Actual Revenue(Delivered & Paid)" ? "₹" : ""}
+                {title === "Actual Revenue(Delivered & Paid)" ? "$" : ""}
                 {value}
               </p>
               {percentage > 0 && (
@@ -44,13 +44,13 @@ const MetricsCard = ({
               {processingRevenue > 0 && (
                 <div className="group-hover:text-dark">
                   <p className="text-2xl font-bold mt-2">
-                    ₹{processingRevenue}
+                    ${processingRevenue}
                   </p>
                 </div>
               )}
               {cancelledRevenue > 0 && (
                 <div className="group-hover:text-dark">
-                  <p className="text-2xl font-bold mt-2">₹{cancelledRevenue}</p>
+                  <p className="text-2xl font-bold mt-2">${cancelledRevenue}</p>
                 </div>
               )}
               {revenuePercentage > 0 && (

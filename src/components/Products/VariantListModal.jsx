@@ -248,13 +248,13 @@ function VariantListModal({ isOpen, onClose, variants }) {
                     <td className="p-2 border">{variant.sku}</td>
                     <td className="p-2 border">{variant.specs.size}</td>
                     <td className="p-2 border">
-                      ₹
+                      $
                       {Number(
                         variant.price?.$numberDecimal || variant.price
                       ).toFixed(2)}
                     </td>
                     <td className="p-2 border">
-                      ₹
+                      $
                       {Number(
                         variant.discountPrice?.$numberDecimal ||
                           variant.discountPrice

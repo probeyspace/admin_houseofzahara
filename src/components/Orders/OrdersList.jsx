@@ -309,7 +309,7 @@ function OrderList() {
                   </span>
                 </td>
                 <td className="p-3">
-                  ₹{order.totalPrice?.$numberDecimal || order.totalPrice}
+                  ${order.totalPrice?.$numberDecimal || order.totalPrice}
                 </td>
                 <td className="p-3 flex gap-3">
                   <button

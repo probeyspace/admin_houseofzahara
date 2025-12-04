@@ -107,11 +107,11 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                     {item.product?.name}
                   </p>
                   <p className="text-sm text-gray-600">
-                    Qty: {item.quantity} × ₹{Number(item.price.$numberDecimal)}
+                    Qty: {item.quantity} × ${Number(item.price.$numberDecimal)}
                   </p>
                 </div>
                 <p className="text-gray-800 font-semibold">
-                  ₹
+                  $
                   {(Number(item.price.$numberDecimal) * item.quantity).toFixed(
                     2
                   )}
@@ -128,20 +128,20 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
           </h2>
           <div className="flex justify-between text-gray-600">
             <p>Subtotal</p>
-            <p>₹{Number(order.totalPrice.$numberDecimal)}</p>
+            <p>${Number(order.totalPrice.$numberDecimal)}</p>
           </div>
           <div className="flex justify-between text-gray-600">
             <p>Shipping Charges</p>
-            <p>-₹{Number(order.shipment)}</p>
+            <p>-${Number(order.shipment)}</p>
           </div>
           <div className="flex justify-between text-gray-600">
             <p>Discount</p>
-            <p>-₹{Number(order.discount.$numberDecimal)}</p>
+            <p>-${Number(order.discount.$numberDecimal)}</p>
           </div>
           <div className="flex justify-between border-t pt-2 text-lg font-semibold">
             <p>Total</p>
             <p>
-              ₹
+              $
               {(
                 Number(order.totalPrice.$numberDecimal) -
                 Number(order.discount.$numberDecimal)
