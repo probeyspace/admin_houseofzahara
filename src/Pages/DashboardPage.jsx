@@ -50,7 +50,7 @@ const DashboardPage = () => {
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-8">
         <MetricsCard
-          to={"/orders?status=PROCESSING"}
+          to={"/orders"}
           title="Processing Orders"
           value={pendingProcessingOrders.length || 0}
           percentage={(100 / totalOrders) * pendingProcessingOrders?.length}

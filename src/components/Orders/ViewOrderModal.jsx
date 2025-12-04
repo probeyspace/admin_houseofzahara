@@ -46,20 +46,20 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
           </p>
           <p>
             <span className="font-medium">Payment Method:</span>{" "}
-            {order.payment?.paymentMethod}
+            {order?.paymentMethod}
           </p>
           <p>
             <span className="font-medium">Payment Status:</span>{" "}
             <span
               className={`font-semibold ${
-                order.payment?.paymentStatus === "SUCCESS"
+                order?.paymentStatus === "PAID"
                   ? "text-green-600"
-                  : order.payment?.paymentStatus === "FAILED"
+                  : order?.paymentStatus === "FAILED"
                   ? "text-red-600"
                   : "text-yellow-600"
               }`}
             >
-              {order.payment?.paymentStatus}
+              {order?.paymentStatus}
             </span>
           </p>
         </div>
