@@ -172,7 +172,7 @@ function AddVariantModal({ isOpen, onClose, product }) {
             accept="image/*"
             onChange={handleChange}
             className="border border-gray-300 rounded p-2 w-full cursor-pointer"
-            required
+            
           />
 
           {/* Submit & Cancel */}
