@@ -1,36 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { createProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { addProductData } from "../../store/slices/productSlice";
 import { useBrand } from "../../Hooks/useBrand";
-
-// Predefined skin types and skin concerns options
-const SKIN_TYPE_OPTIONS = [
-  "Dry",
-  "Oily",
-  "Normal",
-  "Sensitive",
-  "Combination",
-  "All Skin Types",
-];
-
-const SKIN_CONCERN_OPTIONS = [
-  "Hyperpigmentation",
-  "Uneven Skin Tone",
-  "Dullness",
-  "Anti-Ageing",
-  "Wrinkles",
-  "Fine Lines",
-  "Loss of Firmness",
-  "Sagging Skin",
-  "Pores",
-  "Dark Spots",
-  "Acne",
-  "Redness",
-  "Dryness",
-];
 
 // ── Helper: toggle item in an array ────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -128,6 +102,34 @@ const AddProductModal = ({ isOpen, onClose }) => {
   const masterCategories = useSelector((state) => state.masterCategory);
   const { brands } = useBrand();
   const dispatch = useDispatch();
+
+  // ── Derive skin type / concern options from DB subcategories (same as frontend filter) ──
+  const skinTypeCategory = useMemo(
+    () => categories?.find((c) => c.name?.toLowerCase().includes("skin type")),
+    [categories]
+  );
+  const skinConcernCategory = useMemo(
+    () => categories?.find((c) => c.name?.toLowerCase().includes("concern")),
+    [categories]
+  );
+  const SKIN_TYPE_OPTIONS = useMemo(
+    () =>
+      skinTypeCategory
+        ? subcategories
+            ?.filter((s) => s.category?._id === skinTypeCategory._id)
+            .map((s) => s.name) ?? []
+        : [],
+    [skinTypeCategory, subcategories]
+  );
+  const SKIN_CONCERN_OPTIONS = useMemo(
+    () =>
+      skinConcernCategory
+        ? subcategories
+            ?.filter((s) => s.category?._id === skinConcernCategory._id)
+            .map((s) => s.name) ?? []
+        : [],
+    [skinConcernCategory, subcategories]
+  );
 
   // Filter categories that belong to selected masterCategory
   const filteredCategories = categories.filter(

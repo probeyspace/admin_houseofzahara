@@ -1,35 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { updateProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { updateProductData } from "../../store/slices/productSlice";
-
-// ── Constants ────────────────────────────────────────────────────────────────
-const SKIN_TYPE_OPTIONS = [
-  "Dry",
-  "Oily",
-  "Normal",
-  "Sensitive",
-  "Combination",
-  "All Skin Types",
-];
-
-const SKIN_CONCERN_OPTIONS = [
-  "Hyperpigmentation",
-  "Uneven Skin Tone",
-  "Dullness",
-  "Anti-Ageing",
-  "Wrinkles",
-  "Fine Lines",
-  "Loss of Firmness",
-  "Sagging Skin",
-  "Pores",
-  "Dark Spots",
-  "Acne",
-  "Redness",
-  "Dryness",
-];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -144,6 +118,35 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
   const categories = useSelector((state) => state.category);
   const subcategories = useSelector((state) => state.subCategory);
   const masterCategories = useSelector((state) => state.masterCategory);
+
+  // \u2500\u2500 Derive skin type / concern options from DB subcategories (same as frontend filter) \u2500\u2500
+  const skinTypeCategory = useMemo(
+    () => categories?.find((c) => c.name?.toLowerCase().includes("skin type")),
+    [categories]
+  );
+  const skinConcernCategory = useMemo(
+    () => categories?.find((c) => c.name?.toLowerCase().includes("concern")),
+    [categories]
+  );
+  const SKIN_TYPE_OPTIONS = useMemo(
+    () =>
+      skinTypeCategory
+        ? subcategories
+            ?.filter((s) => s.category?._id === skinTypeCategory._id)
+            .map((s) => s.name) ?? []
+        : [],
+    [skinTypeCategory, subcategories]
+  );
+  const SKIN_CONCERN_OPTIONS = useMemo(
+    () =>
+      skinConcernCategory
+        ? subcategories
+            ?.filter((s) => s.category?._id === skinConcernCategory._id)
+            .map((s) => s.name) ?? []
+        : [],
+    [skinConcernCategory, subcategories]
+  );
+
   const dispatch = useDispatch();
 
   // ── Pre-populate form when modal opens ────────────────────────────────────
