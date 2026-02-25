@@ -246,7 +246,9 @@ function VariantListModal({ isOpen, onClose, variants }) {
                 {variants.map((variant) => (
                   <tr key={variant._id} className="border-b hover:bg-gray-50">
                     <td className="p-2 border">{variant.sku}</td>
-                    <td className="p-2 border">{variant.specs.size}</td>
+                    <td className="p-2 border">
+                      {variant.specs?.size || "N/A"}
+                    </td>
                     <td className="p-2 border">
                       $
                       {Number(

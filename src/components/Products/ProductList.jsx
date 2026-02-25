@@ -85,7 +85,13 @@ function ProductList() {
     return (
       product.name?.toLowerCase().includes(searchLower) ||
       product.masterCategory?.name?.toLowerCase().includes(searchLower) ||
+      product.categories?.some((cat) =>
+        cat.name?.toLowerCase().includes(searchLower)
+      ) ||
       product.category?.name?.toLowerCase().includes(searchLower) ||
+      product.subcategories?.some((sub) =>
+        sub.name?.toLowerCase().includes(searchLower)
+      ) ||
       product.subcategory?.name?.toLowerCase().includes(searchLower)
     );
   });
@@ -135,10 +141,10 @@ function ProductList() {
                 Master Category
               </th>
               <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                Category
+                Categories
               </th>
               <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                SubCategory
+                SubCategories
               </th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
@@ -164,10 +170,14 @@ function ProductList() {
                     {product.masterCategory?.name}
                   </td>
                   <td className="p-2 sm:p-3 hidden sm:table-cell">
-                    {product.category?.name}
+                    {product.categories?.length > 0
+                      ? `${product.categories.length} Categories`
+                      : product.category?.name || "N/A"}
                   </td>
                   <td className="p-2 sm:p-3 hidden sm:table-cell">
-                    {product.subcategory?.name}
+                    {product.subcategories?.length > 0
+                      ? `${product.subcategories.length} SubCats`
+                      : product.subcategory?.name || "N/A"}
                   </td>
 
                   <td className="p-2 sm:p-3 space-x-2 sm:space-x-3">

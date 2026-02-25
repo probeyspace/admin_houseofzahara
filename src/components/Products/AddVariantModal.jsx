@@ -73,6 +73,12 @@ function AddVariantModal({ isOpen, onClose, product }) {
       if (form[field]) formData.append(field, form[field]);
     });
 
+    //size is required
+    if (!form.size || !form.price || !form.stock) {
+      toast.error("Size, price and stock are required");
+      return;
+    }
+
     // Images
     form.images.forEach((file) => {
       formData.append("images", file);

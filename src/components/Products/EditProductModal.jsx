@@ -5,118 +5,237 @@ import { updateProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { updateProductData } from "../../store/slices/productSlice";
 
+// ── Constants ────────────────────────────────────────────────────────────────
+const SKIN_TYPE_OPTIONS = [
+  "Dry",
+  "Oily",
+  "Normal",
+  "Sensitive",
+  "Combination",
+  "All Skin Types",
+];
+
+const SKIN_CONCERN_OPTIONS = [
+  "Hyperpigmentation",
+  "Uneven Skin Tone",
+  "Dullness",
+  "Anti-Ageing",
+  "Wrinkles",
+  "Fine Lines",
+  "Loss of Firmness",
+  "Sagging Skin",
+  "Pores",
+  "Dark Spots",
+  "Acne",
+  "Redness",
+  "Dryness",
+];
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const toggleArrayItem = (arr, item) =>
+  arr.includes(item) ? arr.filter((i) => i !== item) : [...arr, item];
+
+// Extract ID from either a populated object or a raw string ID
+const extractId = (val) => {
+  if (!val) return null;
+  if (typeof val === "string") return val;
+  if (typeof val === "object" && val._id) return val._id;
+  return null;
+};
+
+// Normalize a bilingual field from the product data
+const normalizeBilingual = (val) => {
+  if (!val) return { en: "", ar: "" };
+  if (typeof val === "object" && !Array.isArray(val)) {
+    return { en: val.en || "", ar: val.ar || "" };
+  }
+  if (typeof val === "string") {
+    try {
+      const parsed = JSON.parse(val);
+      if (parsed && typeof parsed === "object")
+        return { en: parsed.en || "", ar: parsed.ar || "" };
+    } catch {}
+    return { en: val, ar: "" };
+  }
+  return { en: "", ar: "" };
+};
+
+// ── Reusable Components ──────────────────────────────────────────────────────
+const BilingualTextarea = ({
+  label,
+  fieldKey,
+  value,
+  onChange,
+  lang,
+  rows = 3,
+}) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}{" "}
+      <span className="text-gray-400 text-xs">
+        ({lang === "en" ? "English" : "Arabic"})
+      </span>
+    </label>
+    <textarea
+      value={value?.[lang] || ""}
+      onChange={(e) => onChange(fieldKey, { ...value, [lang]: e.target.value })}
+      placeholder={`Enter ${label} in ${lang === "en" ? "English" : "Arabic"}`}
+      className="w-full border p-2 rounded text-sm"
+      rows={rows}
+    />
+  </div>
+);
+
+const CheckboxGroup = ({ label, options, selected, onToggle }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
+    <div className="flex flex-wrap gap-2">
+      {options.map((opt) => (
+        <label
+          key={opt}
+          className={`flex items-center gap-1 px-2 py-1 rounded-full border text-xs cursor-pointer transition-colors ${
+            selected.includes(opt)
+              ? "bg-blue-100 border-blue-400 text-blue-700"
+              : "border-gray-300 text-gray-600 hover:border-gray-400"
+          }`}
+        >
+          <input
+            type="checkbox"
+            className="hidden"
+            checked={selected.includes(opt)}
+            onChange={() => onToggle(opt)}
+          />
+          {opt}
+        </label>
+      ))}
+    </div>
+  </div>
+);
+
+// ═════════════════════════════════════════════════════════════════════════════
 const EditProductModal = ({ isOpen, onClose, productData }) => {
+  const [activeLanguage, setActiveLanguage] = useState("en");
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     name: "",
-    description: { en: "", ar: "" }, // Bilingual description
+    description: { en: "", ar: "" },
     brandName: "",
     productType: "",
+    countryOfOrigin: "",
     masterCategory: "",
-    category: "",
-    subcategory: "",
+    categories: [],
+    subcategories: [],
+    howToUse: { en: "", ar: "" },
+    addedBenefits: { en: "", ar: "" },
+    visibleResults: { en: "", ar: "" },
+    primaryPurpose: { en: "", ar: "" },
+    antiAgingEffect: "",
+    skinTypes: [],
+    skinConcerns: [],
+    ingredientsRaw: "",
     thumbnails: [],
     video: null,
     YTVideoUrl: "",
-    attributes: "[]", // stringified for submission
-    attributesObj: {}, // for dynamic rendering
   });
-  const [loading, setLoading] = useState(false);
-  const [activeLanguage, setActiveLanguage] = useState("en"); // Language tab state
+
   const categories = useSelector((state) => state.category);
   const subcategories = useSelector((state) => state.subCategory);
   const masterCategories = useSelector((state) => state.masterCategory);
   const dispatch = useDispatch();
 
-  // Populate existing product data when modal opens
+  // ── Pre-populate form when modal opens ────────────────────────────────────
   useEffect(() => {
-    // Convert attributes array to key-value map for input prefill
-    const attributesObj = {};
-    if (productData?.attributes?.length > 0) {
-      productData?.attributes.forEach((attr) => {
-        if (attr.key && attr.value) {
-          // Handle both old format (string) and new format ({en, ar})
-          if (typeof attr.value === "string") {
-            // Try to parse as JSON first
-            try {
-              const parsed = JSON.parse(attr.value);
-              if (typeof parsed === "object" && (parsed.en || parsed.ar)) {
-                // Successfully parsed JSON with en/ar keys
-                attributesObj[attr.key] = {
-                  en: parsed.en || "",
-                  ar: parsed.ar || "",
-                };
-              } else {
-                // Old format - plain string
-                attributesObj[attr.key] = { en: attr.value, ar: "" };
-              }
-            } catch (e) {
-              // Not valid JSON - old format
-              attributesObj[attr.key] = { en: attr.value, ar: "" };
-            }
-          } else if (typeof attr.value === "object") {
-            // New format - already {en, ar}
-            attributesObj[attr.key] = attr.value;
-          }
-        }
-      });
-    }
+    if (!isOpen || !productData) return;
 
-    // Handle description - support both old (string) and new ({en, ar})
-    let descriptionObj = { en: "", ar: "" };
-    if (productData?.description) {
-      if (typeof productData.description === "string") {
-        // Try to parse as JSON first (in case backend stored it as stringified JSON)
-        try {
-          const parsed = JSON.parse(productData.description);
-          if (typeof parsed === "object" && (parsed.en || parsed.ar)) {
-            // Successfully parsed JSON with en/ar keys
-            descriptionObj = { en: parsed.en || "", ar: parsed.ar || "" };
-          } else {
-            // Old format - plain string
-            descriptionObj = { en: productData.description, ar: "" };
-          }
-        } catch (e) {
-          // Not valid JSON - old format, plain string
-          descriptionObj = { en: productData.description, ar: "" };
-        }
-      } else if (typeof productData.description === "object") {
-        // New format - already {en, ar}
-        descriptionObj = productData.description;
-      }
-    }
+    // Extract category IDs (may be populated objects or raw IDs)
+    const categoryIds = (productData.categories || [])
+      .map(extractId)
+      .filter(Boolean);
+    const subcategoryIds = (productData.subcategories || [])
+      .map(extractId)
+      .filter(Boolean);
 
-    if (isOpen && productData) {
-      setFormData({
-        name: productData.name || "",
-        description: descriptionObj,
-        brandName: productData.brandName || "",
-        productType: productData.productType || "",
-        masterCategory:
-          productData.masterCategory?._id || productData.masterCategory || "",
-        category: productData.category?._id || productData.category || "",
-        subcategory:
-          productData.subcategory?._id || productData.subcategory || "",
-        thumbnails: [],
-        video: null,
-        YTVideoUrl: productData.YTVideoUrl || "",
-        attributes: JSON.stringify(productData.attributes || []), // ✅ stringify here
-        attributesObj: attributesObj, // for dynamic rendering
-      });
-    }
+    // Ingredients: join array to comma string for editing
+    const ingredientsRaw = Array.isArray(productData.ingredients)
+      ? productData.ingredients.join(", ")
+      : "";
+
+    setFormData({
+      name: productData.name || "",
+      description: normalizeBilingual(productData.description),
+      brandName: productData.brandName || "",
+      productType: productData.productType || "",
+      countryOfOrigin: productData.countryOfOrigin || "",
+      masterCategory: extractId(productData.masterCategory) || "",
+      categories: categoryIds,
+      subcategories: subcategoryIds,
+      howToUse: normalizeBilingual(productData.howToUse),
+      addedBenefits: normalizeBilingual(productData.addedBenefits),
+      visibleResults: normalizeBilingual(productData.visibleResults),
+      primaryPurpose: normalizeBilingual(productData.primaryPurpose),
+      antiAgingEffect: productData.antiAgingEffect || "",
+      skinTypes: productData.skinTypes || [],
+      skinConcerns: productData.skinConcerns || [],
+      ingredientsRaw,
+      thumbnails: [],
+      video: null,
+      YTVideoUrl: productData.YTVideoUrl || "",
+    });
   }, [isOpen, productData]);
 
+  // ── Filtered lists ────────────────────────────────────────────────────────
+  const filteredCategories = categories.filter(
+    (cat) => cat.masterCategory?._id === formData.masterCategory
+  );
+
+  const filteredSubcategories = subcategories.filter((sub) =>
+    formData.categories.includes(sub.category?._id)
+  );
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const filteredCategories = categories.filter(
-    (cat) => cat.masterCategory?._id === formData.masterCategory
-  );
+  const handleBilingualChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-  const filteredSubcategories = subcategories.filter(
-    (sub) => sub.category?._id === formData.category
-  );
+  const handleMasterCategoryChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      masterCategory: e.target.value,
+      categories: [],
+      subcategories: [],
+    }));
+  };
+
+  const toggleCategory = (catId) => {
+    setFormData((prev) => {
+      const newCategories = toggleArrayItem(prev.categories, catId);
+      const validSubIds = subcategories
+        .filter((sub) => newCategories.includes(sub.category?._id))
+        .map((sub) => sub._id);
+      return {
+        ...prev,
+        categories: newCategories,
+        subcategories: prev.subcategories.filter((id) =>
+          validSubIds.includes(id)
+        ),
+      };
+    });
+  };
+
+  const toggleSubcategory = (subId) => {
+    setFormData((prev) => ({
+      ...prev,
+      subcategories: toggleArrayItem(prev.subcategories, subId),
+    }));
+  };
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -136,44 +255,49 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     setFormData((prev) => ({ ...prev, video: file }));
   };
 
+  // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.categories.length === 0) {
+      toast.error("Please select at least one category.");
+      return;
+    }
+    if (formData.subcategories.length === 0) {
+      toast.error("Please select at least one subcategory.");
+      return;
+    }
     setLoading(true);
 
     const data = new FormData();
     data.append("name", formData.name);
-
-    // Send description as JSON string with {en, ar}
     data.append("description", JSON.stringify(formData.description));
-
     data.append("brandName", formData.brandName);
     data.append("productType", formData.productType);
+    data.append("countryOfOrigin", formData.countryOfOrigin);
     data.append("masterCategory", formData.masterCategory);
-    data.append("category", formData.category);
-    data.append("subcategory", formData.subcategory);
+    data.append("categories", JSON.stringify(formData.categories));
+    data.append("subcategories", JSON.stringify(formData.subcategories));
+    data.append("howToUse", JSON.stringify(formData.howToUse));
+    data.append("addedBenefits", JSON.stringify(formData.addedBenefits));
+    data.append("visibleResults", JSON.stringify(formData.visibleResults));
+    data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
+    data.append("antiAgingEffect", formData.antiAgingEffect);
+    data.append("YTVideoUrl", formData.YTVideoUrl);
 
-    // Optional attributes (JSON string expected) - with bilingual support
-    if (formData.attributes) {
-      data.append("attributes", formData.attributes);
-    }
+    const ingredientsArray = formData.ingredientsRaw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    data.append("ingredients", JSON.stringify(ingredientsArray));
+    data.append("skinTypes", JSON.stringify(formData.skinTypes));
+    data.append("skinConcerns", JSON.stringify(formData.skinConcerns));
 
-    formData.thumbnails.forEach((file) => {
-      data.append("thumbnails", file);
-    });
-
-    // Append video if provided
-    if (formData.video) {
-      data.append("video", formData.video);
-    }
-
-    // Append YouTube URL for How to Use section
-    if (formData.YTVideoUrl) {
-      data.append("YTVideoUrl", formData.YTVideoUrl);
-    }
+    formData.thumbnails.forEach((file) => data.append("thumbnails", file));
+    if (formData.video) data.append("video", formData.video);
 
     try {
       const response = await updateProduct(productData._id, data);
-      dispatch(updateProductData(response.data)); // Redux update
+      dispatch(updateProductData(response.data));
       toast.success(response?.message || "Product updated successfully.");
       onClose();
     } catch (error) {
@@ -189,12 +313,13 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm bg-black/30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-w-full max-h-[90vh] overflow-y-auto">
-        <div className="relative">
-          <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[650px] max-w-full max-h-[90vh] overflow-y-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Edit Product</h2>
           <button
             onClick={onClose}
-            className="absolute top-1 right-1 text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -212,92 +337,174 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             </svg>
           </button>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Product Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          />
 
-          {/* Language Tab Switcher */}
-          <div className="flex gap-2 border-b border-gray-300 mb-4">
-            <button
-              type="button"
-              onClick={() => setActiveLanguage("en")}
-              className={`px-4 cursor-pointer py-2 font-medium transition-colors ${
-                activeLanguage === "en"
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-600 hover:text-gray-800"
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveLanguage("ar")}
-              className={`px-4 cursor-pointer py-2 font-medium transition-colors ${
-                activeLanguage === "ar"
-                  ? "border-b-2 border-blue-500 text-blue-600"
-                  : "text-gray-600 hover:text-gray-800"
-              }`}
-            >
-              Arabic
-            </button>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* ── Language Tabs ── */}
+          <div className="flex gap-2 border-b border-gray-300">
+            {["en", "ar"].map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setActiveLanguage(lang)}
+                className={`px-4 py-2 font-medium transition-colors cursor-pointer ${
+                  activeLanguage === lang
+                    ? "border-b-2 border-blue-500 text-blue-600"
+                    : "text-gray-600 hover:text-gray-800"
+                }`}
+              >
+                {lang === "en" ? "English" : "Arabic"}
+              </button>
+            ))}
           </div>
 
-          {/* Description - Bilingual */}
+          {/* ── Basic Info ── */}
+          <div className="grid grid-cols-2 gap-3">
+            <input
+              type="text"
+              name="name"
+              placeholder="Product Name *"
+              value={formData.name}
+              onChange={handleChange}
+              className="border p-2 rounded col-span-2"
+              required
+            />
+            <input
+              type="text"
+              name="brandName"
+              placeholder="Brand Name *"
+              value={formData.brandName}
+              onChange={handleChange}
+              className="border p-2 rounded"
+              required
+            />
+            <input
+              type="text"
+              name="productType"
+              placeholder="Product Type"
+              value={formData.productType}
+              onChange={handleChange}
+              className="border p-2 rounded"
+            />
+            <input
+              type="text"
+              name="countryOfOrigin"
+              placeholder="Country of Origin (e.g. Turkey)"
+              value={formData.countryOfOrigin}
+              onChange={handleChange}
+              className="border p-2 rounded col-span-2"
+            />
+          </div>
+
+          {/* ── Bilingual Description ── */}
+          <BilingualTextarea
+            label="Description"
+            fieldKey="description"
+            value={formData.description}
+            onChange={handleBilingualChange}
+            lang={activeLanguage}
+            rows={3}
+          />
+
+          {/* ── Bilingual Product Details ── */}
+          <div className="border rounded-lg p-3 space-y-3 bg-gray-50">
+            <p className="text-sm font-semibold text-gray-700">
+              Product Details ({activeLanguage === "en" ? "English" : "Arabic"})
+            </p>
+            <BilingualTextarea
+              label="How to Use"
+              fieldKey="howToUse"
+              value={formData.howToUse}
+              onChange={handleBilingualChange}
+              lang={activeLanguage}
+              rows={2}
+            />
+            <BilingualTextarea
+              label="Added Benefits"
+              fieldKey="addedBenefits"
+              value={formData.addedBenefits}
+              onChange={handleBilingualChange}
+              lang={activeLanguage}
+              rows={2}
+            />
+            <BilingualTextarea
+              label="Visible Results"
+              fieldKey="visibleResults"
+              value={formData.visibleResults}
+              onChange={handleBilingualChange}
+              lang={activeLanguage}
+              rows={2}
+            />
+            <BilingualTextarea
+              label="Primary Purpose"
+              fieldKey="primaryPurpose"
+              value={formData.primaryPurpose}
+              onChange={handleBilingualChange}
+              lang={activeLanguage}
+              rows={2}
+            />
+          </div>
+
+          {/* ── Anti-Aging Effect ── */}
+          <input
+            type="text"
+            name="antiAgingEffect"
+            placeholder="Anti-Aging Effect (e.g. Anti Aging Effect)"
+            value={formData.antiAgingEffect}
+            onChange={handleChange}
+            className="w-full border p-2 rounded"
+          />
+
+          {/* ── Ingredients ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Description ({activeLanguage === "en" ? "English" : "Arabic"})
+              Ingredients{" "}
+              <span className="text-gray-400 text-xs">(comma-separated)</span>
             </label>
             <textarea
-              name="description"
-              placeholder={`Enter description in ${
-                activeLanguage === "en" ? "English" : "Arabic"
-              }`}
-              value={formData.description[activeLanguage]}
-              onChange={(e) => {
-                setFormData((prev) => ({
-                  ...prev,
-                  description: {
-                    ...prev.description,
-                    [activeLanguage]: e.target.value,
-                  },
-                }));
-              }}
-              className="w-full border p-2 rounded"
-              rows={4}
-            ></textarea>
+              name="ingredientsRaw"
+              placeholder="AQUA, GLYCERIN, TOCOPHEROL, CITRUS SINENSIS PEEL EXTRACT..."
+              value={formData.ingredientsRaw}
+              onChange={handleChange}
+              className="w-full border p-2 rounded text-sm"
+              rows={3}
+            />
           </div>
-          <input
-            type="text"
-            name="brandName"
-            placeholder="Brand Name"
-            value={formData.brandName}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
+
+          {/* ── Skin Types ── */}
+          <CheckboxGroup
+            label="Skin Types"
+            options={SKIN_TYPE_OPTIONS}
+            selected={formData.skinTypes}
+            onToggle={(opt) =>
+              setFormData((prev) => ({
+                ...prev,
+                skinTypes: toggleArrayItem(prev.skinTypes, opt),
+              }))
+            }
           />
-          <input
-            type="text"
-            name="productType"
-            placeholder="Product Type"
-            value={formData.productType}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
+
+          {/* ── Skin Concerns ── */}
+          <CheckboxGroup
+            label="Skin Concerns"
+            options={SKIN_CONCERN_OPTIONS}
+            selected={formData.skinConcerns}
+            onToggle={(opt) =>
+              setFormData((prev) => ({
+                ...prev,
+                skinConcerns: toggleArrayItem(prev.skinConcerns, opt),
+              }))
+            }
           />
+
+          {/* ── Master Category ── */}
           <select
             name="masterCategory"
             value={formData.masterCategory}
-            onChange={handleChange}
+            onChange={handleMasterCategoryChange}
             className="w-full border p-2 rounded"
             required
           >
-            <option value="">Select Master Category</option>
+            <option value="">Select Master Category *</option>
             {masterCategories.map((cat) => (
               <option key={cat._id} value={cat._id}>
                 {cat.name}
@@ -305,81 +512,94 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             ))}
           </select>
 
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          >
-            <option value="">Select Category</option>
-            {filteredCategories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="subcategory"
-            value={formData.subcategory}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-            required
-          >
-            <option value="">Select Subcategory</option>
-            {filteredSubcategories.map((sub) => (
-              <option key={sub._id} value={sub._id}>
-                {sub.name}
-              </option>
-            ))}
-          </select>
-
-          {/* Attributes field (JSON string) */}
-          <div className="space-y-2">
-            <label className="block font-medium text-sm text-gray-700">
-              Additional Info ({activeLanguage === "en" ? "English" : "Arabic"})
-            </label>
-            {[
-              { key: "Usage", label: "Usage Instructions" },
-              { key: "Ingredients", label: "Ingredients" },
-              { key: "Highlights", label: "Highlights" },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <label className="text-sm text-gray-600">{label}</label>
-                <input
-                  type="text"
-                  name={`attribute-${key}`}
-                  value={formData.attributesObj?.[key]?.[activeLanguage] || ""}
-                  onChange={(e) => {
-                    const newAttributes = { ...(formData.attributesObj || {}) };
-                    if (!newAttributes[key]) {
-                      newAttributes[key] = { en: "", ar: "" };
-                    }
-                    newAttributes[key][activeLanguage] = e.target.value;
-                    setFormData((prev) => ({
-                      ...prev,
-                      attributesObj: newAttributes,
-                      attributes: JSON.stringify(
-                        Object.entries(newAttributes).map(([k, v]) => ({
-                          key: k,
-                          value: v, // v is now {en, ar}
-                        }))
-                      ),
-                    }));
-                  }}
-                  className="w-full border p-2 rounded"
-                  placeholder={`Enter ${label} in ${
-                    activeLanguage === "en" ? "English" : "Arabic"
-                  }`}
-                />
+          {/* ── Categories (multi-checkbox) ── */}
+          {formData.masterCategory && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Categories *{" "}
+                <span className="text-xs text-gray-400">
+                  (select all that apply)
+                </span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {filteredCategories.map((cat) => (
+                  <label
+                    key={cat._id}
+                    className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
+                      formData.categories.includes(cat._id)
+                        ? "bg-blue-100 border-blue-400 text-blue-700 font-medium"
+                        : "border-gray-300 text-gray-600 hover:border-gray-400"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="hidden"
+                      checked={formData.categories.includes(cat._id)}
+                      onChange={() => toggleCategory(cat._id)}
+                    />
+                    {cat.name}
+                  </label>
+                ))}
               </div>
-            ))}
-          </div>
+              {filteredCategories.length === 0 && (
+                <p className="text-xs text-gray-400 mt-1">
+                  No categories found for this master category.
+                </p>
+              )}
+            </div>
+          )}
 
+          {/* ── Subcategories (grouped by parent category) ── */}
+          {formData.categories.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subcategories *{" "}
+                <span className="text-xs text-gray-400">
+                  (select all that apply)
+                </span>
+              </label>
+              {formData.categories.map((catId) => {
+                const cat = categories.find((c) => c._id === catId);
+                const catSubs = filteredSubcategories.filter(
+                  (sub) => sub.category?._id === catId
+                );
+                if (!catSubs.length) return null;
+                return (
+                  <div key={catId} className="mb-3">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                      {cat?.name}
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {catSubs.map((sub) => (
+                        <label
+                          key={sub._id}
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
+                            formData.subcategories.includes(sub._id)
+                              ? "bg-green-100 border-green-400 text-green-700 font-medium"
+                              : "border-gray-300 text-gray-600 hover:border-gray-400"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            className="hidden"
+                            checked={formData.subcategories.includes(sub._id)}
+                            onChange={() => toggleSubcategory(sub._id)}
+                          />
+                          {sub.name}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── Thumbnails ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Replace Thumbnails (optional, max 2)
+              Replace Thumbnails{" "}
+              <span className="text-xs text-gray-400">(optional, max 2)</span>
             </label>
             <input
               type="file"
@@ -390,9 +610,11 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             />
           </div>
 
+          {/* ── Video ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Video (Optional)
+              Product Video{" "}
+              <span className="text-xs text-gray-400">(Optional)</span>
             </label>
             {productData?.videoUrl && (
               <div className="mb-2 text-sm text-gray-600 bg-gray-100 p-2 rounded">
@@ -414,20 +636,20 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
               className="border border-gray-300 px-3 py-2 rounded-md w-full"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Upload new video to replace existing one (MP4, WebM, MOV | Max
-              50MB)
+              Upload new video to replace existing (MP4, WebM, MOV | Max 50MB)
             </p>
           </div>
 
+          {/* ── YouTube URL ── */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              YouTube Video URL (How to Use)
-              <span className="text-xs text-gray-500 ml-2">
-                Optional - Paste YouTube video link for usage instructions
+              YouTube Video URL{" "}
+              <span className="text-xs text-gray-400">
+                (How to Use — Optional)
               </span>
             </label>
             {productData?.YTVideoUrl && (
-              <div className="mb-2 text-sm text-gray-600 bg-gray-100 p-2 rounded">
+              <div className="mb-2 text-sm text-gray-600 bg-gray-100 p-2 rounded truncate">
                 Current:{" "}
                 <a
                   href={productData.YTVideoUrl}
@@ -445,11 +667,12 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
               placeholder="https://www.youtube.com/watch?v=..."
               value={formData.YTVideoUrl}
               onChange={handleChange}
-              className="w-full border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400"
+              className="w-full border border-gray-300 px-3 py-2 rounded-md"
             />
           </div>
 
-          <div className="flex gap-2">
+          {/* ── Actions ── */}
+          <div className="flex gap-2 pt-2">
             <button
               type="submit"
               className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer"
