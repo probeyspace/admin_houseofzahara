@@ -35,3 +35,12 @@ export const syncAllVariantsToZoho = async () => {
     throw error;
   }
 };
+
+export const syncOrderToZoho = async (orderId) => {
+  try {
+    const response = await api.post(`/zoho/orders/sync/${orderId}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

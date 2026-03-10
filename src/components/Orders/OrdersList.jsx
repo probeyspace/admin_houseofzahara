@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaEye, FaEdit } from "react-icons/fa";
+import { FaEye, FaEdit, FaSync } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import ViewOrderModal from "./ViewOrderModal";
 import EditOrderModal from "./EditOrderModal";
@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { FiDownload, FiSearch } from "react-icons/fi";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { syncOrderToZoho } from "../../services/zoho";
 
 function OrderList() {
   //GET STATUS FROM THE QUERY PARAMS
@@ -40,6 +41,16 @@ function OrderList() {
   const handleView = (order) => {
     setSelectedOrder(order);
     setIsModalOpen(true);
+  };
+
+  const handleSyncOrder = async (orderId) => {
+    try {
+      const res = await syncOrderToZoho(orderId);
+      toast.success(res?.message || "Order sync triggered successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Sync failed");
+      console.error("Error syncing order:", error);
+    }
   };
 
   // Filter orders
@@ -325,6 +336,14 @@ function OrderList() {
                     aria-label="Edit"
                   >
                     <FaEdit size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleSyncOrder(order._id)}
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                    aria-label="Sync to Zoho"
+                    title="Sync to Zoho"
+                  >
+                    <FaSync size={18} />
                   </button>
                 </td>
               </tr>

@@ -62,6 +62,12 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
               {order?.paymentStatus}
             </span>
           </p>
+          {order?.zohoSalesOrderId && (
+            <p>
+              <span className="font-medium">Zoho Sales Order ID:</span>{" "}
+              <span className="text-blue-600 font-semibold">{order.zohoSalesOrderId}</span>
+            </p>
+          )}
         </div>
 
         {/* User Info */}
