@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { FaEye, FaTrash } from "react-icons/fa";
 import { useSelector, useDispatch } from "react-redux";
 import ViewUserModal from "./ViewUserModal";
 import api from "../../Api/api";
 import { setUsers } from "../../store/slices/usersSlice";
 import { toast } from "react-toastify";
 import useUsers from "../../Hooks/useUsers";
+import { syncUserToZoho, syncAllUsersToZoho } from "../../services/zoho";
+import { FaEye, FaTrash, FaSync } from "react-icons/fa";
 
 function UsersList() {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ function UsersList() {
   const [perPage, setPerPage] = useState(5);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   useUsers(); // fetches and sets users in redux
   const users = useSelector((store) => store.users);
@@ -34,6 +36,16 @@ function UsersList() {
         toast.error(error?.response?.data?.message || "Delete failed");
         console.error("Error deleting user:", error);
       }
+    }
+  };
+
+  const handleSync = async (userId) => {
+    try {
+      const res = await syncUserToZoho(userId);
+      toast.success(res?.message || "User synced to Zoho successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Sync failed");
+      console.error("Error syncing user:", error);
     }
   };
 
@@ -87,6 +99,13 @@ function UsersList() {
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"
                   >
                     <FaTrash size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleSync(user._id)}
+                    className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                    title="Sync to Zoho"
+                  >
+                    <FaSync size={18} />
                   </button>
                 </td>
               </tr>

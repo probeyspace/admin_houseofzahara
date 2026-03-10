@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaSync } from "react-icons/fa";
 import { useDispatch } from "react-redux";
 import Modal from "../../common/Modal";
 import { deleteVariantById, editVariantById } from "../../services/products";
 import { deleteVariant, editVariant } from "../../store/slices/productSlice";
 import { toast } from "react-toastify";
 import SvgSpinner from "../../common/SvgSpinner";
+import { syncVariantToZoho } from "../../services/zoho";
 
 function VariantListModal({ isOpen, onClose, variants }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -26,6 +27,16 @@ function VariantListModal({ isOpen, onClose, variants }) {
         toast.error(error?.response?.data?.message || "Delete failed");
         console.error("Error deleting variant:", error);
       }
+    }
+  };
+
+  const handleSync = async (variantId) => {
+    try {
+      const res = await syncVariantToZoho(variantId);
+      toast.success(res?.message || "Item synced to Zoho successfully!");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Sync failed");
+      console.error("Error syncing item:", error);
     }
   };
 
@@ -293,6 +304,13 @@ function VariantListModal({ isOpen, onClose, variants }) {
                             size={16}
                             className="w-4 h-4 sm:w-5 sm:h-5"
                           />
+                        </button>
+                        <button
+                          title="Sync to Zoho"
+                          onClick={() => handleSync(variant._id)}
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                        >
+                          <FaSync size={15} />
                         </button>
                       </div>
                     </td>

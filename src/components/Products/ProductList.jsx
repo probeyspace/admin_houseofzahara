@@ -7,6 +7,7 @@ import {
   FaListUl,
   FaQuestionCircle,
   FaEnvelope,
+  FaSync,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
@@ -20,6 +21,7 @@ import VariantListModal from "./VariantListModal";
 import EditProductModal from "./EditProductModal";
 import FAQManagementModal from "./FAQManagementModal";
 import WriteUsModal from "./WriteUsModal";
+import { syncAllVariantsToZoho } from "../../services/zoho";
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -34,6 +36,7 @@ function ProductList() {
   const [showAddVariant, setShowAddVariant] = useState(false);
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [showWriteUsModal, setShowWriteUsModal] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   useProducts();
   const products = useSelector((store) => store.products);
 
@@ -79,6 +82,24 @@ function ProductList() {
     setShowWriteUsModal(true);
   };
 
+  const handleSyncAllItems = async () => {
+    if (window.confirm("Sync all unsynced variants to Zoho?")) {
+      setIsSyncing(true);
+      try {
+        const res = await syncAllVariantsToZoho();
+        const { synced, failed } = res.data;
+        toast.info(
+          `Bulk item sync complete: ${synced} synced, ${failed} failed`
+        );
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Bulk sync failed");
+        console.error("Error syncing items:", error);
+      } finally {
+        setIsSyncing(false);
+      }
+    }
+  };
+
   // Filter products based on search term
   const filteredProducts = products?.filter((product) => {
     const searchLower = searchTerm.toLowerCase();
@@ -120,6 +141,14 @@ function ProductList() {
           />
         </div>
         <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <button
+            onClick={handleSyncAllItems}
+            disabled={isSyncing}
+            className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer disabled:opacity-50 flex items-center gap-2"
+          >
+            <FaSync className={isSyncing ? "animate-spin" : ""} size={16} />
+            {isSyncing ? "Syncing..." : "Sync All Items to Zoho"}
+          </button>
           <button
             onClick={() => setAddModal(true)}
             className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer"
