@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaSave } from "react-icons/fa"; // Save icon
 import { useDispatch } from "react-redux";
 import { changeStatus } from "../../store/slices/orderSlice";
@@ -7,6 +7,12 @@ import { toast } from "react-toastify";
 const EditOrderModal = ({ isOpen, onClose, order, onSave }) => {
   const [status, setStatus] = useState(order?.status || "");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (order?.status) {
+      setStatus(order.status);
+    }
+  }, [order]);
 
   const dispatch = useDispatch();
 
@@ -67,13 +73,40 @@ const EditOrderModal = ({ isOpen, onClose, order, onSave }) => {
               onChange={(e) => setStatus(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             >
-              <option value="">Select Status</option>
-              <option value="PENDING">Pending</option>
-              <option value="PROCESSING">Processing</option>
-              <option value="SHIPPED">Shipped</option>
-              <option value="DELIVERED">Delivered</option>
-              <option value="CANCELLED">Cancelled</option>
-              <option value="RETURNED">Returned</option>
+              <option value="" disabled>
+                Select Status
+              </option>
+              {(() => {
+                const current = order?.status;
+                const validTransitions = {
+                  PENDING: ["PENDING", "PROCESSING", "CANCELLED"],
+                  PROCESSING: ["PROCESSING", "SHIPPED", "CANCELLED"],
+                  SHIPPED: ["SHIPPED", "DELIVERED", "RETURNED"],
+                  DELIVERED: ["DELIVERED", "RETURNED"],
+                  CANCELLED: ["CANCELLED"],
+                  RETURNED: ["RETURNED"],
+                };
+                const allowed = current
+                  ? validTransitions[current] || [current]
+                  : [];
+
+                const allStatuses = [
+                  { value: "PENDING", label: "Pending" },
+                  { value: "PROCESSING", label: "Processing" },
+                  { value: "SHIPPED", label: "Shipped" },
+                  { value: "DELIVERED", label: "Delivered" },
+                  { value: "CANCELLED", label: "Cancelled" },
+                  { value: "RETURNED", label: "Returned" },
+                ];
+
+                return allStatuses
+                  .filter((s) => allowed.includes(s.value))
+                  .map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ));
+              })()}
             </select>
           </div>
         </div>
