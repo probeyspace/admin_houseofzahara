@@ -98,7 +98,7 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     >
       <div className="flex items-center justify-between p-4">
         {/* <img src={logo} alt="" /> */}
-        <h2 className="text-2xl font-bold">Celestial Beauty</h2>
+        <h2 className="text-2xl font-bold">Heavenly Beauty</h2>
         <FiMenu
           className="cursor-pointer text-xl md:hidden"
           onClick={toggleSidebar}

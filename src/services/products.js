@@ -82,3 +82,14 @@ export const deleteProductById = async (id) => {
     throw error;
   }
 };
+
+export const toggleProductActive = async (id, isActive) => {
+  try {
+    const response = await api.patch(`/products/${id}/toggle-active`, {
+      isActive,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -12,8 +12,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
 import ViewProductModal from "./ViewProductModal";
-import { deleteProduct } from "../../store/slices/productSlice";
-import { deleteProductById } from "../../services/products";
+import { deleteProduct, updateProductData } from "../../store/slices/productSlice";
+import { deleteProductById, toggleProductActive } from "../../services/products";
 import { toast } from "react-toastify";
 import AddProductModal from "./AddProductModal";
 import AddVariantModal from "./AddVariantModal";
@@ -37,6 +37,7 @@ function ProductList() {
   const [showFAQModal, setShowFAQModal] = useState(false);
   const [showWriteUsModal, setShowWriteUsModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [statusUpdatingId, setStatusUpdatingId] = useState(null);
   useProducts();
   const products = useSelector((store) => store.products);
 
@@ -97,6 +98,27 @@ function ProductList() {
       } finally {
         setIsSyncing(false);
       }
+    }
+  };
+
+  const handleToggleStatus = async (product) => {
+    const nextStatus = !product.isActive;
+    setStatusUpdatingId(product._id);
+    try {
+      const res = await toggleProductActive(product._id, nextStatus);
+      dispatch(updateProductData(res.data));
+      if (selectedProduct?._id === product._id) {
+        setSelectedProduct(res.data);
+      }
+      toast.success(
+        `Product ${nextStatus ? "activated" : "deactivated"} successfully`
+      );
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to update product status"
+      );
+    } finally {
+      setStatusUpdatingId(null);
     }
   };
 
@@ -175,6 +197,7 @@ function ProductList() {
               <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
                 SubCategories
               </th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Status</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
             </tr>
@@ -207,6 +230,27 @@ function ProductList() {
                     {product.subcategories?.length > 0
                       ? `${product.subcategories.length} SubCats`
                       : product.subcategory?.name || "N/A"}
+                  </td>
+                  <td className="p-2 sm:p-3">
+                    <button
+                      onClick={() => handleToggleStatus(product)}
+                      disabled={statusUpdatingId === product._id}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border transition cursor-pointer ${
+                        product.isActive
+                          ? "bg-green-100 text-green-700 border-green-200"
+                          : "bg-red-100 text-red-700 border-red-200"
+                      } ${
+                        statusUpdatingId === product._id
+                          ? "opacity-70 cursor-wait"
+                          : ""
+                      }`}
+                    >
+                      {statusUpdatingId === product._id
+                        ? "Updating..."
+                        : product.isActive
+                        ? "Active"
+                        : "Inactive"}
+                    </button>
                   </td>
 
                   <td className="p-2 sm:p-3 space-x-2 sm:space-x-3">
@@ -281,7 +325,7 @@ function ProductList() {
             ) : (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan="8"
                   className="p-2 sm:p-3 text-center text-gray-500"
                 >
                   No products listed yet.
