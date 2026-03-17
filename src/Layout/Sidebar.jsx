@@ -82,12 +82,17 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       icon: <MdDashboard />,
       text: "Contacts",
     },
-    {
-      to: "/subscribers",
-      icon: <MdDashboard />,
-      text: "Subscribers",
-    },
-  ];
+      {
+        to: "/subscribers",
+        icon: <MdDashboard />,
+        text: "Subscribers",
+      },
+      {
+        to: "/pre-bookings",
+        icon: <MdDashboard />,
+        text: "Pre-bookings",
+      },
+    ];
 
   return (
     <div

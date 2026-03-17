@@ -21,6 +21,7 @@ import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
 import SubCategoryList from "./components/SubCategory/SubCategoryList";
 import SubscriberList from "./components/Subscribers/SubscriberList";
 import BlogList from "./components/Blogs/BlogList";
+import PreBookingList from "./components/PreBookings/PreBookingList";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
@@ -47,6 +48,7 @@ function App() {
             <Route path="brands" element={<BrandPage />} />
             <Route path="reviews" element={<ReviewsList />} />
             <Route path="subscribers" element={<SubscriberList />} />
+            <Route path="pre-bookings" element={<PreBookingList />} />
             <Route path="blogs" element={<BlogList />} />
             {/* <Route path="searched" element={<SearchedLogs />} />  */}
             {/* <Route path="articles" element={<Articles />} /> */}
