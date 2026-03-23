@@ -49,9 +49,15 @@ function UsersList() {
     }
   };
 
-  const filteredUsers = users?.filter((user) =>
-    user?.name?.toLowerCase().includes(searchTerm?.toLowerCase())
-  );
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredUsers = users?.filter((user) => {
+    if (!normalizedSearch) return true; // show everything when no query
+    const name = user?.name?.toLowerCase() || "";
+    const email = user?.email?.toLowerCase() || "";
+    return (
+      name.includes(normalizedSearch) || email.includes(normalizedSearch)
+    );
+  });
 
   const totalPages = Math.ceil((filteredUsers?.length || 0) / perPage);
   const paginatedUsers = filteredUsers?.slice(
