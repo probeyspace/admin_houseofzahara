@@ -13,7 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import useProducts from "../../Hooks/useProducts";
 import ViewProductModal from "./ViewProductModal";
 import { deleteProduct, updateProductData } from "../../store/slices/productSlice";
-import { deleteProductById, toggleProductActive } from "../../services/products";
+import {
+  deleteProductById,
+  toggleProductActive,
+  toggleProductPublish,
+} from "../../services/products";
 import { toast } from "react-toastify";
 import AddProductModal from "./AddProductModal";
 import AddVariantModal from "./AddVariantModal";
@@ -38,6 +42,7 @@ function ProductList() {
   const [showWriteUsModal, setShowWriteUsModal] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [statusUpdatingId, setStatusUpdatingId] = useState(null);
+  const [publishUpdatingId, setPublishUpdatingId] = useState(null);
   useProducts();
   const products = useSelector((store) => store.products);
 
@@ -122,6 +127,30 @@ function ProductList() {
     }
   };
 
+  const handleTogglePublish = async (product) => {
+    const currentPublishState = product.isPublished !== false;
+    const nextPublishState = !currentPublishState;
+    setPublishUpdatingId(product._id);
+    try {
+      const res = await toggleProductPublish(product._id, nextPublishState);
+      dispatch(updateProductData(res.data));
+      if (selectedProduct?._id === product._id) {
+        setSelectedProduct(res.data);
+      }
+      toast.success(
+        nextPublishState
+          ? "Product published successfully"
+          : "Product set as coming soon"
+      );
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message || "Failed to update publish status"
+      );
+    } finally {
+      setPublishUpdatingId(null);
+    }
+  };
+
   // Filter products based on search term
   const filteredProducts = products?.filter((product) => {
     const searchLower = searchTerm.toLowerCase();
@@ -198,6 +227,7 @@ function ProductList() {
                 SubCategories
               </th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Status</th>
+              <th className="p-2 sm:p-3 text-sm sm:text-base">Visibility</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
               <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
             </tr>
@@ -250,6 +280,27 @@ function ProductList() {
                         : product.isActive
                         ? "Active"
                         : "Inactive"}
+                    </button>
+                  </td>
+                  <td className="p-2 sm:p-3">
+                    <button
+                      onClick={() => handleTogglePublish(product)}
+                      disabled={publishUpdatingId === product._id}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold border transition cursor-pointer ${
+                        product.isPublished !== false
+                          ? "bg-blue-100 text-blue-700 border-blue-200"
+                          : "bg-yellow-100 text-yellow-700 border-yellow-200"
+                      } ${
+                        publishUpdatingId === product._id
+                          ? "opacity-70 cursor-wait"
+                          : ""
+                      }`}
+                    >
+                      {publishUpdatingId === product._id
+                        ? "Updating..."
+                        : product.isPublished !== false
+                        ? "Live"
+                        : "Coming Soon"}
                     </button>
                   </td>
 
@@ -325,7 +376,7 @@ function ProductList() {
             ) : (
               <tr>
                 <td
-                  colSpan="8"
+                  colSpan="9"
                   className="p-2 sm:p-3 text-center text-gray-500"
                 >
                   No products listed yet.

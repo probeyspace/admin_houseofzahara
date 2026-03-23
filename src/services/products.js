@@ -93,3 +93,14 @@ export const toggleProductActive = async (id, isActive) => {
     throw error;
   }
 };
+
+export const toggleProductPublish = async (id, isPublished) => {
+  try {
+    const response = await api.patch(`/products/${id}/toggle-publish`, {
+      isPublished,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
