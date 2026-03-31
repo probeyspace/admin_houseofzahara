@@ -11,6 +11,7 @@ function PreBookingList() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [loadingId, setLoadingId] = useState(null);
 
   const fetchPreBookings = async () => {
     try {
@@ -29,6 +30,8 @@ function PreBookingList() {
   }, []);
 
   const handleUpdateStatus = async (id, status) => {
+    if (loadingId === id) return;
+    setLoadingId(id);
     try {
       await api.patch(`/pre-bookings/${id}`, { status });
       toast.success("Status updated successfully");
@@ -36,6 +39,8 @@ function PreBookingList() {
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update status");
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -182,19 +187,24 @@ function PreBookingList() {
                   </td> */}
                   <td className="p-3">
                     <select
-                      value={item.status}
+                      value={loadingId === item._id ? "SENDING" : item.status}
                       onChange={(e) =>
                         handleUpdateStatus(item._id, e.target.value)
                       }
-                      disabled={item.status !== "PENDING"}
+                      disabled={item.status !== "PENDING" || loadingId === item._id}
                       className={`text-xs p-1 rounded border-none font-semibold cursor-pointer disabled:cursor-not-allowed ${
-                        item.status === "PENDING"
+                        loadingId === item._id
+                          ? "bg-blue-100 text-blue-700"
+                          : item.status === "PENDING"
                           ? "bg-yellow-100 text-yellow-700"
                           : item.status === "NOTIFIED"
                           ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
                       }`}
                     >
+                      {loadingId === item._id && (
+                        <option value="SENDING">Sending...</option>
+                      )}
                       <option value="PENDING">Pending</option>
                       <option value="NOTIFIED">Notified</option>
                       <option value="CANCELLED">Cancelled</option>
