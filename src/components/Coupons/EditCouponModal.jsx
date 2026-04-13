@@ -9,6 +9,7 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
     discountValue: "",
     minOrderValue: "",
     expiresAt: "",
+    isHidden: false,
   });
 
   useEffect(() => {
@@ -19,13 +20,17 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
         discountValue: coupon.discountValue || "",
         minOrderValue: coupon.minOrderValue || "",
         expiresAt: coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : "",
+        isHidden: coupon.isHidden || false,
       });
     }
   }, [coupon]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -128,6 +133,23 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isHidden"
+              name="isHidden"
+              checked={formData.isHidden}
+              onChange={handleChange}
+              className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded"
+            />
+            <label
+              htmlFor="isHidden"
+              className="text-sm font-medium text-gray-700"
+            >
+              Is Influencer Coupon ?
+            </label>
           </div>
 
           <div className="text-center">

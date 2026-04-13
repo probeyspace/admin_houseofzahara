@@ -83,12 +83,16 @@ function CouponsList() {
                 <th className="p-2 text-sm sm:text-base hidden sm:table-cell">
                   Expiry Date
                 </th>
+                <th className="p-2 text-sm sm:text-base">Visibility</th>
                 <th className="p-2 text-sm sm:text-base">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedCoupons?.map((coupon, index) => (
-                <tr key={coupon._id} className="hover:bg-gray-100 text-gray-500">
+                <tr
+                  key={coupon._id}
+                  className="hover:bg-gray-100 text-gray-500"
+                >
                   <td className="p-2 text-sm sm:text-base">
                     {index + 1 + (page - 1) * perPage}
                   </td>
@@ -104,6 +108,17 @@ function CouponsList() {
                   </td>
                   <td className="p-2 text-sm sm:text-base hidden sm:table-cell">
                     {new Date(coupon.expiresAt).toLocaleDateString()}
+                  </td>
+                  <td className="p-2 text-sm sm:text-base">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        coupon.isHidden
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-emerald-100 text-emerald-700"
+                      }`}
+                    >
+                      {coupon.isHidden ? "Hidden" : "Public"}
+                    </span>
                   </td>
                   <td className="p-2 flex space-x-2 sm:space-x-3">
                     <button

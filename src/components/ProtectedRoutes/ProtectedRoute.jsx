@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import { toast } from "react-toastify";
 const ProtectedRoute = ({ allowedRoles }) => {
   const user = useSelector((state) => state.user); // Assuming user is stored in Redux
 
@@ -8,7 +8,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/login" />;
   }
   if (!allowedRoles.includes(user.role)) {
-    // console.log("Access denied: User role not allowed.");
+    console.log("Access denied: User role not allowed.");
+    toast.error("Access denied: User role not allowed.");
     return <Navigate to="/login" />;
   }
 

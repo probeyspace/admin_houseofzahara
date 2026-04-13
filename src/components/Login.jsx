@@ -26,7 +26,7 @@ const Login = () => {
       if (res?.user) {
         // Save user data and role in Redux
         dispatch(addUser(res?.user)); // Assuming `res.user` includes the role
-        toast.success("Login Successful");
+        // toast.success("Login Successful");
         navigate("/");
       }
     } catch (error) {
