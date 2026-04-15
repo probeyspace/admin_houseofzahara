@@ -64,7 +64,10 @@ function OrderList() {
 
     const matchesSearch = matchesOrderId || matchesCustomerName;
 
-    const matchesStatus = statusFilter ? order.status === statusFilter : true;
+    // Handle RETURN_REQUESTED filter specially
+    const matchesStatus = statusFilter === "RETURN_REQUESTED"
+      ? order.isReturnRequested && order.status === "DELIVERED"
+      : statusFilter ? order.status === statusFilter : true;
 
     const matchesPaymentMethod = paymentMethodFilter
       ? order.payment?.paymentMethod === paymentMethodFilter
@@ -192,9 +195,10 @@ function OrderList() {
               id="status-filter"
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tZG93biI+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[center_right_0.5rem]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tZG93bic+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[center_right_0.5rem]"
             >
               <option value="">All Statuses</option>
+              <option value="RETURN_REQUESTED">🔔 Return Requested</option>
               {uniqueStatuses.map((status) => (
                 <option key={status} value={status}>
                   {status.charAt(0).toUpperCase() +
@@ -318,6 +322,12 @@ function OrderList() {
                   >
                     {order.status}
                   </span>
+                  {/* Return Requested Badge */}
+                  {order.isReturnRequested && order.status === "DELIVERED" && (
+                    <span className="ml-2 px-2 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-700 border border-orange-300">
+                      🔔 Return Requested
+                    </span>
+                  )}
                 </td>
                 <td className="p-3">
                   ${order.totalPrice?.$numberDecimal || order.totalPrice}
