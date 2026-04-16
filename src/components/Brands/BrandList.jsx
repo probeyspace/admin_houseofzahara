@@ -66,26 +66,26 @@ function BrandList() {
 
       {/* Brands Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">ID</th>
-              <th className="p-3">Name</th>
-              <th className="p-2 sm:p-3 hidden md:table-cell">Description</th>
-              <th className="p-2 sm:p-3 hidden md:table-cell">Website</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Name</th>
+              <th className="p-3 font-medium hidden md:table-cell">Description</th>
+              <th className="p-3 font-medium hidden md:table-cell">Website</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedBrands?.map((brand, index) => (
-              <tr key={brand._id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={brand._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{brand.name}</td>
-                <td className="p-2 sm:p-3 hidden md:table-cell">
+                <td className="p-3 hidden md:table-cell">
                   {brand.description}
                 </td>
-                <td className="p-2 sm:p-3 hidden md:table-cell">
+                <td className="p-3 hidden md:table-cell">
                   <a
                     href={brand.website}
                     target="_blank"
@@ -97,7 +97,7 @@ function BrandList() {
                 </td>
                 <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded-full text-sm ${
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       brand.isActive
                         ? "bg-green-100 text-green-600"
                         : "bg-red-100 text-red-600"

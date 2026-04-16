@@ -81,27 +81,27 @@ function CategoryList() {
 
       {/* Categories Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-2">ID</th>
-              <th className="p-2">Category</th>
-              <th className="p-2">Master Category</th>
-              <th className="p-2">Description</th>
-              <th className="p-2 ">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Category</th>
+              <th className="p-3 font-medium">Master Category</th>
+              <th className="p-3 font-medium">Description</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedCategories?.map((category, index) => (
               <tr
                 key={category._id}
-                className="hover:bg-gray-100 text-gray-500"
+                className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
               >
-                <td className="p-2">{index + 1 + (page - 1) * perPage}</td>
-                <td className="p-2 ">{category.name}</td>
-                <td className="p-2 ">{category.masterCategory?.name}</td>
-                <td className="p-2 ">{category.description}</td>
-                <td className="p-2 flex space-x-3">
+                <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
+                <td className="p-3">{category.name}</td>
+                <td className="p-3">{category.masterCategory?.name}</td>
+                <td className="p-3">{category.description}</td>
+                <td className="p-3 flex space-x-3">
                   <button
                     onClick={() => handleView(category)}
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"

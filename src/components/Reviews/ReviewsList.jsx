@@ -94,22 +94,22 @@ const ReviewsList = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">#</th>
-              <th className="p-3">Product Name</th>
-              <th className="p-3">User</th>
-              <th className="p-3">Rating</th>
-              <th className="p-3">Comment</th>
-              <th className="p-3 text-center">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Product Name</th>
+              <th className="p-3 font-medium">User</th>
+              <th className="p-3 font-medium">Rating</th>
+              <th className="p-3 font-medium">Comment</th>
+              <th className="p-3 font-medium text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {filteredReviews.map((review, index) => (
               <tr
                 key={review._id}
-                className="hover:bg-gray-100 text-gray-500 text-sm border-t"
+                className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
               >
                 <td className="p-3">{index + 1}</td>
                 <td className="p-3">{review.product?.name || "N/A"}</td>

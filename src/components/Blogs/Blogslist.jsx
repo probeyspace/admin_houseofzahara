@@ -89,25 +89,25 @@ function BlogList() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">ID</th>
-              <th className="p-3">Title</th>
-              <th className="p-3 hidden md:table-cell">Author</th>
-              <th className="p-3 hidden md:table-cell">Status</th>
-              <th className="p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Title</th>
+              <th className="p-3 font-medium hidden md:table-cell">Author</th>
+              <th className="p-3 font-medium hidden md:table-cell">Status</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedBlogs?.map((blog, index) => (
-              <tr key={blog._id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={blog._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{blog.title}</td>
                 <td className="p-3 hidden md:table-cell">{blog.author}</td>
                 <td className="p-3 hidden md:table-cell">
                   <span
-                    className={`px-2 py-1 rounded-full text-sm ${
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       blog.isPublished
                         ? "bg-green-100 text-green-600"
                         : "bg-yellow-100 text-yellow-600"

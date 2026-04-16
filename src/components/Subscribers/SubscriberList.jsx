@@ -53,12 +53,12 @@ function SubscriberList() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3 text-left">#</th>
-              <th className="p-3 text-left">Email</th>
-              <th className="p-3 text-left">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Email</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -66,13 +66,13 @@ function SubscriberList() {
               paginated.map((subscriber, index) => (
                 <tr
                   key={subscriber._id}
-                  className="hover:bg-gray-100 text-gray-500 text-left"
+                  className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                 >
-                  <td className="p-3 text-left">
+                  <td className="p-3">
                     {index + 1 + (page - 1) * perPage}
                   </td>
-                  <td className="p-3 text-left">{subscriber.email}</td>
-                  <td className="p-3 text-left">
+                  <td className="p-3">{subscriber.email}</td>
+                  <td className="p-3">
                     <button
                       onClick={() => handleDelete(subscriber._id)}
                       className="text-gray-600 hover:text-gray-800 cursor-pointer"

@@ -73,25 +73,23 @@ function CouponsList() {
         <p>Loading...</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full rounded-lg shadow-md">
-            <thead className="bg-gray-200 text-slate-600">
-              <tr className="text-left">
-                <th className="p-2 text-sm sm:text-base">ID</th>
-                <th className="p-2 text-sm sm:text-base">Code</th>
-                <th className="p-2 text-sm sm:text-base">Discount Type</th>
-                <th className="p-2 text-sm sm:text-base">Discount</th>
-                <th className="p-2 text-sm sm:text-base hidden sm:table-cell">
-                  Expiry Date
-                </th>
-                <th className="p-2 text-sm sm:text-base">Visibility</th>
-                <th className="p-2 text-sm sm:text-base">Actions</th>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr className="text-left border-b border-gray-100">
+                <th className="p-3 font-medium">ID</th>
+                <th className="p-3 font-medium">Code</th>
+                <th className="p-3 font-medium">Discount Type</th>
+                <th className="p-3 font-medium">Discount</th>
+                <th className="p-3 font-medium hidden sm:table-cell">Expiry Date</th>
+                <th className="p-3 font-medium">Visibility</th>
+                <th className="p-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {paginatedCoupons?.map((coupon, index) => (
                 <tr
                   key={coupon._id}
-                  className="hover:bg-gray-100 text-gray-500"
+                  className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                 >
                   <td className="p-2 text-sm sm:text-base">
                     {index + 1 + (page - 1) * perPage}

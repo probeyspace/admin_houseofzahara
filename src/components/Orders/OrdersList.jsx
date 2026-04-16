@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaEye, FaEdit, FaSync } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import ViewOrderModal from "./ViewOrderModal";
@@ -9,6 +9,7 @@ import { FiDownload, FiSearch } from "react-icons/fi";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { syncOrderToZoho } from "../../services/zoho";
+import useOrders from "../../Hooks/useOrders";
 
 function OrderList() {
   //GET STATUS FROM THE QUERY PARAMS
@@ -21,12 +22,36 @@ function OrderList() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   const orders = useSelector((store) => store.orders);
+  const { refetch } = useOrders();
+
+  // Refetch orders when URL status param changes (sidebar navigation)
+  useEffect(() => {
+    const currentStatus = new URLSearchParams(window.location.search).get("status") || "";
+    setStatusFilter(currentStatus);
+    refetch();
+  }, [window.location.search, refetch]);
+
+  // Listen for browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const currentStatus = new URLSearchParams(window.location.search).get("status") || "";
+      setStatusFilter(currentStatus);
+      refetch();
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [refetch]);
 
   const handleChangeStatus = async (id, status) => {
     try {
       await api.put(`/orders/${id}`, { status });
+      toast.success("Order status updated successfully!");
+      // Refetch orders to get latest data
+      await refetch();
     } catch (error) {
       console.error("Error updating order status:", error);
       toast.error("Failed to update order status. Please try again.");
@@ -83,6 +108,13 @@ function OrderList() {
       matchesSearch && matchesStatus && matchesDateRange && matchesPaymentMethod
     );
   });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredOrders?.length / perPage);
+  const paginatedOrders = filteredOrders?.slice(
+    (page - 1) * perPage,
+    page * perPage
+  );
 
   const uniqueStatuses = [...new Set(orders?.map((order) => order.status))];
   const exportToExcel = () => {
@@ -194,7 +226,18 @@ function OrderList() {
             <select
               id="status-filter"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => {
+                const newStatus = e.target.value;
+                setStatusFilter(newStatus);
+                // Update URL to reflect filter change
+                const url = new URL(window.location);
+                if (newStatus) {
+                  url.searchParams.set("status", newStatus);
+                } else {
+                  url.searchParams.delete("status");
+                }
+                window.history.pushState({}, "", url);
+              }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all appearance-none bg-white bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb24tZG93bic+PHBhdGggZD0ibTYgOSA2IDYgNi02Ii8+PC9zdmc+')] bg-no-repeat bg-[center_right_0.5rem]"
             >
               <option value="">All Statuses</option>
@@ -281,22 +324,22 @@ function OrderList() {
 
       {/* Orders Table */}
       <div className="overflow-x-auto">
-        <table className="table-auto min-w-max w-full text-sm rounded-lg shadow-md">
-          <thead className="bg-gray-100 text-gray-600">
-            <tr className="text-left">
-              <th className="p-3">#</th>
-              <th className="p-3">Order ID</th>
-              <th className="p-3">Customer</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Total</th>
-              <th className="p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Order ID</th>
+              <th className="p-3 font-medium">Customer</th>
+              <th className="p-3 font-medium">Date</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Total</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredOrders?.map((order, index) => (
-              <tr key={order._id} className="hover:bg-gray-50 text-gray-700">
-                <td className="p-3">{index + 1}</td>
+            {paginatedOrders?.map((order, index) => (
+              <tr key={order._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
+                <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3 font-medium truncate max-w-[120px]">
                   {order._id}
                 </td>
@@ -317,6 +360,8 @@ function OrderList() {
                         ? "bg-purple-100 text-purple-600"
                         : order.status === "DELIVERED"
                         ? "bg-green-100 text-green-600"
+                        : order.status === "RETURNED"
+                        ? "bg-orange-100 text-orange-600"
                         : "bg-gray-100 text-gray-600"
                     }`}
                   >
@@ -358,7 +403,7 @@ function OrderList() {
                 </td>
               </tr>
             ))}
-            {!filteredOrders?.length && (
+            {!paginatedOrders?.length && (
               <tr>
                 <td colSpan="7" className="text-center p-4 text-gray-400">
                   No orders found.
@@ -367,6 +412,60 @@ function OrderList() {
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-between items-center mt-4">
+        <div>
+          <label className="text-gray-600 font-medium mr-2">Display:</label>
+          <select
+            value={perPage}
+            onChange={(e) => setPerPage(Number(e.target.value))}
+            className="border border-gray-400 text-gray-600 px-2 py-1 rounded-sm"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+          </select>
+        </div>
+        <div className="flex items-center">
+          <button
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+            className="px-3 py-1 mx-1 hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
+          >
+            &lt;
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`px-3 py-1 mx-1 rounded-full transition ${
+                page === i + 1
+                  ? "bg-primary text-dark"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
+          )).slice(0, 5)}
+          {totalPages > 5 && <span className="px-2">...</span>}
+          {totalPages > 5 && (
+            <button
+              onClick={() => setPage(totalPages)}
+              className="px-3 py-1 mx-1 hover:bg-gray-200"
+            >
+              {totalPages}
+            </button>
+          )}
+          <button
+            disabled={page === totalPages || totalPages === 0}
+            onClick={() => setPage(page + 1)}
+            className="px-3 py-1 mx-1 hover:bg-gray-200 disabled:opacity-50 cursor-pointer"
+          >
+            &gt;
+          </button>
+        </div>
       </div>
 
       {/* Modals */}

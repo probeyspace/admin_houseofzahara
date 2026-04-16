@@ -101,36 +101,35 @@ function BannerList() {
 
       {/* Banners Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-2 sm:p-3">ID</th>
-              <th className="p-2 sm:p-3">Title</th>
-              <th className="p-2 sm:p-3 hidden sm:table-cell">Description</th>
-              <th className="p-2 sm:p-3 hidden md:table-cell">Offer</th>
-              <th className="p-2 sm:p-3">Status</th>
-              <th className="p-2 sm:p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Title</th>
+              <th className="p-3 font-medium hidden sm:table-cell">Description</th>
+              <th className="p-3 font-medium hidden md:table-cell">Offer</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedBanners?.map((banner, index) => (
-              <tr key={banner._id} className="hover:bg-gray-100 text-gray-500">
-                <td className="p-2 sm:p-3">
+              <tr key={banner._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
+                <td className="p-3">
                   {index + 1 + (page - 1) * perPage}
                 </td>
-                <td className="p-2 sm:p-3">{banner.title}</td>
-                <td className="p-2 sm:p-3 hidden sm:table-cell">
+                <td className="p-3">{banner.title}</td>
+                <td className="p-3 hidden sm:table-cell">
                   {banner.description.length > 30
                     ? `${banner.description.substring(0, 30)}...`
                     : banner.description}
                 </td>
-                <td className="p-2 sm:p-3 hidden md:table-cell">
+                <td className="p-3 hidden md:table-cell">
                   {banner.offer}
                 </td>
-
-                <td className="p-2 sm:p-3">
+                <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs sm:text-sm ${
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       banner.isActive
                         ? "bg-green-100 text-green-600"
                         : "bg-red-100 text-red-600"
@@ -139,7 +138,7 @@ function BannerList() {
                     {banner.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td className="p-2 sm:p-3 flex space-x-2 sm:space-x-3">
+                <td className="p-3 flex space-x-3">
                   <button
                     onClick={() => handleView(banner)}
                     className="text-gray-600 hover:text-gray-800 cursor-pointer"

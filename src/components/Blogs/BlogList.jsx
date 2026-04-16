@@ -110,24 +110,16 @@ function BlogList() {
       ) : (
         <>
           <div className="overflow-x-auto">
-            <table className="w-full rounded-lg shadow-md">
-              <thead className="bg-gray-200 text-slate-600">
-                <tr className="text-left">
-                  <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base">Title</th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden lg:table-cell">
-                    Author
-                  </th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                    Image
-                  </th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden md:table-cell">
-                    Reading Time
-                  </th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                    Created Date
-                  </th>
-                  <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600">
+                <tr className="text-left border-b border-gray-100">
+                  <th className="p-3 font-medium">#</th>
+                  <th className="p-3 font-medium">Title</th>
+                  <th className="p-3 font-medium hidden lg:table-cell">Author</th>
+                  <th className="p-3 font-medium hidden sm:table-cell">Image</th>
+                  <th className="p-3 font-medium hidden md:table-cell">Reading Time</th>
+                  <th className="p-3 font-medium hidden sm:table-cell">Created Date</th>
+                  <th className="p-3 font-medium">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -135,7 +127,7 @@ function BlogList() {
                   paginatedBlogs.map((blog, index) => (
                     <tr
                       key={blog._id}
-                      className="hover:bg-gray-100 text-gray-500"
+                      className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                     >
                       <td className="p-2 sm:p-3">
                         {index + 1 + (page - 1) * perPage}

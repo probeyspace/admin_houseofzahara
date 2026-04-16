@@ -154,13 +154,13 @@ const SearchedLogs = () => {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">#</th>
-              <th className="p-3">Searched Text</th>
-              {sortMode === "most-searched" && <th className="p-3">Count</th>}
-              <th className="p-3 px-4 text-right">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Searched Text</th>
+              {sortMode === "most-searched" && <th className="p-3 font-medium">Count</th>}
+              <th className="p-3 px-4 text-right font-medium">Actions</th>
             </tr>
           </thead>
 
@@ -169,7 +169,7 @@ const SearchedLogs = () => {
               ? groupedLogs.map((log, index) => (
                   <tr
                     key={index}
-                    className="hover:bg-gray-100 text-gray-500 text-sm"
+                    className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                   >
                     <td className="p-3">{index + 1}</td>
                     <td className="p-3">{log.text}</td>
@@ -180,7 +180,7 @@ const SearchedLogs = () => {
               : logs.map((log, index) => (
                   <tr
                     key={log._id}
-                    className="hover:bg-gray-100 text-gray-500 text-sm"
+                    className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                   >
                     <td className="p-3">{index + 1}</td>
                     <td className="p-3">{log?.text}</td>

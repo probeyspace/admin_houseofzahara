@@ -98,19 +98,19 @@ const Articles = () => {
 
       {/* Articles Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">ID</th>
-              <th className="p-3">Title</th>
-              <th className="p-3">Author</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Title</th>
+              <th className="p-3 font-medium">Author</th>
+              <th className="p-3 font-medium">Date</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedArticles.map((article, index) => (
-              <tr key={article._id} className="hover:bg-gray-100 text-gray-500">
+              <tr key={article._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{article.title}</td>
                 <td className="p-3">{article.author}</td>

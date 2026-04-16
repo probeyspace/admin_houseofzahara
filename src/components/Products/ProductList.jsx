@@ -211,25 +211,18 @@ function ProductList() {
 
       {/* Product Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-2 sm:p-3 text-sm sm:text-base">#</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Name</th>
-
-              <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                Master Category
-              </th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                Categories
-              </th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base hidden sm:table-cell">
-                SubCategories
-              </th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Status</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Visibility</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Variants</th>
-              <th className="p-2 sm:p-3 text-sm sm:text-base">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Name</th>
+              <th className="p-3 font-medium hidden sm:table-cell">Master Category</th>
+              <th className="p-3 font-medium hidden sm:table-cell">Categories</th>
+              <th className="p-3 font-medium hidden sm:table-cell">SubCategories</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Visibility</th>
+              <th className="p-3 font-medium">Variants</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -237,7 +230,7 @@ function ProductList() {
               paginatedProducts?.map((product, index) => (
                 <tr
                   key={product._id}
-                  className="hover:bg-gray-100 text-gray-500"
+                  className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
                 >
                   <td className="p-2 sm:p-3">
                     {index + 1 + (page - 1) * perPage}

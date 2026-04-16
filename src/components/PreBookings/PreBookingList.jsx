@@ -137,16 +137,15 @@ function PreBookingList() {
       </div>
 
       <div className="overflow-x-auto">
-        <table className="table-auto w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600">
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
             <tr className="text-left">
-              <th className="p-3">#</th>
-              <th className="p-3">Product</th>
-              <th className="p-3">User Details</th>
-              {/* <th className="p-3">Type</th> */}
-              <th className="p-3">Status</th>
-              <th className="p-3">Date</th>
-              <th className="p-3">Actions</th>
+              <th className="p-3 font-medium">#</th>
+              <th className="p-3 font-medium">Product</th>
+              <th className="p-3 font-medium">User Details</th>
+              <th className="p-3 font-medium">Status</th>
+              <th className="p-3 font-medium">Date</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -160,7 +159,7 @@ function PreBookingList() {
               filteredData.map((item, index) => (
                 <tr
                   key={item._id}
-                  className="border-b hover:bg-gray-50 transition-colors"
+                  className="hover:bg-gray-50 transition-colors"
                 >
                   <td className="p-3 text-gray-500">{index + 1}</td>
                   <td className="p-3">
@@ -191,7 +190,9 @@ function PreBookingList() {
                       onChange={(e) =>
                         handleUpdateStatus(item._id, e.target.value)
                       }
-                      disabled={item.status !== "PENDING" || loadingId === item._id}
+                      disabled={
+                        item.status !== "PENDING" || loadingId === item._id
+                      }
                       className={`text-xs p-1 rounded border-none font-semibold cursor-pointer disabled:cursor-not-allowed ${
                         loadingId === item._id
                           ? "bg-blue-100 text-blue-700"

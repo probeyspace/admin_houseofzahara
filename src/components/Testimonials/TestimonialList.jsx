@@ -80,22 +80,22 @@ function TestimonialList() {
 
       {/* Testimonials Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded-lg shadow-md">
-          <thead className="bg-gray-200 text-slate-600">
-            <tr className="text-left">
-              <th className="p-3">ID</th>
-              <th className="p-3">Name</th>
-              <th className="p-3">Description</th>
-              <th className="p-3">City</th>
-              <th className="p-3">Rating</th>
-              <th className="p-3">Actions</th>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 text-gray-600">
+            <tr className="text-left border-b border-gray-100">
+              <th className="p-3 font-medium">ID</th>
+              <th className="p-3 font-medium">Name</th>
+              <th className="p-3 font-medium">Description</th>
+              <th className="p-3 font-medium">City</th>
+              <th className="p-3 font-medium">Rating</th>
+              <th className="p-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
             {paginatedTestimonials?.map((testimonial, index) => (
               <tr
                 key={testimonial._id}
-                className="hover:bg-gray-100 text-gray-500"
+                className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
               >
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{testimonial.name}</td>
