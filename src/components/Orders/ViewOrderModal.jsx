@@ -152,14 +152,14 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                         {order.quiqupOrderId}
                       </span>
                     </p>
-                    {order?.quiqupOrderUuid && (
+                    {/* {order?.quiqupOrderUuid && (
                       <p className="text-green-700">
                         <span className="font-medium">UUID:</span>{" "}
                         <span className="font-mono text-xs text-green-600">
                           {order.quiqupOrderUuid.slice(0, 16)}...
                         </span>
                       </p>
-                    )}
+                    )} */}
                     {order?.quiqupStatus && (
                       <p className="text-green-700">
                         <span className="font-medium">Status:</span>{" "}
@@ -194,11 +194,18 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                     {order?.quiqupOrderId && (
                       <div className="mt-2 pt-2 border-t border-green-200">
                         {(() => {
-                          const canDownloadAWB = ["ready_for_collection", "collected", "in_transit", "delivered"].includes(order.quiqupStatus);
+                          const canDownloadAWB = [
+                            "ready_for_collection",
+                            "collected",
+                            "in_transit",
+                            "delivered",
+                          ].includes(order.quiqupStatus);
                           return canDownloadAWB ? (
                             <>
                               <a
-                                href={`${import.meta.env.VITE_API_URL}/orders/quiqup/${order._id}/awb`}
+                                href={`${
+                                  import.meta.env.VITE_API_URL
+                                }/orders/quiqup/${order._id}/awb`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center text-blue-700 hover:text-blue-900 text-sm font-medium"
@@ -210,13 +217,15 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                               <p className="text-xs text-green-600 mt-1">
                                 Print and attach to parcel before pickup
                               </p>
-                              <p className="text-xs text-gray-500 mt-1 italic">
-                                💡 Staging Note: AWB may not be available in Quiqup staging environment.
-                              </p>
+                              {/* <p className="text-xs text-gray-500 mt-1 italic">
+                                💡 Staging Note: AWB may not be available in
+                                Quiqup staging environment.
+                              </p> */}
                             </>
                           ) : (
                             <div className="text-yellow-700 text-sm">
-                              <span className="font-medium">AWB:</span> Not available yet
+                              <span className="font-medium">AWB:</span> Not
+                              available yet
                               <p className="text-xs text-yellow-600 mt-1">
                                 Mark order as SHIPPED to generate AWB
                               </p>
@@ -357,14 +366,14 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                     {order.quiqupReturnOrderId}
                   </span>
                 </p>
-                {order.quiqupReturnOrderUuid && (
+                {/* {order.quiqupReturnOrderUuid && (
                   <p className="text-blue-700">
                     <span className="font-medium">UUID:</span>{" "}
                     <span className="font-mono text-sm">
                       {order.quiqupReturnOrderUuid}
                     </span>
                   </p>
-                )}
+                )} */}
                 {order.quiqupReturnStatus && (
                   <p className="text-blue-700">
                     <span className="font-medium">Pickup Status:</span>{" "}
