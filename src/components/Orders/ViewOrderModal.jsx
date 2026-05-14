@@ -5,7 +5,9 @@ import {
   FiTruck,
   FiCloud,
   FiFileText,
+  FiDownload,
 } from "react-icons/fi";
+import { toast } from "react-toastify";
 
 const ViewOrderModal = ({ isOpen, onClose, order }) => {
   if (!isOpen || !order) return null;
@@ -13,6 +15,29 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
+    }
+  };
+
+  const handleDownloadInvoice = async () => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/orders/${order._id}/invoice`,
+        { credentials: "include" }
+      );
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.message || "Invoice not available for this order.");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `invoice-${order._id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Failed to download invoice. Please try again.");
     }
   };
 
@@ -26,6 +51,12 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
         <div className="border-b pb-4 mb-6 flex items-center space-x-2">
           <FiCheckCircle className="text-green-500 text-3xl" />
           <h1 className="text-2xl font-bold text-gray-800">Order Details</h1>
+          <button
+            onClick={handleDownloadInvoice}
+            className="ml-auto inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary text-dark text-sm font-medium rounded-lg hover:scale-105 transition cursor-pointer"
+          >
+            <FiDownload /> Download Invoice
+          </button>
         </div>
 
         {/* Order Info */}
