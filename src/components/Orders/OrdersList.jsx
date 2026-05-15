@@ -127,8 +127,10 @@ function OrderList() {
       order.items.map((item, idx) => ({
         "S.No": index + 1,
         "Order ID": order._id,
-        "Customer Name": order.user?.name || "N/A",
-        "Customer Email": order.user?.email || "N/A",
+        "Customer Name": order.user?.name || order.guestEmail || "Guest",
+        "Customer Email": order.user?.email || order.guestEmail || "N/A",
+        "Customer Phone": order.user?.phone || order.address?.phone || "N/A",
+        "Customer Type": order.user ? "Registered" : "Guest",
         "Order Status": order.status,
         "Payment Method": order.payment?.paymentMethod || "N/A",
         "Payment Status": order.payment?.paymentStatus || "N/A",
@@ -343,7 +345,16 @@ function OrderList() {
                 <td className="p-3 font-medium truncate max-w-[120px]">
                   {order._id}
                 </td>
-                <td className="p-3">{order?.user?.name || "Unknown"}</td>
+                <td className="p-3">
+                  {order?.user?.name ? (
+                    order.user.name
+                  ) : (
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-gray-600">{order?.guestEmail || "—"}</span>
+                      <span className="px-1.5 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full font-medium">Guest</span>
+                    </span>
+                  )}
+                </td>
                 <td className="p-3">
                   {new Date(order.createdAt).toLocaleDateString()}
                 </td>

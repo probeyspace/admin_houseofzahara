@@ -272,14 +272,28 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
           </div>
         )}
 
-        {/* User Info */}
+        {/* Customer Info */}
         <div className="bg-gray-50 p-4 rounded-lg mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Customer Info
-          </h2>
-          <p>{order.user?.name}</p>
-          <p>{order.user?.email}</p>
-          <p>{order.user?.phone}</p>
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="text-lg font-semibold text-gray-800">Customer Info</h2>
+            {!order.user && (
+              <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full font-medium">
+                Guest
+              </span>
+            )}
+          </div>
+          {order.user ? (
+            <div className="space-y-1 text-sm text-gray-700">
+              <p><span className="font-medium text-gray-500">Name:</span> {order.user.name || "—"}</p>
+              <p><span className="font-medium text-gray-500">Email:</span> {order.user.email || "—"}</p>
+              <p><span className="font-medium text-gray-500">Phone:</span> {order.user.phone || "—"}</p>
+            </div>
+          ) : (
+            <div className="space-y-1 text-sm text-gray-700">
+              <p><span className="font-medium text-gray-500">Email:</span> {order.guestEmail || "—"}</p>
+              <p><span className="font-medium text-gray-500">Phone:</span> {order.address?.phone || "—"}</p>
+            </div>
+          )}
         </div>
 
         {/* Address */}
