@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
-import { MdArticle, MdDashboard, MdLock, MdSearch } from "react-icons/md";
+import { MdArticle, MdDashboard, MdLock, MdSearch, MdAccountBalanceWallet, MdSettings } from "react-icons/md";
 import { BsEyeglasses } from "react-icons/bs";
 import { FaUsers, FaUserPlus, FaPlus, FaCommentDots } from "react-icons/fa";
 import { BiCategory } from "react-icons/bi";
@@ -91,6 +91,16 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
         to: "/pre-bookings",
         icon: <MdDashboard />,
         text: "Pre-bookings",
+      },
+      {
+        to: "/wallet-config",
+        icon: <MdSettings />,
+        text: "Wallet Config",
+      },
+      {
+        to: "/wallet-management",
+        icon: <MdAccountBalanceWallet />,
+        text: "Wallet Management",
       },
     ];
 

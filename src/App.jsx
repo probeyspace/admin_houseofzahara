@@ -22,6 +22,8 @@ import SubCategoryList from "./components/SubCategory/SubCategoryList";
 import SubscriberList from "./components/Subscribers/SubscriberList";
 import BlogList from "./components/Blogs/BlogList";
 import PreBookingList from "./components/PreBookings/PreBookingList";
+import WalletConfig from "./Pages/WalletConfig";
+import WalletManagement from "./Pages/WalletManagement";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
@@ -50,6 +52,8 @@ function App() {
             <Route path="subscribers" element={<SubscriberList />} />
             <Route path="pre-bookings" element={<PreBookingList />} />
             <Route path="blogs" element={<BlogList />} />
+            <Route path="wallet-config" element={<WalletConfig />} />
+            <Route path="wallet-management" element={<WalletManagement />} />
             {/* <Route path="searched" element={<SearchedLogs />} />  */}
             {/* <Route path="articles" element={<Articles />} /> */}
           </Route>
