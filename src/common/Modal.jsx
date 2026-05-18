@@ -1,9 +1,9 @@
-const Modal = ({ isOpen, onClose, title, children }) => {
+const Modal = ({ isOpen, onClose, title, children, maxWidth = "max-w-2xl" }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 relative">
+      <div className={`bg-white rounded-lg shadow-xl ${maxWidth} w-full p-6 relative`}>
         {/* Header */}
         <div className="sticky top-0 bg-white z-10 pb-2">
           <h2 className="text-xl font-semibold"> {title} </h2>

@@ -61,6 +61,17 @@ export const editVariantById = async (id, data) => {
   }
 };
 
+export const deleteVariantImageById = async (variantId, imageId) => {
+  try {
+    const response = await api.delete(
+      `/products/variant/${variantId}/image/${imageId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const updateProduct = async (id, productData) => {
   try {
     const response = await api.put(`/products/${id}`, productData, {
