@@ -128,12 +128,12 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Banner Image
+              Banner Image / Video
             </label>
             <input
               type="file"
               name="image"
-              accept="image/*"
+              accept="image/*,video/*"
               onChange={handleImageChange}
               className="mt-1 block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-primary hover:file:bg-primary/10"
             />
