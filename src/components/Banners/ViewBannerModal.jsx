@@ -48,13 +48,21 @@ const ViewBannerModal = ({ isOpen, onClose, banner }) => {
 
         {/* Banner Image */}
         <div className="mt-3">
-          <h2 className="text-lg font-semibold text-gray-800 mb-1">Image</h2>
+          <h2 className="text-lg font-semibold text-gray-800 mb-1">Media</h2>
           {banner.imageUrl && (
-            <img
-              src={banner.imageUrl}
-              alt={banner.title}
-              className="w-full h-64 object-cover rounded-lg"
-            />
+            banner.mediaType === "video" || banner.imageUrl.match(/\.(mp4|webm|ogg|mov)($|\?)/i) ? (
+              <video
+                src={banner.imageUrl}
+                controls
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            ) : (
+              <img
+                src={banner.imageUrl}
+                alt={banner.title}
+                className="w-full h-64 object-cover rounded-lg"
+              />
+            )
           )}
         </div>
 

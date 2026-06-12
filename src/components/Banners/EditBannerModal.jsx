@@ -121,14 +121,14 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Banner Image
+              Banner Image / Video
             </label>
             <input
               type="file"
               name="image"
               onChange={handleImageChange}
               className="mt-1 block w-full text-sm text-gray-900"
-              accept="image/*"
+              accept="image/*,video/*"
             />
           </div>
           <div className="flex justify-end space-x-2">
