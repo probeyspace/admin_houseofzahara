@@ -44,3 +44,12 @@ export const syncOrderToZoho = async (orderId) => {
     throw error;
   }
 };
+
+export const reconcilePayments = async () => {
+  try {
+    const response = await api.post("/admin/reconcile-payments");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
