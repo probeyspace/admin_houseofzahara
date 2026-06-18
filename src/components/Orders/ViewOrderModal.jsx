@@ -33,7 +33,7 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `invoice-${order._id}.pdf`;
+      a.download = `invoice-${order.orderNumber || order._id}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -62,7 +62,7 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
         {/* Order Info */}
         <div className="space-y-2 text-gray-700 mb-6">
           <p>
-            <span className="font-medium">Order ID:</span> {order._id}
+            <span className="font-medium">Order ID:</span> {order.orderNumber || order._id}
           </p>
           <p>
             <span className="font-medium">Order Date:</span>{" "}

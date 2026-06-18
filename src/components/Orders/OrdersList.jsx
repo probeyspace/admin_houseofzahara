@@ -99,7 +99,7 @@ function OrderList() {
   const filteredOrders = orders?.filter((order) => {
     const search = searchTerm?.toLowerCase();
 
-    const matchesOrderId = order?._id?.toLowerCase().includes(search);
+    const matchesOrderId = (order?.orderNumber || order?._id)?.toLowerCase().includes(search);
     const matchesCustomerName = order?.user?.name
       ?.toLowerCase()
       .includes(search);
@@ -143,7 +143,7 @@ function OrderList() {
     const data = filteredOrders.flatMap((order, index) =>
       order.items.map((item, idx) => ({
         "S.No": index + 1,
-        "Order ID": order._id,
+        "Order ID": order.orderNumber || order._id,
         "Customer Name": order.user?.name || order.guestEmail || "Guest",
         "Customer Email": order.user?.email || order.guestEmail || "N/A",
         "Customer Phone": order.user?.phone || order.address?.phone || "N/A",
@@ -384,7 +384,7 @@ function OrderList() {
               <tr key={order._id} className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors">
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3 font-medium truncate max-w-[120px]">
-                  {order._id}
+                  {order.orderNumber || order._id}
                 </td>
                 <td className="p-3">
                   {order?.user?.name ? (
