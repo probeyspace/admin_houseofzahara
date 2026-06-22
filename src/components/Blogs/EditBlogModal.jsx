@@ -10,6 +10,8 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     content: "",
     author: "",
     image: null,
+    metaTitle: "",
+    metaDetails: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -21,6 +23,8 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         content: blog.content || "",
         author: blog.author || "",
         image: null,
+        metaTitle: blog.metaTitle || "",
+        metaDetails: blog.metaDetails || "",
       });
       setImagePreview(blog.imageUrl || null);
     }
@@ -66,6 +70,8 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     data.append("title", formData.title);
     data.append("content", formData.content);
     data.append("author", formData.author);
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDetails", formData.metaDetails);
 
     // Only append image if a new one was selected
     if (formData.image) {
@@ -85,7 +91,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", content: "", author: "", image: null });
+    setFormData({ title: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "" });
     setImagePreview(null);
     onClose();
   };
@@ -124,6 +130,34 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Title
+            </label>
+            <input
+              type="text"
+              name="metaTitle"
+              placeholder="Enter SEO meta title"
+              value={formData.metaTitle}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Details
+            </label>
+            <textarea
+              name="metaDetails"
+              placeholder="Enter SEO meta details"
+              value={formData.metaDetails}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              rows={3}
             />
           </div>
 

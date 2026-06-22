@@ -10,6 +10,8 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     content: "",
     author: "",
     image: null,
+    metaTitle: "",
+    metaDetails: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -58,6 +60,8 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     data.append("content", formData.content);
     data.append("author", formData.author);
     data.append("image", formData.image);
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDetails", formData.metaDetails);
 
     try {
       const response = await createBlog(data);
@@ -72,7 +76,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", content: "", author: "", image: null });
+    setFormData({ title: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "" });
     setImagePreview(null);
     onClose();
   };
@@ -111,6 +115,34 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Title
+            </label>
+            <input
+              type="text"
+              name="metaTitle"
+              placeholder="Enter SEO meta title"
+              value={formData.metaTitle}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Details
+            </label>
+            <textarea
+              name="metaDetails"
+              placeholder="Enter SEO meta details"
+              value={formData.metaDetails}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              rows={3}
             />
           </div>
 

@@ -61,6 +61,16 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
               {blog.readingTime} min
             </p>
           )}
+          {blog.metaTitle && (
+            <p>
+              <span className="font-semibold">Meta Title:</span> {blog.metaTitle}
+            </p>
+          )}
+          {blog.metaDetails && (
+            <p>
+              <span className="font-semibold">Meta Details:</span> {blog.metaDetails}
+            </p>
+          )}
           <p>
             <span className="font-semibold">Created:</span>{" "}
             {formatDate(blog.createdAt)}
