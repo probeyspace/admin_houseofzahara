@@ -7,11 +7,13 @@ import QuillEditor from "../common/QuillEditor";
 const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
     content: "",
     author: "",
     image: null,
     metaTitle: "",
     metaDetails: "",
+    imageAlt: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -20,19 +22,35 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     if (blog) {
       setFormData({
         title: blog.title || "",
+        slug: blog.slug || "",
         content: blog.content || "",
         author: blog.author || "",
         image: null,
         metaTitle: blog.metaTitle || "",
         metaDetails: blog.metaDetails || "",
+        imageAlt: blog.imageAlt || "",
       });
       setImagePreview(blog.imageUrl || null);
     }
   }, [blog]);
 
+  const generateSlug = (text) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      if (name === "title") {
+        updated.slug = generateSlug(value);
+      }
+      return updated;
+    });
   };
 
   const handleContentChange = (content) => {
@@ -68,10 +86,12 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
     const data = new FormData();
     data.append("title", formData.title);
+    data.append("slug", formData.slug);
     data.append("content", formData.content);
     data.append("author", formData.author);
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
+    data.append("imageAlt", formData.imageAlt);
 
     // Only append image if a new one was selected
     if (formData.image) {
@@ -91,7 +111,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "" });
     setImagePreview(null);
     onClose();
   };
@@ -115,6 +135,22 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
               required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Slug *
+            </label>
+            <input
+              type="text"
+              name="slug"
+              placeholder="Enter blog slug (e.g. timeless-beauty)"
+              value={formData.slug}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              required
+              maxLength={200}
             />
           </div>
 
@@ -181,6 +217,21 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               accept="image/*"
               onChange={handleImageChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Image Alt Text *
+            </label>
+            <input
+              type="text"
+              name="imageAlt"
+              placeholder="Alternative text describing the image"
+              value={formData.imageAlt}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              required
             />
             {imagePreview && (
               <div className="mt-2">
