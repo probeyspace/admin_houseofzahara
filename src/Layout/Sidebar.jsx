@@ -102,6 +102,11 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
         icon: <MdAccountBalanceWallet />,
         text: "Wallet Management",
       },
+      {
+        to: "/seo-settings",
+        icon: <MdSettings />,
+        text: "SEO Settings",
+      },
     ];
 
   return (

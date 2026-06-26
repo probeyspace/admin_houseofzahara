@@ -24,6 +24,7 @@ import BlogList from "./components/Blogs/BlogList";
 import PreBookingList from "./components/PreBookings/PreBookingList";
 import WalletConfig from "./Pages/WalletConfig";
 import WalletManagement from "./Pages/WalletManagement";
+import SeoSettings from "./Pages/SeoSettings";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
 function App() {
@@ -54,6 +55,8 @@ function App() {
             <Route path="blogs" element={<BlogList />} />
             <Route path="wallet-config" element={<WalletConfig />} />
             <Route path="wallet-management" element={<WalletManagement />} />
+            <Route path="seo-settings" element={<SeoSettings />} />
+
             {/* <Route path="searched" element={<SearchedLogs />} />  */}
             {/* <Route path="articles" element={<Articles />} /> */}
           </Route>
