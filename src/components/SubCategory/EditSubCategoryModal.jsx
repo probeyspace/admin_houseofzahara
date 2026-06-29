@@ -14,6 +14,7 @@ import {
 
 const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
   const [categoryName, setCategoryName] = useState("");
+  const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -26,6 +27,7 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
   useEffect(() => {
     if (isOpen && subCategory) {
       setCategoryName(subCategory.name || "");
+      setSlug(subCategory.slug || "");
       setDescription(subCategory.description || "");
       setSelectedCategory(subCategory.category._id || "");
       setPreview(subCategory.image || null);
@@ -51,6 +53,7 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
     }
     const formData = new FormData();
     formData.append("name", categoryName);
+    formData.append("slug", slug);
     formData.append("description", description);
     formData.append("category", selectedCategory);
     if (image) formData.append("image", image);
@@ -60,8 +63,9 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
         subCategory._id,
         formData
       );
-      toast.success("SubCategory added successfully");
+      toast.success("SubCategory updated successfully");
       setCategoryName("");
+      setSlug("");
       setDescription("");
       setImage(null);
       setPreview(null);
@@ -69,7 +73,7 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
       onClose(); // close modal after success
     } catch (error) {
       toast.error(
-        error?.response?.data?.message || "Failed to create category."
+        error?.response?.data?.message || "Failed to update subcategory."
       );
     } finally {
       setLoading(false);
@@ -89,7 +93,7 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
         </button>
 
         <h2 className="text-2xl font-bold mb-4 text-gray-800">
-          Create SubCategory
+          Edit SubCategory
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,6 +110,20 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Enter subcategory name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Slug (URL segment)
+            </label>
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+              placeholder="subcategory-slug"
             />
           </div>
 
@@ -176,7 +194,7 @@ const EditSubCategoryModal = ({ isOpen, onClose, subCategory }) => {
               className="bg-primary cursor-pointer hover:scale-105 transition duration-300 text-dark px-4 py-2 rounded-md font-medium"
               disabled={loading}
             >
-              {!loading ? "Create Category" : <SvgSpinner />}
+              {!loading ? "Update SubCategory" : <SvgSpinner />}
             </button>
           </div>
         </form>

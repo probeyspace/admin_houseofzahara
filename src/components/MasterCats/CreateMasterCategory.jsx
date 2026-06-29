@@ -8,10 +8,23 @@ import { addMaster } from "../../store/slices/masterSlice";
 
 const CreateMasterCategory = ({ isOpen, onClose }) => {
   const [categoryName, setCategoryName] = useState("");
+  const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const handleNameChange = (e) => {
+    const val = e.target.value;
+    setCategoryName(val);
+    setSlug(
+      val
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "")
+    );
+  };
 
   const dispatch = useDispatch();
   const categories = useSelector((store) => store.category);
@@ -34,6 +47,7 @@ const CreateMasterCategory = ({ isOpen, onClose }) => {
     }
     const formData = new FormData();
     formData.append("name", categoryName);
+    formData.append("slug", slug);
     formData.append("description", description);
     if (image) formData.append("image", image);
 
@@ -41,6 +55,7 @@ const CreateMasterCategory = ({ isOpen, onClose }) => {
       const newCategory = await createMasterCategory(formData);
       toast.success("Master Category created successfully");
       setCategoryName("");
+      setSlug("");
       setDescription("");
       setImage(null);
       setPreview(null);
@@ -81,10 +96,24 @@ const CreateMasterCategory = ({ isOpen, onClose }) => {
             <input
               type="text"
               value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
+              onChange={handleNameChange}
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Enter name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Slug (URL segment)
+            </label>
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+              placeholder="master-category-slug"
             />
           </div>
 

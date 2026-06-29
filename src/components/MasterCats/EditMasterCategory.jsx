@@ -11,6 +11,7 @@ import { updateLocalMasterCategory } from "../../store/slices/masterSlice";
 
 const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
   const [categoryName, setCategoryName] = useState("");
+  const [slug, setSlug] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -21,6 +22,7 @@ const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
   useEffect(() => {
     if (isOpen && masterCategory) {
       setCategoryName(masterCategory.name || "");
+      setSlug(masterCategory.slug || "");
       setDescription(masterCategory.description || "");
       setPreview(masterCategory.image || null);
       setImage(null); // Reset image selection on open
@@ -49,6 +51,7 @@ const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
 
     const formData = new FormData();
     formData.append("name", categoryName);
+    formData.append("slug", slug);
     formData.append("description", description);
     if (image) formData.append("image", image);
 
@@ -70,6 +73,7 @@ const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
 
   const handleClose = () => {
     setCategoryName("");
+    setSlug("");
     setDescription("");
     setPreview(null);
     setImage(null);
@@ -92,6 +96,19 @@ const EditMasterCategory = ({ isOpen, onClose, masterCategory }) => {
               type="text"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
+              required
+              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+            />
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">
+              Slug (URL segment)
+            </label>
+            <input
+              type="text"
+              value={slug}
+              onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-"))}
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
             />
