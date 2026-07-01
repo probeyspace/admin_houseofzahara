@@ -138,6 +138,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
   const [formData, setFormData] = useState({
     name: "",
+    slug: "",
     description: { en: "", ar: "" },
     brandName: "",
     productType: "",
@@ -208,6 +209,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
     setFormData({
       name: productData.name || "",
+      slug: productData.slug || "",
       description: normalizeBilingual(productData.description),
       brandName: productData.brandName || "",
       productType: productData.productType || "",
@@ -314,6 +316,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
     const data = new FormData();
     data.append("name", formData.name);
+    data.append("slug", formData.slug);
     data.append("description", JSON.stringify(formData.description));
     data.append("brandName", formData.brandName);
     data.append("productType", formData.productType);
@@ -407,6 +410,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             <Section title="Basic Info" sectionKey="basicInfo" openSections={openSections} toggle={toggleSection} note="required">
               <div className="grid grid-cols-2 gap-3">
                 <LabeledInput label="Product Name" name="name" value={formData.name} onChange={handleChange} required colSpan={2} />
+                <LabeledInput label="URL Slug" name="slug" value={formData.slug} onChange={handleChange} required colSpan={2} />
                 <LabeledInput label="Brand Name" name="brandName" value={formData.brandName} onChange={handleChange} required />
                 <LabeledInput label="Product Type" name="productType" value={formData.productType} onChange={handleChange} placeholder="e.g. Serum, Moisturiser" />
                 <LabeledInput label="Country of Origin" name="countryOfOrigin" value={formData.countryOfOrigin} onChange={handleChange} placeholder="e.g. Italy" colSpan={2} />
