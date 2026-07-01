@@ -15,6 +15,7 @@ const INITIAL_FORM = {
   sku: "",
   isActive: true,
   images: [],
+  imageAlts: [],
   shade: "",
   size: "",
   finish: "",
@@ -95,7 +96,12 @@ function AddVariantModal({ isOpen, onClose, product }) {
     if (type === "checkbox") {
       setForm((p) => ({ ...p, [name]: checked }));
     } else if (type === "file") {
-      setForm((p) => ({ ...p, images: Array.from(files) }));
+      const selectedFiles = Array.from(files);
+      setForm((p) => ({
+        ...p,
+        images: selectedFiles,
+        imageAlts: selectedFiles.map((_, i) => p.imageAlts[i] || "")
+      }));
     } else {
       setForm((p) => ({ ...p, [name]: value }));
     }
@@ -132,6 +138,7 @@ function AddVariantModal({ isOpen, onClose, product }) {
     });
 
     form.images.forEach((file) => formData.append("images", file));
+    formData.append("imageAlts", JSON.stringify(form.imageAlts));
 
     setLoading(true);
     try {
@@ -310,9 +317,29 @@ function AddVariantModal({ isOpen, onClose, product }) {
                   className="border border-gray-300 rounded p-2 w-full text-sm cursor-pointer"
                 />
                 {form.images.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-1.5">
-                    {form.images.length} file{form.images.length !== 1 ? "s" : ""} selected
-                  </p>
+                  <div className="space-y-2 mt-2">
+                    <p className="text-xs text-gray-500 font-semibold">
+                      {form.images.length} file{form.images.length !== 1 ? "s" : ""} selected:
+                    </p>
+                    {form.images.map((file, i) => (
+                      <div key={i} className="flex flex-col gap-0.5">
+                        <label className="text-[10px] text-gray-500 font-semibold">
+                          Image {i + 1} ({file.name}) Alt Text
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={`Alt text for image ${i + 1}`}
+                          value={form.imageAlts?.[i] || ""}
+                          onChange={(e) => {
+                            const newAlts = [...(form.imageAlts || [])];
+                            newAlts[i] = e.target.value;
+                            setForm((prev) => ({ ...prev, imageAlts: newAlts }));
+                          }}
+                          className="border border-gray-300 rounded p-1.5 w-full text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                        />
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
             )}

@@ -21,6 +21,8 @@ const buildEditData = (variant) => ({
   images: [],
   existingImages: variant.images ?? [],
   imagesToRemove: [],
+  imageAlts: variant.imageAlts && variant.imageAlts.length ? [...variant.imageAlts] : (variant.images || []).map(() => ""),
+  newAlts: [],
   shade: variant.specs?.shade ?? "",
   size: variant.specs?.size ?? "",
   finish: variant.specs?.finish ?? "",
@@ -479,6 +481,63 @@ const VariantEditForm = ({
               className="border border-gray-300 rounded p-2 w-full text-sm cursor-pointer"
             />
           </div>
+
+          {/* Alt Texts */}
+          {editData.existingImages?.length > 0 && (
+            <div className="space-y-2 mt-2">
+              <p className="text-xs text-gray-500 font-semibold">Existing Images Alt Texts</p>
+              {editData.existingImages.map((img, idx) => {
+                const markedForRemoval = removedSet.has(img._id);
+                if (markedForRemoval) return null;
+                return (
+                  <div key={img._id} className="flex flex-col gap-0.5">
+                    <label className="text-[10px] text-gray-500 font-semibold">
+                      Image {idx + 1} Alt Text
+                    </label>
+                    <input
+                      type="text"
+                      placeholder={`Alt text for image ${idx + 1}`}
+                      value={editData.imageAlts?.[idx] || ""}
+                      onChange={(e) => {
+                        const newAlts = [...(editData.imageAlts || [])];
+                        newAlts[idx] = e.target.value;
+                        onFieldChange(variantId, {
+                          target: { name: "imageAlts", value: newAlts }
+                        });
+                      }}
+                      className="border border-gray-300 rounded p-1.5 w-full text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {newPreviews.length > 0 && (
+            <div className="space-y-2 mt-2">
+              <p className="text-xs text-gray-500 font-semibold">New Images Alt Texts</p>
+              {newPreviews.map((src, idx) => (
+                <div key={idx} className="flex flex-col gap-0.5">
+                  <label className="text-[10px] text-gray-500 font-semibold">
+                    New Image {idx + 1} Alt Text
+                  </label>
+                  <input
+                    type="text"
+                    placeholder={`Alt text for new image ${idx + 1}`}
+                    value={editData.newAlts?.[idx] || ""}
+                    onChange={(e) => {
+                      const newAlts = [...(editData.newAlts || [])];
+                      newAlts[idx] = e.target.value;
+                      onFieldChange(variantId, {
+                        target: { name: "newAlts", value: newAlts }
+                      });
+                    }}
+                    className="border border-gray-300 rounded p-1.5 w-full text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </EditSection>
 
@@ -608,13 +667,16 @@ function VariantListModal({ isOpen, onClose, variants }) {
   // Append newly chosen files to the current selection (not replace)
   const handleAddImages = (variantId, e) => {
     const incoming = Array.from(e.target.files);
-    setEditDataMap((p) => ({
-      ...p,
-      [variantId]: {
-        ...p[variantId],
-        images: [...(p[variantId].images || []), ...incoming],
-      },
-    }));
+    setEditDataMap((p) => {
+      const data = p[variantId];
+      const newImages = [...(data.images || []), ...incoming];
+      const newAlts = [...(data.newAlts || [])];
+      incoming.forEach(() => newAlts.push(""));
+      return {
+        ...p,
+        [variantId]: { ...data, images: newImages, newAlts },
+      };
+    });
     setDirtyMap((p) => ({ ...p, [variantId]: true }));
     e.target.value = ""; // reset so same file can be picked again
   };
@@ -646,7 +708,9 @@ function VariantListModal({ isOpen, onClose, variants }) {
     setEditDataMap((p) => {
       const files = [...(p[variantId].images || [])];
       files.splice(index, 1);
-      return { ...p, [variantId]: { ...p[variantId], images: files } };
+      const newAlts = [...(p[variantId].newAlts || [])];
+      newAlts.splice(index, 1);
+      return { ...p, [variantId]: { ...p[variantId], images: files, newAlts } };
     });
     setDirtyMap((p) => ({ ...p, [variantId]: true }));
   };
@@ -683,6 +747,14 @@ function VariantListModal({ isOpen, onClose, variants }) {
       if (Array.isArray(d.images) && d.images.length > 0) {
         d.images.forEach((file) => formData.append("images", file));
       }
+
+      const remainingAlts = (d.existingImages || [])
+        .map((img, idx) => ({ id: img._id, alt: d.imageAlts?.[idx] || "" }))
+        .filter((img) => !(d.imagesToRemove || []).includes(img.id))
+        .map((img) => img.alt);
+      const newAlts = d.newAlts || [];
+      const finalAlts = [...remainingAlts, ...newAlts];
+      formData.append("imageAlts", JSON.stringify(finalAlts));
 
       const response = await editVariantById(variantId, formData);
       dispatch(editVariant(response.data));

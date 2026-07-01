@@ -155,6 +155,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     skinConcerns: [],
     ingredientsRaw: "",
     thumbnails: [],
+    imageAlts: ["", ""],
     video: null,
     YTVideoUrl: "",
   });
@@ -226,6 +227,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       skinConcerns: productData.skinConcerns || [],
       ingredientsRaw,
       thumbnails: [],
+      imageAlts: productData.imageAlts && productData.imageAlts.length ? [...productData.imageAlts] : ["", ""],
       video: null,
       YTVideoUrl: productData.YTVideoUrl || "",
     });
@@ -339,6 +341,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("skinTypes", JSON.stringify(formData.skinTypes));
     data.append("skinConcerns", JSON.stringify(formData.skinConcerns));
     formData.thumbnails.forEach((file) => data.append("thumbnails", file));
+    data.append("imageAlts", JSON.stringify(formData.imageAlts || ["", ""]));
     if (formData.video) data.append("video", formData.video);
 
     try {
@@ -650,6 +653,24 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                     onChange={handleFileChange}
                     className="border border-gray-300 rounded p-2 w-full text-sm cursor-pointer"
                   />
+                  {Array.from({ length: thumbnailPreviews.length > 0 ? thumbnailPreviews.length : existingThumbnails.length }).map((_, i) => (
+                    <div key={i} className="mt-2">
+                      <label className="block text-[10px] text-gray-500 font-semibold mb-0.5">
+                        Thumbnail {i + 1} Alt Text
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={`Alt text for image ${i + 1}`}
+                        value={formData.imageAlts?.[i] || ""}
+                        onChange={(e) => {
+                          const newAlts = [...(formData.imageAlts || ["", ""])];
+                          newAlts[i] = e.target.value;
+                          setFormData((prev) => ({ ...prev, imageAlts: newAlts }));
+                        }}
+                        className="border border-gray-300 rounded p-2 w-full text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                      />
+                    </div>
+                  ))}
                 </div>
 
                 {/* Video */}
