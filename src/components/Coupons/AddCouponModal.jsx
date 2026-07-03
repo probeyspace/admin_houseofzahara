@@ -148,6 +148,22 @@ const AddCouponModal = ({ show, onClose, onUpdate }) => {
             </label>
           </div>
 
+          {formData.isHidden && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Influencer Email
+              </label>
+              <input
+                type="email"
+                name="influencerEmail"
+                value={formData.influencerEmail}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                required={formData.isHidden}
+              />
+            </div>
+          )}
+
           <div className="text-center">
             <button
               type="submit"

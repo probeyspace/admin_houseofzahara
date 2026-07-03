@@ -10,6 +10,7 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
     minOrderValue: "",
     expiresAt: "",
     isHidden: false,
+    influencerEmail: "",
   });
 
   useEffect(() => {
@@ -21,6 +22,7 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
         minOrderValue: coupon.minOrderValue || "",
         expiresAt: coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : "",
         isHidden: coupon.isHidden || false,
+        influencerEmail: coupon.influencerEmail || "",
       });
     }
   }, [coupon]);
@@ -151,6 +153,22 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
               Is Influencer Coupon ?
             </label>
           </div>
+
+          {formData.isHidden && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Influencer Email
+              </label>
+              <input
+                type="email"
+                name="influencerEmail"
+                value={formData.influencerEmail}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                required={formData.isHidden}
+              />
+            </div>
+          )}
 
           <div className="text-center">
             <button
