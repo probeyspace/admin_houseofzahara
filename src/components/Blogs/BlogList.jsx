@@ -6,6 +6,8 @@ import SvgSpinner from "../../common/SvgSpinner";
 import AddBlogModal from "./AddBlogModal";
 import EditBlogModal from "./EditBlogModal";
 import ViewBlogModal from "./ViewBlogModal";
+import CreateBlogCategoryModal from "./CreateBlogCategoryModal";
+import api from "../../Api/api";
 
 function BlogList() {
   const [blogs, setBlogs] = useState([]);
@@ -17,6 +19,11 @@ function BlogList() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
+  const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+
+  const createBlogCategory = async (data) => {
+    return await api.post("/categories/blog", data);
+  };
 
   useEffect(() => {
     loadBlogs();
@@ -94,12 +101,20 @@ function BlogList() {
             }}
           />
         </div>
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer"
-        >
-          Add Blog
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer text-sm sm:text-base font-semibold"
+          >
+            Add Blog
+          </button>
+          <button
+            onClick={() => setShowAddCategoryModal(true)}
+            className="bg-primary hover:bg-primary/80 text-dark py-2 px-4 rounded cursor-pointer text-sm sm:text-base font-semibold"
+          >
+            Add Blog Category
+          </button>
+        </div>
       </div>
 
       {/* Blog Table */}
@@ -276,6 +291,12 @@ function BlogList() {
         isOpen={showViewModal}
         onClose={() => setShowViewModal(false)}
         blog={selectedBlog}
+      />
+      <CreateBlogCategoryModal
+        isOpen={showAddCategoryModal}
+        onClose={() => setShowAddCategoryModal(false)}
+        fetchCategories={() => {}}
+        createBlogCategory={createBlogCategory}
       />
     </div>
   );

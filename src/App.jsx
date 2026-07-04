@@ -21,6 +21,7 @@ import MasterCategoryList from "./components/MasterCats/MasterCategoryList";
 import SubCategoryList from "./components/SubCategory/SubCategoryList";
 import SubscriberList from "./components/Subscribers/SubscriberList";
 import BlogList from "./components/Blogs/BlogList";
+import BlogCategoryList from "./components/Blogs/BlogCategoryList";
 import PreBookingList from "./components/PreBookings/PreBookingList";
 import WalletConfig from "./Pages/WalletConfig";
 import WalletManagement from "./Pages/WalletManagement";
@@ -53,6 +54,7 @@ function App() {
             <Route path="subscribers" element={<SubscriberList />} />
             <Route path="pre-bookings" element={<PreBookingList />} />
             <Route path="blogs" element={<BlogList />} />
+            <Route path="blog-categories" element={<BlogCategoryList />} />
             <Route path="wallet-config" element={<WalletConfig />} />
             <Route path="wallet-management" element={<WalletManagement />} />
             <Route path="seo-settings" element={<SeoSettings />} />

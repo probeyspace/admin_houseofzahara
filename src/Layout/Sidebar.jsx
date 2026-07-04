@@ -73,6 +73,11 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       text: "Blogs",
     },
     {
+      to: "/blog-categories",
+      icon: <BiCategory />,
+      text: "Blog Categories",
+    },
+    {
       to: "/brands",
       icon: <BiCategory />,
       text: "Brands",

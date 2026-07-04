@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { updateBlog } from "../../services/blog";
 import SvgSpinner from "../../common/SvgSpinner";
 import QuillEditor from "../common/QuillEditor";
+import api from "../../Api/api";
 
 const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const [formData, setFormData] = useState({
@@ -14,9 +15,19 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     metaTitle: "",
     metaDetails: "",
     imageAlt: "",
+    categoryId: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [categoriesList, setCategoriesList] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      api.get("/categories/blog")
+        .then((res) => setCategoriesList(res.data.data || []))
+        .catch((err) => console.error("Error fetching blog categories:", err));
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (blog) {
@@ -29,6 +40,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         metaTitle: blog.metaTitle || "",
         metaDetails: blog.metaDetails || "",
         imageAlt: blog.imageAlt || "",
+        categoryId: blog.categories && blog.categories.length > 0 ? (blog.categories[0]._id || blog.categories[0]) : "",
       });
       setImagePreview(blog.imageUrl || null);
     }
@@ -92,6 +104,9 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
     data.append("imageAlt", formData.imageAlt);
+    if (formData.categoryId !== undefined) {
+      data.append("categories", formData.categoryId);
+    }
 
     // Only append image if a new one was selected
     if (formData.image) {
@@ -102,7 +117,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
       const response = await updateBlog(blog._id, data);
       toast.success(response?.message || "Blog updated successfully!");
       onBlogUpdated(); // Refresh the blog list
-      handleClose();
+      onClose();
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to update blog");
     } finally {
@@ -111,7 +126,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "", categoryId: "" });
     setImagePreview(null);
     onClose();
   };
@@ -167,6 +182,25 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               className="w-full border border-gray-300 p-2 rounded"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded text-sm sm:text-base text-gray-700"
+            >
+              <option value="">Select a Category</option>
+              {categoriesList.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

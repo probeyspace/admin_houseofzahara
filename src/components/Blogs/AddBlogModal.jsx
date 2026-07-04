@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { createBlog } from "../../services/blog";
 import SvgSpinner from "../../common/SvgSpinner";
 import QuillEditor from "../common/QuillEditor";
+import api from "../../Api/api";
 
 const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   const [formData, setFormData] = useState({
@@ -14,9 +15,19 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     metaTitle: "",
     metaDetails: "",
     imageAlt: "",
+    categoryId: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [categoriesList, setCategoriesList] = useState([]);
+
+  useEffect(() => {
+    if (isOpen) {
+      api.get("/categories/blog")
+        .then((res) => setCategoriesList(res.data.data || []))
+        .catch((err) => console.error("Error fetching blog categories:", err));
+    }
+  }, [isOpen]);
 
   const generateSlug = (text) => {
     return text
@@ -80,6 +91,9 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
     data.append("imageAlt", formData.imageAlt);
+    if (formData.categoryId) {
+      data.append("categories", formData.categoryId);
+    }
 
     try {
       const response = await createBlog(data);
@@ -94,7 +108,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "", categoryId: "" });
     setImagePreview(null);
     onClose();
   };
@@ -150,6 +164,25 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               className="w-full border border-gray-300 p-2 rounded"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <select
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded text-sm sm:text-base text-gray-700"
+            >
+              <option value="">Select a Category</option>
+              {categoriesList.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
