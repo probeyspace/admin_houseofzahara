@@ -10,6 +10,7 @@ const AddCouponModal = ({ show, onClose, onUpdate }) => {
     minOrderValue: "",
     expiresAt: "",
     isHidden: false,
+    influencerEmail: "",
   });
 
   const handleChange = (e) => {
@@ -33,6 +34,7 @@ const AddCouponModal = ({ show, onClose, onUpdate }) => {
         minOrderValue: "",
         expiresAt: "",
         isHidden: false,
+        influencerEmail: "",
       });
       onUpdate();
       onClose(); // Close modal after submission

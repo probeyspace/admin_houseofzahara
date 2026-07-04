@@ -8,6 +8,7 @@ import UsersList from "./components/Users/UsersList";
 import DashboardPage from "./Pages/DashboardPage";
 import CategoryList from "./components/Category/CategoryList";
 import CouponsList from "./components/Coupons/CouponsList";
+import InfluencerCouponsList from "./components/Coupons/InfluencerCouponsList";
 import OrderList from "./components/Orders/OrdersList";
 import BannerList from "./components/Banners/BannerList";
 import TestimonialList from "./components/Testimonials/TestimonialList";
@@ -46,6 +47,7 @@ function App() {
             <Route path="users" element={<UsersList />} />
             <Route path="orders" element={<OrderList />} />
             <Route path="coupons" element={<CouponsList />} />
+            <Route path="influencer-coupons" element={<InfluencerCouponsList />} />
             <Route path="banners" element={<BannerList />} />
             <Route path="testimonials" element={<TestimonialList />} />
             <Route path="contacts" element={<ContactList />} />

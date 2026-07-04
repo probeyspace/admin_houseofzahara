@@ -53,6 +53,11 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
     },
     {
       icon: <BiCategory />,
+      text: "Influencer Coupons",
+      to: "/influencer-coupons",
+    },
+    {
+      icon: <BiCategory />,
       text: "Banners",
       to: "/banners",
     },

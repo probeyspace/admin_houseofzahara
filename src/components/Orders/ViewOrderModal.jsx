@@ -372,6 +372,36 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
           </div>
         </div>
 
+        {/* Coupon Info */}
+        {order.promoCode && (
+          <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg mb-6">
+            <h2 className="text-lg font-semibold text-purple-800 mb-2">
+              Coupon Details
+            </h2>
+            <div className="space-y-1 text-sm text-purple-700">
+              <p>
+                <span className="font-medium text-purple-900">Applied Code:</span>{" "}
+                <span className="font-mono bg-purple-100 px-2 py-0.5 rounded text-xs font-semibold">
+                  {order.promoCode.code}
+                </span>
+              </p>
+              <p>
+                <span className="font-medium text-purple-900">Discount:</span>{" "}
+                {order.promoCode.discountValue}
+                {order.promoCode.discountType === "Percentage" ? "%" : " USD"}
+              </p>
+              {order.promoCode.influencerEmail && (
+                <p>
+                  <span className="font-medium text-purple-900">Influencer Email:</span>{" "}
+                  <a href={`mailto:${order.promoCode.influencerEmail}`} className="underline font-medium">
+                    {order.promoCode.influencerEmail}
+                  </a>
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Return Request Info */}
         {order.isReturnRequested && (
           <div className="bg-orange-50 border border-orange-200 p-4 rounded-lg mb-6">
