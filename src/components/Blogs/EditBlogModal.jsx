@@ -5,6 +5,15 @@ import SvgSpinner from "../../common/SvgSpinner";
 import QuillEditor from "../common/QuillEditor";
 import api from "../../Api/api";
 
+const formatDateForInput = (dateString) => {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const [formData, setFormData] = useState({
     title: "",
@@ -17,6 +26,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     metaKeywords: "",
     imageAlt: "",
     categoryId: "",
+    publishDate: "",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -43,6 +53,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         metaKeywords: blog.metaKeywords || "",
         imageAlt: blog.imageAlt || "",
         categoryId: blog.categories && blog.categories.length > 0 ? (blog.categories[0]._id || blog.categories[0]) : "",
+        publishDate: formatDateForInput(blog.publishDate || blog.createdAt),
       });
       setImagePreview(blog.imageUrl || null);
     }
@@ -107,6 +118,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     data.append("metaDetails", formData.metaDetails);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
+    data.append("publishDate", formData.publishDate);
     if (formData.categoryId !== undefined) {
       data.append("categories", formData.categoryId);
     }
@@ -129,7 +141,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: "" });
     setImagePreview(null);
     onClose();
   };
@@ -204,6 +216,20 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Publishing Date *
+            </label>
+            <input
+              type="date"
+              name="publishDate"
+              value={formData.publishDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              required
+            />
           </div>
 
           <div>

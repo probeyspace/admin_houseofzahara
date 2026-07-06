@@ -168,7 +168,14 @@ function BlogList() {
                         {blog.readingTime ? `${blog.readingTime} min` : "N/A"}
                       </td>
                       <td className="p-2 sm:p-3 hidden sm:table-cell">
-                        {formatDate(blog.createdAt)}
+                        <div>
+                          {formatDate(blog.publishDate || blog.createdAt)}
+                          {new Date(blog.publishDate || blog.createdAt) > new Date() && (
+                            <span className="block mt-1 w-max px-2 py-0.5 text-[10px] font-semibold rounded bg-amber-100 text-amber-800">
+                              Scheduled
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="p-2 sm:p-3 flex space-x-2 sm:space-x-3">
                         <button

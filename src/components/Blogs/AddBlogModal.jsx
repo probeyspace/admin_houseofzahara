@@ -5,6 +5,14 @@ import SvgSpinner from "../../common/SvgSpinner";
 import QuillEditor from "../common/QuillEditor";
 import api from "../../Api/api";
 
+const getTodayString = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   const [formData, setFormData] = useState({
     title: "",
@@ -17,6 +25,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     metaKeywords: "",
     imageAlt: "",
     categoryId: "",
+    publishDate: getTodayString(),
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -93,6 +102,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     data.append("metaDetails", formData.metaDetails);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
+    data.append("publishDate", formData.publishDate);
     if (formData.categoryId) {
       data.append("categories", formData.categoryId);
     }
@@ -110,7 +120,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: getTodayString() });
     setImagePreview(null);
     onClose();
   };
@@ -185,6 +195,20 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
                 </option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Publishing Date *
+            </label>
+            <input
+              type="date"
+              name="publishDate"
+              value={formData.publishDate}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
+              required
+            />
           </div>
 
           <div>

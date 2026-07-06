@@ -72,10 +72,15 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
             </p>
           )}
           <p>
-            <span className="font-semibold">Created:</span>{" "}
-            {formatDate(blog.createdAt)}
+            <span className="font-semibold">Published:</span>{" "}
+            {formatDate(blog.publishDate || blog.createdAt)}
+            {new Date(blog.publishDate || blog.createdAt) > new Date() && (
+              <span className="ml-2 px-2 py-0.5 text-[11px] font-semibold rounded bg-amber-100 text-amber-800">
+                Scheduled
+              </span>
+            )}
           </p>
-          {blog.updatedAt && blog.updatedAt !== blog.createdAt && (
+          {blog.updatedAt && blog.updatedAt !== (blog.publishDate || blog.createdAt) && (
             <p>
               <span className="font-semibold">Last Updated:</span>{" "}
               {formatDate(blog.updatedAt)}
