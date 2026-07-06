@@ -14,6 +14,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     image: null,
     metaTitle: "",
     metaDetails: "",
+    metaKeywords: "",
     imageAlt: "",
     categoryId: "",
   });
@@ -39,6 +40,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         image: null,
         metaTitle: blog.metaTitle || "",
         metaDetails: blog.metaDetails || "",
+        metaKeywords: blog.metaKeywords || "",
         imageAlt: blog.imageAlt || "",
         categoryId: blog.categories && blog.categories.length > 0 ? (blog.categories[0]._id || blog.categories[0]) : "",
       });
@@ -103,6 +105,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     data.append("author", formData.author);
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
+    data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
     if (formData.categoryId !== undefined) {
       data.append("categories", formData.categoryId);
@@ -126,7 +129,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "", categoryId: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "" });
     setImagePreview(null);
     onClose();
   };
@@ -228,6 +231,20 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
               rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Keywords
+            </label>
+            <input
+              type="text"
+              name="metaKeywords"
+              placeholder="Enter SEO meta keywords (comma-separated)"
+              value={formData.metaKeywords}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
             />
           </div>
 

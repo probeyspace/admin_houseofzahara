@@ -7,6 +7,7 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
     title: "",
     description: "",
     offer: "",
+    imageAlt: "",
     isActive: false,
     image: null,
   });
@@ -18,6 +19,7 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
         title: bannerData.title,
         description: bannerData.description,
         offer: bannerData.offer,
+        imageAlt: bannerData.imageAlt || "",
         isActive: bannerData.isActive,
         image: null,
       });
@@ -47,6 +49,7 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("offer", formData.offer);
+      formDataToSend.append("imageAlt", formData.imageAlt);
       formDataToSend.append("isActive", formData.isActive);
       if (formData.image) {
         formDataToSend.append("image", formData.image);
@@ -65,8 +68,12 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
 
   if (!isOpen) return null;
 
+  const isVideo =
+    (formData.image && formData.image.type.startsWith("video/")) ||
+    (!formData.image && bannerData?.mediaType === "video");
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4">Edit Banner</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -107,6 +114,20 @@ const EditBannerModal = ({ isOpen, onClose, bannerData, fetchBanner }) => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
             />
           </div>
+          {!isVideo && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Image Alt Tag
+              </label>
+              <input
+                type="text"
+                name="imageAlt"
+                value={formData.imageAlt}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
+              />
+            </div>
+          )}
           <div className="flex items-center">
             <input
               type="checkbox"

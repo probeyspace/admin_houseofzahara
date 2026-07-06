@@ -14,6 +14,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     image: null,
     metaTitle: "",
     metaDetails: "",
+    metaKeywords: "",
     imageAlt: "",
     categoryId: "",
   });
@@ -90,6 +91,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     data.append("image", formData.image);
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
+    data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
     if (formData.categoryId) {
       data.append("categories", formData.categoryId);
@@ -108,7 +110,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", imageAlt: "", categoryId: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "" });
     setImagePreview(null);
     onClose();
   };
@@ -210,6 +212,20 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
               rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Meta Keywords
+            </label>
+            <input
+              type="text"
+              name="metaKeywords"
+              placeholder="Enter SEO meta keywords (comma-separated)"
+              value={formData.metaKeywords}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded"
             />
           </div>
 

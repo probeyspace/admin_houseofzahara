@@ -7,6 +7,7 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
     title: "",
     description: "",
     offer: "",
+    imageAlt: "",
     isActive: false,
     image: null,
   });
@@ -38,6 +39,7 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
       formDataToSend.append("offer", formData.offer);
+      formDataToSend.append("imageAlt", formData.imageAlt);
       formDataToSend.append("isActive", formData.isActive);
       if (formData.image) {
         formDataToSend.append("image", formData.image);
@@ -49,6 +51,7 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
         title: "",
         description: "",
         offer: "",
+        imageAlt: "",
         isActive: false,
         image: null,
       });
@@ -61,6 +64,8 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
       setLoading(false);
     }
   };
+
+  const isVideo = formData.image?.type?.startsWith("video/");
 
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-4">
@@ -114,6 +119,21 @@ const BannerModal = ({ show, onClose, fetchBanner }) => {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
+
+          {!isVideo && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Image Alt Tag
+              </label>
+              <input
+                type="text"
+                name="imageAlt"
+                value={formData.imageAlt}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          )}
 
           <div className="flex items-center">
             <input

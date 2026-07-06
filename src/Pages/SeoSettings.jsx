@@ -7,17 +7,26 @@ const SeoSettings = () => {
   const [baseUrl, setBaseUrl] = useState("");
   const [robotsContent, setRobotsContent] = useState("");
   const [staticUrls, setStaticUrls] = useState([]);
+  const [pages, setPages] = useState([]);
+  const [newPagePath, setNewPagePath] = useState("");
   
   // Form state for adding a new static URL
   const [newLoc, setNewLoc] = useState("");
   const [newChangefreq, setNewChangefreq] = useState("weekly");
   const [newPriority, setNewPriority] = useState(0.8);
 
-  // Editing state for table rows
+  // Editing state for table rows (Sitemap)
   const [editingIndex, setEditingIndex] = useState(-1);
   const [editLoc, setEditLoc] = useState("");
   const [editChangefreq, setEditChangefreq] = useState("weekly");
   const [editPriority, setEditPriority] = useState(0.8);
+
+  // Editing state for Page SEO Metadata
+  const [editingPageIndex, setEditingPageIndex] = useState(-1);
+  const [editPagePath, setEditPagePath] = useState("");
+  const [editPageTitle, setEditPageTitle] = useState("");
+  const [editPageDescription, setEditPageDescription] = useState("");
+  const [editPageKeywords, setEditPageKeywords] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -29,6 +38,7 @@ const SeoSettings = () => {
         setBaseUrl(data.baseUrl || "");
         setRobotsContent(data.robotsContent || "");
         setStaticUrls(data.staticUrls || []);
+        setPages(data.pages || []);
       })
       .catch(() => toast.error("Failed to load SEO settings"))
       .finally(() => setLoading(false));
@@ -110,6 +120,72 @@ const SeoSettings = () => {
     toast.info("Removed path from sitemap listing");
   };
 
+  const handleAddPageMetadata = (e) => {
+    e.preventDefault();
+    if (!newPagePath) {
+      toast.warning("Please enter a page path");
+      return;
+    }
+    let formattedPath = newPagePath.trim();
+    if (!formattedPath.startsWith("/")) {
+      formattedPath = "/" + formattedPath;
+    }
+    if (pages.some((p) => p.path.toLowerCase() === formattedPath.toLowerCase())) {
+      toast.warning("SEO settings for this path already exist!");
+      return;
+    }
+    const newPage = {
+      path: formattedPath,
+      title: "",
+      description: "",
+      keywords: "",
+    };
+    setPages((prev) => [...prev, newPage]);
+    setNewPagePath("");
+    toast.success(`Added ${formattedPath} to the metadata list. Remember to Save!`);
+  };
+
+  const handleDeletePageMetadata = (pathToDelete) => {
+    setPages((prev) => prev.filter((p) => p.path !== pathToDelete));
+    toast.info("Removed page from metadata listing. Remember to Save!");
+  };
+
+  const startEditingPage = (index, page) => {
+    setEditingPageIndex(index);
+    setEditPagePath(page.path);
+    setEditPageTitle(page.title || "");
+    setEditPageDescription(page.description || "");
+    setEditPageKeywords(page.keywords || "");
+  };
+
+  const cancelEditingPage = () => {
+    setEditingPageIndex(-1);
+  };
+
+  const saveEditingPage = (index) => {
+    if (!editPagePath) {
+      toast.warning("Please enter a page path");
+      return;
+    }
+    let formattedPath = editPagePath.trim();
+    if (!formattedPath.startsWith("/")) {
+      formattedPath = "/" + formattedPath;
+    }
+    if (pages.some((p, idx) => idx !== index && p.path.toLowerCase() === formattedPath.toLowerCase())) {
+      toast.warning("This path already exists");
+      return;
+    }
+    setPages((prev) =>
+      prev.map((item, idx) =>
+        idx === index
+          ? { ...item, path: formattedPath, title: editPageTitle, description: editPageDescription, keywords: editPageKeywords }
+          : item
+      )
+    );
+    setEditingPageIndex(-1);
+    toast.success("Page SEO metadata updated!");
+  };
+
   const handleSave = async () => {
     if (!baseUrl) {
       toast.error("Base URL is required");
@@ -121,9 +197,11 @@ const SeoSettings = () => {
         baseUrl: baseUrl.trim(),
         robotsContent: robotsContent,
         staticUrls: staticUrls,
+        pages: pages,
       };
       const updated = await updateSeoSettings(payload);
       setSeo(updated);
+      setPages(updated.pages || []);
       toast.success("SEO Settings and sitemap files updated successfully!");
     } catch (err) {
       toast.error(err?.response?.data?.message || "Failed to update SEO settings");
@@ -354,6 +432,147 @@ const SeoSettings = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* Page-Specific SEO Metadata */}
+          <div className="bg-white rounded-xl shadow p-6 space-y-5">
+            <h2 className="text-lg font-semibold text-gray-700 border-b pb-2">Page-Specific SEO Metadata</h2>
+            <p className="text-xs text-gray-400">
+              Configure custom titles, descriptions, and keywords for general site pages.
+            </p>
+            
+            {/* Add new page path metadata */}
+            <form onSubmit={handleAddPageMetadata} className="flex gap-3 bg-gray-50 p-4 rounded-lg items-end">
+              <div className="flex-1">
+                <label className="block text-xs font-semibold text-gray-500 mb-1">PAGE PATH FOR META TAGS (e.g. /sustainability)</label>
+                <input
+                  type="text"
+                  value={newPagePath}
+                  onChange={(e) => setNewPagePath(e.target.value)}
+                  placeholder="/new-page-path"
+                  className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-green-600 text-white rounded text-sm font-semibold hover:bg-green-700 transition"
+              >
+                Add Page Meta
+              </button>
+            </form>
+
+            <div className="space-y-4">
+              {pages.map((p, idx) => {
+                const isDefaultPath = ["/", "/about", "/contact", "/products", "/faq", "/blogs"].includes(p.path);
+                const isEditing = editingPageIndex === idx;
+                
+                return (
+                  <div key={idx} className="border border-gray-150 p-4 rounded-lg bg-gray-50/50 space-y-3">
+                    <div className="flex justify-between items-center border-b pb-1">
+                      <span className="text-sm font-bold text-gray-700">
+                        {p.path === "/" ? "Home Page (/)" : `${p.path} Page`}
+                      </span>
+                      <div className="space-x-3 text-xs">
+                        {isEditing ? (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => saveEditingPage(idx)}
+                              className="text-green-600 hover:text-green-800 font-semibold"
+                            >
+                              Save
+                            </button>
+                            <button
+                              type="button"
+                              onClick={cancelEditingPage}
+                              className="text-gray-500 hover:text-gray-700 font-semibold"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => startEditingPage(idx, p)}
+                              className="text-blue-600 hover:text-blue-800 font-semibold"
+                            >
+                              Edit Meta
+                            </button>
+                            {!isDefaultPath && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeletePageMetadata(p.path)}
+                                className="text-red-600 hover:text-red-800 font-semibold"
+                              >
+                                Remove Page
+                              </button>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {isEditing ? (
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1">Page Path</label>
+                          <input
+                            type="text"
+                            value={editPagePath}
+                            onChange={(e) => setEditPagePath(e.target.value)}
+                            disabled={isDefaultPath}
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm outline-none disabled:bg-gray-100 disabled:text-gray-400"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1">Meta Title</label>
+                          <input
+                            type="text"
+                            value={editPageTitle}
+                            onChange={(e) => setEditPageTitle(e.target.value)}
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1">Meta Keywords</label>
+                          <input
+                            type="text"
+                            value={editPageKeywords}
+                            onChange={(e) => setEditPageKeywords(e.target.value)}
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-500 mb-1">Meta Description</label>
+                          <textarea
+                            value={editPageDescription}
+                            onChange={(e) => setEditPageDescription(e.target.value)}
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded bg-white text-sm outline-none"
+                            rows={1}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm text-gray-600">
+                        <div>
+                          <span className="font-semibold text-xs text-gray-400 block">Meta Title:</span>
+                          <span className="text-gray-800">{p.title || <em className="text-gray-300">None</em>}</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-xs text-gray-400 block">Meta Keywords:</span>
+                          <span className="text-gray-800">{p.keywords || <em className="text-gray-300">None</em>}</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-xs text-gray-400 block">Meta Description:</span>
+                          <span className="text-gray-800">{p.description || <em className="text-gray-300">None</em>}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

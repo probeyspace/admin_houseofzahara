@@ -11,7 +11,7 @@ const ViewBannerModal = ({ isOpen, onClose, banner }) => {
 
   return (
     <div
-      className="fixed inset-0 backdrop-blur-sm flex justify-center items-start z-50 overflow-y-auto py-8"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-start z-50 overflow-y-auto py-8"
       onClick={handleBackdropClick}
     >
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-6 md:p-8 mx-4">
@@ -44,6 +44,11 @@ const ViewBannerModal = ({ isOpen, onClose, banner }) => {
               {banner.isActive ? "Active" : "Inactive"}
             </span>
           </p>
+          {banner.mediaType !== "video" && banner.imageAlt && (
+            <p>
+              <span className="font-medium">Image Alt Tag:</span> {banner.imageAlt}
+            </p>
+          )}
         </div>
 
         {/* Banner Image */}
@@ -59,7 +64,7 @@ const ViewBannerModal = ({ isOpen, onClose, banner }) => {
             ) : (
               <img
                 src={banner.imageUrl}
-                alt={banner.title}
+                alt={banner.imageAlt || banner.title}
                 className="w-full h-64 object-cover rounded-lg"
               />
             )

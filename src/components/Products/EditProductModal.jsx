@@ -132,6 +132,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     composition: false,
     classification: true,
     media: false,
+    seo: false,
   });
   const toggleSection = (key) =>
     setOpenSections((p) => ({ ...p, [key]: !p[key] }));
@@ -158,6 +159,9 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     imageAlts: ["", ""],
     video: null,
     YTVideoUrl: "",
+    metaTitle: "",
+    metaDescription: "",
+    metaKeywords: "",
   });
 
   const categories = useSelector((state) => state.category);
@@ -206,6 +210,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       composition: false,
       classification: true,
       media: false,
+      seo: false,
     });
 
     setFormData({
@@ -230,6 +235,9 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       imageAlts: productData.imageAlts && productData.imageAlts.length ? [...productData.imageAlts] : ["", ""],
       video: null,
       YTVideoUrl: productData.YTVideoUrl || "",
+      metaTitle: productData.metaTitle || "",
+      metaDescription: productData.metaDescription || "",
+      metaKeywords: productData.metaKeywords || "",
     });
     setThumbnailPreviews([]);
   }, [isOpen, productData]);
@@ -332,6 +340,11 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
     data.append("antiAgingEffect", formData.antiAgingEffect);
     data.append("YTVideoUrl", formData.YTVideoUrl);
+    
+    // SEO fields
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDescription", formData.metaDescription);
+    data.append("metaKeywords", formData.metaKeywords);
 
     const ingredientsArray = formData.ingredientsRaw
       .split(",")
@@ -514,6 +527,37 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                     </div>
                   </div>
                 )}
+              </div>
+            </Section>
+
+            {/* ── § SEO Settings ── */}
+            <Section title="SEO Settings" sectionKey="seo" openSections={openSections} toggle={toggleSection}>
+              <div className="space-y-4">
+                <LabeledInput
+                  label="Meta Title"
+                  name="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={handleChange}
+                  placeholder="SEO Meta Title"
+                />
+                <div>
+                  <label className="block text-xs text-gray-500 mb-0.5">Meta Description</label>
+                  <textarea
+                    name="metaDescription"
+                    placeholder="Enter SEO meta description..."
+                    value={formData.metaDescription}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    rows={3}
+                  />
+                </div>
+                <LabeledInput
+                  label="Meta Keywords"
+                  name="metaKeywords"
+                  value={formData.metaKeywords}
+                  onChange={handleChange}
+                  placeholder="skincare, premium cosmetics, etc. (comma-separated)"
+                />
               </div>
             </Section>
 

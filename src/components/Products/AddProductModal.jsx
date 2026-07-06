@@ -32,6 +32,9 @@ const INITIAL_FORM = {
   imageAlts: ["", ""],
   video: null,
   YTVideoUrl: "",
+  metaTitle: "",
+  metaDescription: "",
+  metaKeywords: "",
 };
 
 const INITIAL_SECTIONS = {
@@ -41,6 +44,7 @@ const INITIAL_SECTIONS = {
   composition: false,
   classification: true,
   media: false,
+  seo: false,
 };
 
 // ── Shared UI primitives ──────────────────────────────────────────────────────
@@ -267,6 +271,11 @@ const AddProductModal = ({ isOpen, onClose }) => {
     data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
     if (formData.antiAgingEffect) data.append("antiAgingEffect", formData.antiAgingEffect);
     if (formData.YTVideoUrl) data.append("YTVideoUrl", formData.YTVideoUrl);
+    
+    // SEO fields
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDescription", formData.metaDescription);
+    data.append("metaKeywords", formData.metaKeywords);
 
     const ingredientsArray = formData.ingredientsRaw
       .split(",")
@@ -462,6 +471,37 @@ const AddProductModal = ({ isOpen, onClose }) => {
                     </div>
                   </div>
                 )}
+              </div>
+            </Section>
+
+            {/* ── § SEO Settings ── */}
+            <Section title="SEO Settings" sectionKey="seo" openSections={openSections} toggle={toggleSection}>
+              <div className="space-y-4">
+                <LabeledInput
+                  label="Meta Title"
+                  name="metaTitle"
+                  value={formData.metaTitle}
+                  onChange={handleChange}
+                  placeholder="SEO Meta Title"
+                />
+                <div>
+                  <label className="block text-xs text-gray-500 mb-0.5">Meta Description</label>
+                  <textarea
+                    name="metaDescription"
+                    placeholder="Enter SEO meta description..."
+                    value={formData.metaDescription}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    rows={3}
+                  />
+                </div>
+                <LabeledInput
+                  label="Meta Keywords"
+                  name="metaKeywords"
+                  value={formData.metaKeywords}
+                  onChange={handleChange}
+                  placeholder="skincare, premium cosmetics, etc. (comma-separated)"
+                />
               </div>
             </Section>
 
