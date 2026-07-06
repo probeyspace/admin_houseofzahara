@@ -79,43 +79,73 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!formData.image) {
-      toast.error("Please select an image");
+  const saveBlog = async (status = "published") => {
+    if (!formData.title) {
+      toast.error("Please enter a title");
       return;
     }
 
-    if (!formData.content || formData.content === "<p><br></p>") {
-      toast.warn("Please enter blog content");
-      return;
+    if (status === "published") {
+      if (!formData.image) {
+        toast.error("Please select an image");
+        return;
+      }
+      if (!formData.content || formData.content === "<p><br></p>") {
+        toast.warn("Please enter blog content");
+        return;
+      }
+      if (!formData.author) {
+        toast.warn("Please enter author name");
+        return;
+      }
     }
 
     setLoading(true);
     const data = new FormData();
     data.append("title", formData.title);
-    data.append("slug", formData.slug);
-    data.append("content", formData.content);
-    data.append("author", formData.author);
-    data.append("image", formData.image);
+    data.append("slug", formData.slug || generateSlug(formData.title));
+    data.append("content", formData.content || "");
+    data.append("author", formData.author || "");
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
     data.append("publishDate", formData.publishDate);
+    data.append("status", status);
     if (formData.categoryId) {
       data.append("categories", formData.categoryId);
     }
 
     try {
       const response = await createBlog(data);
-      toast.success(response?.message || "Blog created successfully!");
+      toast.success(response?.message || `Blog ${status === "draft" ? "draft saved" : "created"} successfully!`);
       onBlogAdded(); // Refresh the blog list
       handleClose();
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to create blog");
+      toast.error(error?.response?.data?.message || "Failed to save blog");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await saveBlog("published");
+  };
+
+  const handleCancelClick = () => {
+    const hasUnsavedChanges = formData.title || formData.content || formData.author || formData.image;
+    if (hasUnsavedChanges) {
+      if (window.confirm("You have unsaved changes. Would you like to save this blog as a draft before closing?")) {
+        saveBlog("draft");
+      } else {
+        handleClose();
+      }
+    } else {
+      handleClose();
     }
   };
 
@@ -304,15 +334,23 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer"
+              className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold"
               disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Create Blog"}
+              {loading ? <SvgSpinner /> : "Publish Blog"}
             </button>
             <button
               type="button"
-              onClick={handleClose}
-              className="bg-gray-400 text-dark px-4 py-2 rounded flex-1 cursor-pointer"
+              onClick={() => saveBlog("draft")}
+              className="bg-secondary text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold border border-primary/20 hover:bg-primary/10"
+              disabled={loading}
+            >
+              Save Draft
+            </button>
+            <button
+              type="button"
+              onClick={handleCancelClick}
+              className="bg-gray-400 text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold"
             >
               Cancel
             </button>

@@ -27,6 +27,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     imageAlt: "",
     categoryId: "",
     publishDate: "",
+    status: "published",
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         imageAlt: blog.imageAlt || "",
         categoryId: blog.categories && blog.categories.length > 0 ? (blog.categories[0]._id || blog.categories[0]) : "",
         publishDate: formatDateForInput(blog.publishDate || blog.createdAt),
+        status: blog.status || "published",
       });
       setImagePreview(blog.imageUrl || null);
     }
@@ -102,23 +104,30 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.content || formData.content === "<p><br></p>") {
-      toast.error("Please enter blog content");
-      return;
+    if (formData.status === "published") {
+      if (!formData.content || formData.content === "<p><br></p>") {
+        toast.error("Please enter blog content to publish");
+        return;
+      }
+      if (!formData.author) {
+        toast.error("Please enter author name to publish");
+        return;
+      }
     }
 
     setLoading(true);
 
     const data = new FormData();
     data.append("title", formData.title);
-    data.append("slug", formData.slug);
-    data.append("content", formData.content);
-    data.append("author", formData.author);
+    data.append("slug", formData.slug || generateSlug(formData.title));
+    data.append("content", formData.content || "");
+    data.append("author", formData.author || "");
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("imageAlt", formData.imageAlt);
     data.append("publishDate", formData.publishDate);
+    data.append("status", formData.status);
     if (formData.categoryId !== undefined) {
       data.append("categories", formData.categoryId);
     }
@@ -140,8 +149,59 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     }
   };
 
+  const saveAsDraftDirectly = async () => {
+    setLoading(true);
+    const data = new FormData();
+    data.append("title", formData.title);
+    data.append("slug", formData.slug || generateSlug(formData.title));
+    data.append("content", formData.content || "");
+    data.append("author", formData.author || "");
+    data.append("metaTitle", formData.metaTitle);
+    data.append("metaDetails", formData.metaDetails);
+    data.append("metaKeywords", formData.metaKeywords);
+    data.append("imageAlt", formData.imageAlt);
+    data.append("publishDate", formData.publishDate);
+    data.append("status", "draft");
+    if (formData.categoryId !== undefined) {
+      data.append("categories", formData.categoryId);
+    }
+    if (formData.image) {
+      data.append("image", formData.image);
+    }
+
+    try {
+      const response = await updateBlog(blog._id, data);
+      toast.success("Saved as draft successfully!");
+      onBlogUpdated();
+      onClose();
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update blog");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelClick = () => {
+    const isTitleChanged = formData.title !== (blog.title || "");
+    const isContentChanged = formData.content !== (blog.content || "");
+    const isAuthorChanged = formData.author !== (blog.author || "");
+    const isStatusChanged = formData.status !== (blog.status || "published");
+    const isImageChanged = !!formData.image;
+
+    const hasChanges = isTitleChanged || isContentChanged || isAuthorChanged || isStatusChanged || isImageChanged;
+    if (hasChanges) {
+      if (window.confirm("You have unsaved changes. Would you like to save this blog as a draft before closing?")) {
+        saveAsDraftDirectly();
+      } else {
+        onClose();
+      }
+    } else {
+      onClose();
+    }
+  };
+
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: "", status: "published" });
     setImagePreview(null);
     onClose();
   };
@@ -230,6 +290,22 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               className="w-full border border-gray-300 p-2 rounded"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Status *
+            </label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="w-full border border-gray-300 p-2 rounded text-sm sm:text-base text-gray-700"
+              required
+            >
+              <option value="draft">Draft</option>
+              <option value="published">Published</option>
+            </select>
           </div>
 
           <div>
@@ -327,15 +403,15 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer"
+              className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold"
               disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Update Blog"}
+              {loading ? <SvgSpinner /> : "Save Changes"}
             </button>
             <button
               type="button"
-              onClick={handleClose}
-              className="bg-gray-400 text-dark px-4 py-2 rounded flex-1 cursor-pointer"
+              onClick={handleCancelClick}
+              className="bg-gray-400 text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold"
             >
               Cancel
             </button>

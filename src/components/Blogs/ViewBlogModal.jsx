@@ -72,6 +72,14 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
             </p>
           )}
           <p>
+            <span className="font-semibold">Status:</span>{" "}
+            <span className={`px-2 py-0.5 text-[11px] font-semibold rounded capitalize ${
+              blog.status === "draft" ? "bg-gray-100 text-gray-800 border border-gray-200" : "bg-green-100 text-green-800"
+            }`}>
+              {blog.status || "Published"}
+            </span>
+          </p>
+          <p>
             <span className="font-semibold">Published:</span>{" "}
             {formatDate(blog.publishDate || blog.createdAt)}
             {new Date(blog.publishDate || blog.createdAt) > new Date() && (
