@@ -148,18 +148,9 @@ function BlogList() {
                         {index + 1 + (page - 1) * perPage}
                       </td>
                       <td className="p-2 sm:p-3 font-medium">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span>
-                            {blog.title?.length > 50
-                              ? blog.title.substring(0, 50) + "..."
-                              : blog.title}
-                          </span>
-                          {blog.status === "draft" && (
-                            <span className="px-1.5 py-0.5 text-[10px] font-semibold rounded bg-gray-100 text-gray-800 border border-gray-200">
-                              Draft
-                            </span>
-                          )}
-                        </div>
+                        {blog.title?.length > 50
+                          ? blog.title.substring(0, 50) + "..."
+                          : blog.title}
                       </td>
                       <td className="p-2 sm:p-3 hidden lg:table-cell">
                         {blog.author || "N/A"}

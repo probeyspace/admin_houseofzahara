@@ -121,8 +121,8 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
     try {
       const response = await createBlog(data);
-      toast.success(response?.message || `Blog ${status === "draft" ? "draft saved" : "created"} successfully!`);
-      onBlogAdded(); // Refresh the blog list
+      toast.success(response?.message || (status === "draft" ? "Draft saved!" : "Blog created successfully!"));
+      onBlogAdded();
       handleClose();
     } catch (error) {
       toast.error(error?.response?.data?.message || "Failed to save blog");
@@ -137,16 +137,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
   };
 
   const handleCancelClick = () => {
-    const hasUnsavedChanges = formData.title || formData.content || formData.author || formData.image;
-    if (hasUnsavedChanges) {
-      if (window.confirm("You have unsaved changes. Would you like to save this blog as a draft before closing?")) {
-        saveBlog("draft");
-      } else {
-        handleClose();
-      }
-    } else {
-      handleClose();
-    }
+    handleClose();
   };
 
   const handleClose = () => {
@@ -337,12 +328,12 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               className="bg-primary text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold"
               disabled={loading}
             >
-              {loading ? <SvgSpinner /> : "Publish Blog"}
+              {loading ? <SvgSpinner /> : "Create Blog"}
             </button>
             <button
               type="button"
               onClick={() => saveBlog("draft")}
-              className="bg-secondary text-dark px-4 py-2 rounded flex-1 cursor-pointer font-semibold border border-primary/20 hover:bg-primary/10"
+              className="bg-gray-100 text-gray-800 border border-gray-300 px-4 py-2 rounded flex-1 cursor-pointer font-semibold hover:bg-gray-200"
               disabled={loading}
             >
               Save Draft

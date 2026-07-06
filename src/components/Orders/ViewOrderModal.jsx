@@ -344,33 +344,61 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
         </div>
 
         {/* Price Breakdown */}
-        <div className="bg-gray-100 p-4 rounded-lg mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-2">
-            Price Breakdown
-          </h2>
-          <div className="flex justify-between text-gray-600">
-            <p>Subtotal</p>
-            <p>${Number(order.totalPrice.$numberDecimal)}</p>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <p>Shipping Charges</p>
-            <p>-${Number(order.shipment)}</p>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <p>Discount</p>
-            <p>-${Number(order.discount.$numberDecimal)}</p>
-          </div>
-          <div className="flex justify-between border-t pt-2 text-lg font-semibold">
-            <p>Total</p>
-            <p>
-              $
-              {(
-                Number(order.totalPrice.$numberDecimal) -
-                Number(order.discount.$numberDecimal)
-              ).toFixed(2)}
-            </p>
-          </div>
-        </div>
+        {(() => {
+          const totalUsd = Number(order.totalPrice?.$numberDecimal || 0);
+          const discountUsd = Number(order.discount?.$numberDecimal || 0);
+          const shipmentUsd = Number(order.shipment || 0);
+          const vatUsd = Number(order.vat?.$numberDecimal || 0);
+          const walletDiscountUsd = Number(order.walletDiscount?.$numberDecimal || 0);
+          const rewardUsd = Number(order.rewardPoints || 0);
+
+          // Calculate subtotal by backing out other values
+          const subtotalUsd = totalUsd - shipmentUsd - vatUsd + discountUsd + walletDiscountUsd + rewardUsd;
+
+          return (
+            <div className="bg-gray-100 p-4 rounded-lg mb-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                Price Breakdown
+              </h2>
+              <div className="flex justify-between text-gray-600 mb-1">
+                <p>Subtotal</p>
+                <p>${subtotalUsd.toFixed(2)}</p>
+              </div>
+              <div className="flex justify-between text-gray-600 mb-1">
+                <p>Shipping Charges</p>
+                <p>{shipmentUsd > 0 ? `+$${shipmentUsd.toFixed(2)}` : "Free"}</p>
+              </div>
+              {discountUsd > 0 && (
+                <div className="flex justify-between text-gray-600 mb-1">
+                  <p>Discount</p>
+                  <p>-${discountUsd.toFixed(2)}</p>
+                </div>
+              )}
+              {rewardUsd > 0 && (
+                <div className="flex justify-between text-gray-600 mb-1">
+                  <p>Reward Points Used</p>
+                  <p>-${rewardUsd.toFixed(2)}</p>
+                </div>
+              )}
+              {walletDiscountUsd > 0 && (
+                <div className="flex justify-between text-gray-600 mb-1">
+                  <p>Wallet Credit Used</p>
+                  <p>-${walletDiscountUsd.toFixed(2)}</p>
+                </div>
+              )}
+              {vatUsd > 0 && (
+                <div className="flex justify-between text-gray-600 mb-1">
+                  <p>VAT (5%)</p>
+                  <p>+${vatUsd.toFixed(2)}</p>
+                </div>
+              )}
+              <div className="flex justify-between border-t pt-2 mt-2 text-lg font-semibold">
+                <p>Total</p>
+                <p>${totalUsd.toFixed(2)}</p>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Coupon Info */}
         {order.promoCode && (
