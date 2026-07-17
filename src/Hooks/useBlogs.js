@@ -9,7 +9,7 @@ export const useBlogs = () => {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/blogs");
+      const response = await api.get("/blogs?admin=true");
       setBlogs(response.data.data);
       setLoading(false);
     } catch (error) {

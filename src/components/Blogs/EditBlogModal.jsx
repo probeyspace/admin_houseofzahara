@@ -239,7 +239,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Publishing Date *
+              Publishing Date
             </label>
             <input
               type="date"
@@ -247,7 +247,6 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               value={formData.publishDate}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
             />
           </div>
 
