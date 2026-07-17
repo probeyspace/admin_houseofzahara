@@ -26,6 +26,8 @@ import BlogCategoryList from "./components/Blogs/BlogCategoryList";
 import PreBookingList from "./components/PreBookings/PreBookingList";
 import WalletConfig from "./Pages/WalletConfig";
 import WalletManagement from "./Pages/WalletManagement";
+import MembershipConfig from "./Pages/MembershipConfig";
+import MembershipManagement from "./Pages/MembershipManagement";
 import SeoSettings from "./Pages/SeoSettings";
 // import Articles from "./components/Articles/Articles";
 // import SearchedLogs from "./components/Searched/SearchedLogs";
@@ -59,6 +61,8 @@ function App() {
             <Route path="blog-categories" element={<BlogCategoryList />} />
             <Route path="wallet-config" element={<WalletConfig />} />
             <Route path="wallet-management" element={<WalletManagement />} />
+            <Route path="membership-config" element={<MembershipConfig />} />
+            <Route path="membership-management" element={<MembershipManagement />} />
             <Route path="seo-settings" element={<SeoSettings />} />
 
             {/* <Route path="searched" element={<SearchedLogs />} />  */}

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { fetchUnseenMembershipCount } from "../services/membershipApi";
 import { MdArticle, MdDashboard, MdLock, MdSearch, MdAccountBalanceWallet, MdSettings } from "react-icons/md";
 import { BsEyeglasses } from "react-icons/bs";
 import { FaUsers, FaUserPlus, FaPlus, FaCommentDots } from "react-icons/fa";
@@ -10,12 +11,30 @@ import { TbCategoryPlus } from "react-icons/tb";
 import { FaStore } from "react-icons/fa";
 const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
   const [dropdownsOpen, setDropdownsOpen] = useState({});
+  const [unseenMemberships, setUnseenMemberships] = useState(0);
   const toggleDropdown = (text) => {
     setDropdownsOpen((prev) => ({
       ...prev,
       [text]: !prev[text],
     }));
   };
+
+  // New-membership red-dot badge: poll every 60s, and clear instantly when
+  // the Membership Management page reports the list was seen
+  useEffect(() => {
+    const load = () =>
+      fetchUnseenMembershipCount()
+        .then(setUnseenMemberships)
+        .catch(() => {});
+    load();
+    const interval = setInterval(load, 60000);
+    const onSeen = () => setUnseenMemberships(0);
+    window.addEventListener("memberships-seen", onSeen);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("memberships-seen", onSeen);
+    };
+  }, []);
 
   const menuItems = [
     { to: "/", icon: <MdDashboard />, text: "Dashboard" },
@@ -113,6 +132,17 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
         text: "Wallet Management",
       },
       {
+        to: "/membership-config",
+        icon: <MdSettings />,
+        text: "Membership Config",
+      },
+      {
+        to: "/membership-management",
+        icon: <MdDashboard />,
+        text: "Membership Management",
+        showDot: unseenMemberships > 0,
+      },
+      {
         to: "/seo-settings",
         icon: <MdSettings />,
         text: "SEO Settings",
@@ -173,14 +203,19 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
   );
 };
 
-const NavItem = ({ to, icon, text, toggleSidebar }) => (
+const NavItem = ({ to, icon, text, toggleSidebar, showDot }) => (
   <Link
     to={to}
     onClick={toggleSidebar}
     className="flex items-center gap-3 p-2 hover:transform hover:scale-105 transition ease-in-out duration-300 cursor-pointer rounded-md"
   >
     {icon}
-    <span>{text}</span>
+    <span className="relative">
+      {text}
+      {showDot && (
+        <span className="absolute -top-1 -right-3 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+      )}
+    </span>
   </Link>
 );
 

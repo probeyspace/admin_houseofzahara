@@ -319,41 +319,68 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
             Order Items
           </h2>
           <div className="space-y-3">
-            {order.items?.map((item) => (
-              <div
-                key={item._id}
-                className="flex justify-between items-center p-3 border rounded-lg bg-gray-50"
-              >
-                <div>
-                  <p className="text-gray-800 font-medium">
-                    {item.product?.name}
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Qty: {item.quantity} × ${Number(item.price.$numberDecimal)}
+            {order.items?.map((item) => {
+              const unitPrice = Number(item.price?.$numberDecimal ?? item.price ?? 0);
+              const isGift = unitPrice === 0 && order.membership?.giftIncluded;
+              return (
+                <div
+                  key={item._id}
+                  className={`flex justify-between items-center p-3 border rounded-lg ${
+                    isGift ? "bg-amber-50 border-amber-200" : "bg-gray-50"
+                  }`}
+                >
+                  <div>
+                    <p className="text-gray-800 font-medium">
+                      {item.product?.name}
+                      {isGift && (
+                        <span className="ml-2 px-2 py-0.5 text-xs bg-amber-200 text-amber-800 rounded-full font-semibold">
+                          🎁 FREE MEMBER GIFT
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Qty: {item.quantity} × ${unitPrice}
+                    </p>
+                  </div>
+                  <p className={`font-semibold ${isGift ? "text-amber-700" : "text-gray-800"}`}>
+                    {isGift ? "FREE" : `$${(unitPrice * item.quantity).toFixed(2)}`}
                   </p>
                 </div>
-                <p className="text-gray-800 font-semibold">
-                  $
-                  {(Number(item.price.$numberDecimal) * item.quantity).toFixed(
-                    2
-                  )}
-                </p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
         {/* Price Breakdown */}
         {(() => {
+          const AED_RATE = 3.6725;
           const totalUsd = Number(order.totalPrice?.$numberDecimal || 0);
           const discountUsd = Number(order.discount?.$numberDecimal || 0);
           const shipmentUsd = Number(order.shipment || 0);
           const vatUsd = Number(order.vat?.$numberDecimal || 0);
           const walletDiscountUsd = Number(order.walletDiscount?.$numberDecimal || 0);
           const rewardUsd = Number(order.rewardPoints || 0);
+          const membershipDiscountUsd = Number(
+            order.membershipDiscount?.$numberDecimal || 0
+          );
+          const membershipFeeAed = order.membership?.purchasedInOrder
+            ? Number(order.membership?.feeAed || 0)
+            : 0;
+          const membershipFeeUsd = membershipFeeAed / AED_RATE;
+          const membershipUnits = Number(
+            order.membership?.discountUnitsUsed || 0
+          );
 
           // Calculate subtotal by backing out other values
-          const subtotalUsd = totalUsd - shipmentUsd - vatUsd + discountUsd + walletDiscountUsd + rewardUsd;
+          const subtotalUsd =
+            totalUsd -
+            shipmentUsd -
+            vatUsd -
+            membershipFeeUsd +
+            discountUsd +
+            membershipDiscountUsd +
+            walletDiscountUsd +
+            rewardUsd;
 
           return (
             <div className="bg-gray-100 p-4 rounded-lg mb-6">
@@ -364,6 +391,15 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                 <p>Subtotal</p>
                 <p>${subtotalUsd.toFixed(2)}</p>
               </div>
+              {membershipDiscountUsd > 0 && (
+                <div className="flex justify-between text-amber-700 mb-1">
+                  <p>
+                    Member Discount
+                    {membershipUnits > 0 ? ` (${membershipUnits} items)` : ""}
+                  </p>
+                  <p>-${membershipDiscountUsd.toFixed(2)}</p>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600 mb-1">
                 <p>Shipping Charges</p>
                 <p>{shipmentUsd > 0 ? `+$${shipmentUsd.toFixed(2)}` : "Free"}</p>
@@ -372,6 +408,12 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
                 <div className="flex justify-between text-gray-600 mb-1">
                   <p>Discount</p>
                   <p>-${discountUsd.toFixed(2)}</p>
+                </div>
+              )}
+              {membershipFeeUsd > 0 && (
+                <div className="flex justify-between text-amber-700 mb-1">
+                  <p>Gold Membership Fee (AED {membershipFeeAed})</p>
+                  <p>+${membershipFeeUsd.toFixed(2)}</p>
                 </div>
               )}
               {rewardUsd > 0 && (
@@ -399,6 +441,52 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
             </div>
           );
         })()}
+
+        {/* Membership Info */}
+        {order.membership?.membershipId && (
+          <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg mb-6">
+            <h2 className="text-lg font-semibold text-amber-800 mb-2">
+              👑 Gold Membership
+            </h2>
+            <div className="space-y-1 text-sm text-amber-700">
+              {order.membership.purchasedInOrder && (
+                <p>
+                  <span className="font-medium text-amber-900">
+                    Membership purchased with this order:
+                  </span>{" "}
+                  AED {order.membership.feeAed}
+                </p>
+              )}
+              {Number(order.membership.discountUnitsUsed) > 0 && (
+                <p>
+                  <span className="font-medium text-amber-900">
+                    Member discount applied on:
+                  </span>{" "}
+                  {order.membership.discountUnitsUsed} item unit
+                  {order.membership.discountUnitsUsed === 1 ? "" : "s"}
+                </p>
+              )}
+              {order.membership.giftIncluded && (
+                <p>
+                  <span className="font-medium text-amber-900">
+                    Free member gift included
+                  </span>{" "}
+                  — worth $
+                  {Number(
+                    order.membership.giftAmount?.$numberDecimal || 0
+                  ).toFixed(2)}
+                  . Make sure it's packed with this shipment.
+                </p>
+              )}
+              {order.membership.benefitsReleased && (
+                <p className="text-red-600 font-medium">
+                  Benefits were restored to the member (order failed or was
+                  cancelled).
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Coupon Info */}
         {order.promoCode && (
