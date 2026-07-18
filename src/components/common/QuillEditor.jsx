@@ -3,9 +3,43 @@ import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import api from "../../Api/api";
 
-const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
+const FULL_TOOLBAR = [
+  [{ header: [1, 2, 3, 4, 5, 6, false] }],
+  ["bold", "italic", "underline", "strike"],
+  [{ color: [] }, { background: [] }],
+  [{ list: "ordered" }, { list: "bullet" }],
+  [{ indent: "-1" }, { indent: "+1" }],
+  [{ align: [] }],
+  ["link", "image", "video"],
+  ["blockquote", "code-block"],
+  ["clean"],
+];
+
+const SIMPLE_TOOLBAR = [
+  [{ header: [2, 3, false] }],
+  ["bold", "italic", "underline"],
+  [{ list: "ordered" }, { list: "bullet" }],
+  ["link"],
+  ["clean"],
+];
+
+const QuillEditor = ({
+  value,
+  onChange,
+  placeholder,
+  error,
+  height = "300px",
+  toolbar = "full",
+  dir = "ltr",
+  ...props
+}) => {
   const quillRef = useRef(null);
   const editorRef = useRef(null);
+  const onChangeRef = useRef(onChange);
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
 
   useEffect(() => {
     if (editorRef.current && !quillRef.current) {
@@ -45,7 +79,7 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
                   if (imgs.length > 0) {
                     imgs[imgs.length - 1].setAttribute("alt", altText || "");
                     // Trigger onChange so the updated HTML (with alt) is saved
-                    onChange(quill.root.innerHTML);
+                    onChangeRef.current(quill.root.innerHTML);
                   }
                 }, 100);
               }
@@ -62,20 +96,8 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
         placeholder: placeholder || "Write something...",
         modules: {
           toolbar: {
-            container: [
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
-              ["bold", "italic", "underline", "strike"],
-              [{ color: [] }, { background: [] }],
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ indent: "-1" }, { indent: "+1" }],
-              [{ align: [] }],
-              ["link", "image", "video"],
-              ["blockquote", "code-block"],
-              ["clean"],
-            ],
-            handlers: {
-              image: imageHandler,
-            },
+            container: toolbar === "simple" ? SIMPLE_TOOLBAR : FULL_TOOLBAR,
+            handlers: toolbar === "simple" ? {} : { image: imageHandler },
           },
         },
         formats: [
@@ -98,6 +120,8 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
         ],
       });
 
+      quill.root.setAttribute("dir", dir);
+
       // Set initial content
       if (value) {
         quill.root.innerHTML = value;
@@ -105,8 +129,11 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
 
       // Handle text change
       quill.on("text-change", () => {
-        const content = quill.root.innerHTML;
-        onChange(content);
+        // Quill leaves "<p><br></p>" behind when cleared — report a real empty value
+        const content = quill.getText().trim() === "" && quill.root.querySelector("img, iframe, video") === null
+          ? ""
+          : quill.root.innerHTML;
+        onChangeRef.current(content);
       });
 
       quillRef.current = quill;
@@ -115,9 +142,15 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
 
   // Update content when value prop changes
   useEffect(() => {
-    if (quillRef.current && value !== quillRef.current.root.innerHTML) {
-      quillRef.current.root.innerHTML = value || "";
-    }
+    const quill = quillRef.current;
+    if (!quill) return;
+    if ((value || "") === quill.root.innerHTML) return;
+    // A cleared editor reports "" while its DOM is "<p><br></p>" — don't reset it
+    const editorIsEmpty =
+      quill.getText().trim() === "" &&
+      quill.root.querySelector("img, iframe, video") === null;
+    if (!value && editorIsEmpty) return;
+    quill.root.innerHTML = value || "";
   }, [value]);
 
   return (
@@ -127,7 +160,7 @@ const QuillEditor = ({ value, onChange, placeholder, error, ...props }) => {
         className={`quill-editor ${
           error ? "border-red-500" : "border-gray-300"
         } rounded-md`}
-        style={{ height: "300px", marginBottom: "16px" }}
+        style={{ height, marginBottom: "16px" }}
         {...props}
       />
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

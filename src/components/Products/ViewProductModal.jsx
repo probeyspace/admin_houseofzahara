@@ -6,9 +6,20 @@ import { Link } from "react-router-dom";
 function ViewProductModal({ isOpen, onClose, product }) {
   if (!product) return null;
 
+  // Bilingual fields may hold Quill HTML (new) or plain text (legacy)
+  const renderHtmlValue = (html, className = "") =>
+    html ? (
+      <span
+        className={`[&_p]:inline-block [&_ul]:list-disc [&_ol]:list-decimal [&_ul]:pl-4 [&_ol]:pl-4 ${className}`}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    ) : (
+      <span>N/A</span>
+    );
+
   const renderBilingual = (field) => {
     if (!field) return "N/A";
-    if (typeof field === "string") return field;
+    if (typeof field === "string") return renderHtmlValue(field);
     if (typeof field === "object") {
       return (
         <div className="space-y-1">
@@ -16,13 +27,13 @@ function ViewProductModal({ isOpen, onClose, product }) {
             <span className="text-[10px] font-bold bg-gray-100 px-1 rounded">
               EN
             </span>
-            <span>{field.en || "N/A"}</span>
+            {renderHtmlValue(field.en)}
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[10px] font-bold bg-gray-100 px-1 rounded">
               AR
             </span>
-            <span className="font-arabic">{field.ar || "N/A"}</span>
+            {renderHtmlValue(field.ar, "font-arabic")}
           </div>
         </div>
       );

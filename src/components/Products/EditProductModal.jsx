@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { updateProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { updateProductData } from "../../store/slices/productSlice";
+import QuillEditor from "../common/QuillEditor";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -88,16 +89,17 @@ const LabeledInput = ({ label, name, type = "text", value, onChange, required, p
   </div>
 );
 
-const BilingualTextarea = ({ label, fieldKey, value, onChange, lang, rows = 3 }) => (
+const BilingualQuillEditor = ({ label, fieldKey, value, onChange, lang, height = "160px" }) => (
   <div>
     <label className="block text-xs text-gray-500 mb-0.5">{label}</label>
-    <textarea
+    <QuillEditor
+      key={lang}
       value={value?.[lang] || ""}
-      onChange={(e) => onChange(fieldKey, { ...value, [lang]: e.target.value })}
+      onChange={(html) => onChange(fieldKey, { ...value, [lang]: html })}
       placeholder={`${label} in ${lang === "en" ? "English" : "Arabic"}`}
-      className="w-full border border-gray-300 p-2 rounded text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-      rows={rows}
       dir={lang === "ar" ? "rtl" : "ltr"}
+      toolbar="simple"
+      height={height}
     />
   </div>
 );
@@ -435,23 +437,23 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
             {/* ── § Description ── */}
             <Section title="Description" sectionKey="description" openSections={openSections} toggle={toggleSection}>
-              <BilingualTextarea
+              <BilingualQuillEditor
                 label={`Description (${lang === "en" ? "English" : "Arabic"})`}
                 fieldKey="description"
                 value={formData.description}
                 onChange={handleBilingualChange}
                 lang={lang}
-                rows={4}
+                height="200px"
               />
             </Section>
 
             {/* ── § Product Details ── */}
             <Section title="Product Details" sectionKey="productDetails" openSections={openSections} toggle={toggleSection}>
               <div className="space-y-3">
-                <BilingualTextarea label={`How to Use (${lang === "en" ? "English" : "Arabic"})`} fieldKey="howToUse" value={formData.howToUse} onChange={handleBilingualChange} lang={lang} rows={2} />
-                <BilingualTextarea label={`Added Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="addedBenefits" value={formData.addedBenefits} onChange={handleBilingualChange} lang={lang} rows={2} />
-                <BilingualTextarea label={`Visible Results (${lang === "en" ? "English" : "Arabic"})`} fieldKey="visibleResults" value={formData.visibleResults} onChange={handleBilingualChange} lang={lang} rows={2} />
-                <BilingualTextarea label={`Primary Purpose (${lang === "en" ? "English" : "Arabic"})`} fieldKey="primaryPurpose" value={formData.primaryPurpose} onChange={handleBilingualChange} lang={lang} rows={2} />
+                <BilingualQuillEditor label={`How to Use (${lang === "en" ? "English" : "Arabic"})`} fieldKey="howToUse" value={formData.howToUse} onChange={handleBilingualChange} lang={lang} />
+                <BilingualQuillEditor label={`Added Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="addedBenefits" value={formData.addedBenefits} onChange={handleBilingualChange} lang={lang} />
+                <BilingualQuillEditor label={`Visible Results (${lang === "en" ? "English" : "Arabic"})`} fieldKey="visibleResults" value={formData.visibleResults} onChange={handleBilingualChange} lang={lang} />
+                <BilingualQuillEditor label={`Primary Purpose (${lang === "en" ? "English" : "Arabic"})`} fieldKey="primaryPurpose" value={formData.primaryPurpose} onChange={handleBilingualChange} lang={lang} />
               </div>
             </Section>
 
