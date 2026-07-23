@@ -22,6 +22,7 @@ const INITIAL_FORM = {
   categories: [],
   subcategories: [],
   howToUse: { en: "", ar: "" },
+  keyBenefits: { en: "", ar: "" },
   addedBenefits: { en: "", ar: "" },
   visibleResults: { en: "", ar: "" },
   primaryPurpose: { en: "", ar: "" },
@@ -268,6 +269,8 @@ const AddProductModal = ({ isOpen, onClose }) => {
     data.append("categories", JSON.stringify(formData.categories));
     data.append("subcategories", JSON.stringify(formData.subcategories));
     data.append("howToUse", JSON.stringify(formData.howToUse));
+    data.append("keyBenefits_en", formData.keyBenefits.en);
+    data.append("keyBenefits_ar", formData.keyBenefits.ar);
     data.append("addedBenefits", JSON.stringify(formData.addedBenefits));
     data.append("visibleResults", JSON.stringify(formData.visibleResults));
     data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
@@ -399,6 +402,7 @@ const AddProductModal = ({ isOpen, onClose }) => {
             <Section title="Product Details" sectionKey="productDetails" openSections={openSections} toggle={toggleSection}>
               <div className="space-y-3">
                 <BilingualQuillEditor label={`How to Use (${lang === "en" ? "English" : "Arabic"})`} fieldKey="howToUse" value={formData.howToUse} onChange={handleBilingualChange} lang={lang} />
+                <BilingualQuillEditor label={`Key Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="keyBenefits" value={formData.keyBenefits} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Added Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="addedBenefits" value={formData.addedBenefits} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Visible Results (${lang === "en" ? "English" : "Arabic"})`} fieldKey="visibleResults" value={formData.visibleResults} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Primary Purpose (${lang === "en" ? "English" : "Arabic"})`} fieldKey="primaryPurpose" value={formData.primaryPurpose} onChange={handleBilingualChange} lang={lang} />

@@ -150,6 +150,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     categories: [],
     subcategories: [],
     howToUse: { en: "", ar: "" },
+    keyBenefits: { en: "", ar: "" },
     addedBenefits: { en: "", ar: "" },
     visibleResults: { en: "", ar: "" },
     primaryPurpose: { en: "", ar: "" },
@@ -226,6 +227,10 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       categories: categoryIds,
       subcategories: subcategoryIds,
       howToUse: normalizeBilingual(productData.howToUse),
+      keyBenefits: {
+        en: productData.keyBenefits_en || "",
+        ar: productData.keyBenefits_ar || ""
+      },
       addedBenefits: normalizeBilingual(productData.addedBenefits),
       visibleResults: normalizeBilingual(productData.visibleResults),
       primaryPurpose: normalizeBilingual(productData.primaryPurpose),
@@ -337,6 +342,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("categories", JSON.stringify(formData.categories));
     data.append("subcategories", JSON.stringify(formData.subcategories));
     data.append("howToUse", JSON.stringify(formData.howToUse));
+    data.append("keyBenefits_en", formData.keyBenefits.en);
+    data.append("keyBenefits_ar", formData.keyBenefits.ar);
     data.append("addedBenefits", JSON.stringify(formData.addedBenefits));
     data.append("visibleResults", JSON.stringify(formData.visibleResults));
     data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
@@ -451,6 +458,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
             <Section title="Product Details" sectionKey="productDetails" openSections={openSections} toggle={toggleSection}>
               <div className="space-y-3">
                 <BilingualQuillEditor label={`How to Use (${lang === "en" ? "English" : "Arabic"})`} fieldKey="howToUse" value={formData.howToUse} onChange={handleBilingualChange} lang={lang} />
+                <BilingualQuillEditor label={`Key Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="keyBenefits" value={formData.keyBenefits} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Added Benefits (${lang === "en" ? "English" : "Arabic"})`} fieldKey="addedBenefits" value={formData.addedBenefits} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Visible Results (${lang === "en" ? "English" : "Arabic"})`} fieldKey="visibleResults" value={formData.visibleResults} onChange={handleBilingualChange} lang={lang} />
                 <BilingualQuillEditor label={`Primary Purpose (${lang === "en" ? "English" : "Arabic"})`} fieldKey="primaryPurpose" value={formData.primaryPurpose} onChange={handleBilingualChange} lang={lang} />

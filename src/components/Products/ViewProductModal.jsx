@@ -158,6 +158,14 @@ function ViewProductModal({ isOpen, onClose, product }) {
                       </div>
                       <div>
                         <strong className="block text-gray-500 mb-1 uppercase text-[10px] tracking-wider">
+                          Key Benefits
+                        </strong>
+                        <div className="bg-white p-3 rounded border border-gray-200">
+                          {renderBilingual({ en: product.keyBenefits_en, ar: product.keyBenefits_ar })}
+                        </div>
+                      </div>
+                      <div>
+                        <strong className="block text-gray-500 mb-1 uppercase text-[10px] tracking-wider">
                           Added Benefits
                         </strong>
                         <div className="bg-white p-3 rounded border border-gray-200">
