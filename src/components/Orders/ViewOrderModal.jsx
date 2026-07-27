@@ -100,6 +100,14 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
               {order?.paymentStatus}
             </span>
           </p>
+          {order?.tabbyPaymentId && (
+            <p>
+              <span className="font-medium">Tabby Payment ID:</span>{" "}
+              <span className="font-mono bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-200 text-xs">
+                {order.tabbyPaymentId}
+              </span>
+            </p>
+          )}
           {order?.zohoSalesOrderId && (
             <p>
               <span className="font-medium">Zoho Sales Order ID:</span>{" "}

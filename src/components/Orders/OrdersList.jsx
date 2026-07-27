@@ -112,7 +112,7 @@ function OrderList() {
       : statusFilter ? order.status === statusFilter : true;
 
     const matchesPaymentMethod = paymentMethodFilter
-      ? order.payment?.paymentMethod === paymentMethodFilter
+      ? (order.paymentMethod || order.payment?.paymentMethod) === paymentMethodFilter
       : true;
 
     const matchesDateRange =
@@ -149,8 +149,8 @@ function OrderList() {
         "Customer Phone": order.user?.phone || order.address?.phone || "N/A",
         "Customer Type": order.user ? "Registered" : "Guest",
         "Order Status": order.status,
-        "Payment Method": order.payment?.paymentMethod || "N/A",
-        "Payment Status": order.payment?.paymentStatus || "N/A",
+        "Payment Method": order.paymentMethod || order.payment?.paymentMethod || "N/A",
+        "Payment Status": order.paymentStatus || order.payment?.paymentStatus || "N/A",
         "Total Price": order.totalPrice?.$numberDecimal || order.totalPrice,
         "Shipment Fee": order.shipment,
         Discount: order.discount?.$numberDecimal || order.discount || 0,
@@ -288,6 +288,9 @@ function OrderList() {
               </option>
               <option key="Online" value="ONLINE">
                 Online
+              </option>
+              <option key="Tabby" value="TABBY">
+                Tabby Pay Later
               </option>
             </select>
           </div>
