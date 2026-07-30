@@ -86,10 +86,6 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     }
 
     if (status === "published") {
-      if (!formData.image) {
-        toast.error("Please select an image");
-        return;
-      }
       if (!formData.content || formData.content === "<p><br></p>") {
         toast.warn("Please enter blog content");
         return;
@@ -287,14 +283,13 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blog Image *
+              Blog Image
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
               className="border border-gray-300 px-3 py-2 rounded-md focus:ring-2 focus:ring-blue-400 w-full"
-              required
             />
           </div>
 

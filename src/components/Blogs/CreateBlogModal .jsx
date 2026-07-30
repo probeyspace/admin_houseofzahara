@@ -29,8 +29,7 @@ function CreateBlogModal({ isOpen, onClose, fetchBlogs }) {
       !form.title ||
       !form.author ||
       !form.description ||
-      !form.content ||
-      !coverImage
+      !form.content
     ) {
       return toast.error("All required fields must be filled.");
     }
@@ -40,7 +39,9 @@ function CreateBlogModal({ isOpen, onClose, fetchBlogs }) {
       formData.append(key, value);
     });
 
-    formData.append("coverImage", coverImage);
+    if (coverImage) {
+      formData.append("coverImage", coverImage);
+    }
     images.forEach((img) => formData.append("images", img));
 
     try {
@@ -123,13 +124,12 @@ function CreateBlogModal({ isOpen, onClose, fetchBlogs }) {
 
           {/* Cover Image */}
           <div>
-            <label className="font-medium">Cover Image *</label>
+            <label className="font-medium">Cover Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setCoverImage(e.target.files[0])}
               className="w-full border p-2 rounded"
-              required
             />
           </div>
 
