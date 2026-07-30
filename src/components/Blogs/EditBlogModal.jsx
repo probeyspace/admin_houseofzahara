@@ -319,7 +319,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Image Alt Text *
+              Image Alt Text
             </label>
             <input
               type="text"
@@ -328,7 +328,6 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               value={formData.imageAlt}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
             />
             {imagePreview && (
               <div className="mt-2">
