@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaCalendarAlt, FaCheck, FaTimes } from "react-icons/fa";
 import { useCoupons } from "../../Hooks/useCoupons";
 import api from "../../Api/api";
 import EditCouponModal from "./EditCouponModal.jsx";
 import AddCouponModal from "./AddCouponModal.jsx";
+import { toast } from "react-toastify";
 
 function CouponsList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +14,12 @@ function CouponsList() {
   const { loading, coupons, setCoupons, fetchCoupons } = useCoupons();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // Expiry Date Management States
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [bulkExpiryDate, setBulkExpiryDate] = useState("");
+  const [editingExpiryId, setEditingExpiryId] = useState(null);
+  const [editExpiryDate, setEditExpiryDate] = useState("");
 
   const handleEdit = (coupon) => {
     setSelectedCoupon(coupon);
@@ -25,10 +32,83 @@ function CouponsList() {
         await api.delete(`/promoCode/${id}`);
         const updatedCoupons = coupons.filter((coupon) => coupon._id !== id);
         setCoupons(updatedCoupons);
+        toast.success("Coupon deleted successfully");
       } catch (error) {
         toast.error(error?.response?.data?.message || "Delete failed");
         console.error("Error deleting coupon:", error);
       }
+    }
+  };
+
+  // Selection Handlers
+  const handleSelectAll = (e, paginatedCoupons) => {
+    const pageIds = paginatedCoupons.map((c) => c._id);
+    if (e.target.checked) {
+      setSelectedIds((prev) => [...new Set([...prev, ...pageIds])]);
+    } else {
+      setSelectedIds((prev) => prev.filter((id) => !pageIds.includes(id)));
+    }
+  };
+
+  const handleSelectOne = (id) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const handleSelectAllAcrossPages = () => {
+    const allIds = filteredCoupons?.map((c) => c._id) || [];
+    setSelectedIds(allIds);
+  };
+
+  // Bulk Expiry Update
+  const handleBulkUpdateExpiry = async () => {
+    if (!bulkExpiryDate) {
+      toast.warn("Please select a valid expiry date");
+      return;
+    }
+    if (selectedIds.length === 0) {
+      toast.warn("No coupons selected");
+      return;
+    }
+    try {
+      const response = await api.put("/promoCode/bulk-update/expiry", {
+        ids: selectedIds,
+        expiresAt: bulkExpiryDate,
+      });
+      toast.success(response.data.message || "Bulk update successful");
+      setSelectedIds([]);
+      setBulkExpiryDate("");
+      fetchCoupons();
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Bulk update failed");
+    }
+  };
+
+  // Inline Expiry Edit Handlers
+  const handleStartEditExpiry = (coupon) => {
+    setEditingExpiryId(coupon._id);
+    setEditExpiryDate(coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : "");
+  };
+
+  const handleSaveInlineExpiry = async (id) => {
+    if (!editExpiryDate) {
+      toast.warn("Please select a valid expiry date");
+      return;
+    }
+    try {
+      const response = await api.put(`/promoCode/${id}`, {
+        expiresAt: editExpiryDate,
+      });
+      toast.success(response.data.message || "Expiry date updated successfully");
+      setEditingExpiryId(null);
+      fetchCoupons();
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to update expiry date");
     }
   };
 
@@ -43,6 +123,8 @@ function CouponsList() {
     (page - 1) * perPage,
     page * perPage
   );
+
+  const isAllPageSelected = paginatedCoupons?.length > 0 && paginatedCoupons.every(c => selectedIds.includes(c._id));
 
   return (
     <div className="max-w-6xl mx-auto p-2 sm:p-4 bg-white shadow-md rounded-lg">
@@ -76,66 +158,123 @@ function CouponsList() {
           <table className="w-full text-sm">
             <thead className="bg-gray-50 text-gray-600">
               <tr className="text-left border-b border-gray-100">
+                <th className="p-3 font-medium w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={isAllPageSelected}
+                    onChange={(e) => handleSelectAll(e, paginatedCoupons || [])}
+                    className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer transition-colors"
+                  />
+                </th>
                 <th className="p-3 font-medium">ID</th>
                 <th className="p-3 font-medium">Code</th>
                 <th className="p-3 font-medium">Discount Type</th>
                 <th className="p-3 font-medium">Discount</th>
-                <th className="p-3 font-medium hidden sm:table-cell">Expiry Date</th>
+                <th className="p-3 font-medium">Expiry Date</th>
                 <th className="p-3 font-medium">Visibility</th>
                 <th className="p-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedCoupons?.map((coupon, index) => (
-                <tr
-                  key={coupon._id}
-                  className="hover:bg-gray-50 text-gray-700 border-b border-gray-50 last:border-b-0 transition-colors"
-                >
-                  <td className="p-2 text-sm sm:text-base">
-                    {index + 1 + (page - 1) * perPage}
-                  </td>
-                  <td className="p-2 text-sm sm:text-base font-medium">
-                    {coupon.code}
-                  </td>
-                  <td className="p-2 text-sm sm:text-base">
-                    {coupon.discountType}
-                  </td>
-                  <td className="p-2 text-sm sm:text-base">
-                    {coupon.discountValue}
-                    {coupon.discountType === "Percentage" ? "%" : ""}
-                  </td>
-                  <td className="p-2 text-sm sm:text-base hidden sm:table-cell">
-                    {new Date(coupon.expiresAt).toLocaleDateString()}
-                  </td>
-                  <td className="p-2 text-sm sm:text-base">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        coupon.isHidden
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}
-                    >
-                      {coupon.isHidden ? "Hidden" : "Public"}
-                    </span>
-                  </td>
-                  <td className="p-2 flex space-x-2 sm:space-x-3">
-                    <button
-                      onClick={() => handleEdit(coupon)}
-                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
-                      aria-label="Edit coupon"
-                    >
-                      <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(coupon._id)}
-                      className="text-gray-600 hover:text-gray-800 cursor-pointer"
-                      aria-label="Delete coupon"
-                    >
-                      <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {paginatedCoupons?.map((coupon, index) => {
+                const isSelected = selectedIds.includes(coupon._id);
+                return (
+                  <tr
+                    key={coupon._id}
+                    className={`text-gray-700 border-b border-gray-50 last:border-b-0 transition-all duration-200 ${
+                      isSelected
+                        ? "bg-primary/10 hover:bg-primary/20 font-medium"
+                        : "hover:bg-gray-50/80"
+                    }`}
+                  >
+                    <td className="p-2 w-10 text-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleSelectOne(coupon._id)}
+                        className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer transition-colors"
+                      />
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      {index + 1 + (page - 1) * perPage}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base font-medium">
+                      {coupon.code}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      {coupon.discountType}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      {coupon.discountValue}
+                      {coupon.discountType === "Percentage" ? "%" : ""}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      {editingExpiryId === coupon._id ? (
+                        <div className="flex items-center gap-1.5 animate-fadeIn">
+                          <input
+                            type="date"
+                            value={editExpiryDate}
+                            onChange={(e) => setEditExpiryDate(e.target.value)}
+                            className="border border-gray-400 p-1 rounded text-sm w-36 outline-none focus:ring-1 focus:ring-primary"
+                          />
+                          <button
+                            onClick={() => handleSaveInlineExpiry(coupon._id)}
+                            className="text-emerald-600 hover:text-emerald-800 p-1 cursor-pointer transition"
+                            title="Save"
+                          >
+                            <FaCheck size={14} />
+                          </button>
+                          <button
+                            onClick={() => setEditingExpiryId(null)}
+                            className="text-red-600 hover:text-red-800 p-1 cursor-pointer transition"
+                            title="Cancel"
+                          >
+                            <FaTimes size={14} />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <button
+                            onClick={() => handleStartEditExpiry(coupon)}
+                            className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 border border-gray-200 text-gray-700 hover:bg-primary/20 hover:text-dark hover:border-primary/40 transition-all duration-200 cursor-pointer shadow-sm group"
+                            title="Click to edit expiry date"
+                          >
+                            <FaCalendarAlt size={12} className="text-gray-400 group-hover:text-primary transition" />
+                            <span>{new Date(coupon.expiresAt).toLocaleDateString()}</span>
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          coupon.isHidden
+                            ? "bg-amber-100 text-amber-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
+                        {coupon.isHidden ? "Hidden" : "Public"}
+                      </span>
+                    </td>
+                    <td className="p-2 flex space-x-2 sm:space-x-3">
+                      <button
+                        onClick={() => handleEdit(coupon)}
+                        className="text-gray-600 hover:text-gray-800 cursor-pointer transition hover:scale-110"
+                        aria-label="Edit coupon"
+                      >
+                        <FaEdit size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(coupon._id)}
+                        className="text-gray-600 hover:text-gray-800 cursor-pointer transition hover:scale-110"
+                        aria-label="Delete coupon"
+                      >
+                        <FaTrash size={16} className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -195,6 +334,52 @@ function CouponsList() {
             aria-label="Next page"
           >
             &gt;
+          </button>
+        </div>
+      </div>
+
+      {/* Floating Glassmorphic Bulk Action Dock */}
+      <div
+        className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between gap-4 bg-white/85 backdrop-blur-md border border-gray-200/60 shadow-2xl px-6 py-4 rounded-full transition-all duration-355 transform ${
+          selectedIds.length > 0
+            ? "translate-y-0 opacity-100 scale-100"
+            : "translate-y-10 opacity-0 scale-95 pointer-events-none"
+        } w-[90%] sm:w-auto min-w-[320px] sm:min-w-[480px]`}
+      >
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-dark shadow-sm animate-pulse">
+            {selectedIds.length}
+          </span>
+          <span className="text-xs sm:text-sm font-semibold text-gray-700 whitespace-nowrap">
+            Selected
+          </span>
+          {selectedIds.length > 0 && selectedIds.length < (filteredCoupons?.length || 0) && (
+            <button
+              onClick={handleSelectAllAcrossPages}
+              className="text-[10px] sm:text-xs text-primary hover:opacity-80 underline font-bold cursor-pointer transition whitespace-nowrap ml-1"
+            >
+              Select all {filteredCoupons.length}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 flex-grow justify-end">
+          <input
+            type="date"
+            className="border border-gray-300 focus:border-primary focus:ring-1 focus:ring-primary p-1.5 rounded-full text-xs bg-white text-gray-700 outline-none transition"
+            value={bulkExpiryDate}
+            onChange={(e) => setBulkExpiryDate(e.target.value)}
+          />
+          <button
+            onClick={handleBulkUpdateExpiry}
+            className="bg-primary hover:bg-primary/80 text-dark px-4 py-1.5 rounded-full text-xs font-bold transition duration-200 shadow-md hover:shadow-lg active:scale-95 cursor-pointer whitespace-nowrap"
+          >
+            Set Expiry
+          </button>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-full text-xs font-bold transition duration-200 cursor-pointer whitespace-nowrap"
+          >
+            Cancel
           </button>
         </div>
       </div>
