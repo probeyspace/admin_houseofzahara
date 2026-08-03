@@ -86,6 +86,10 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
     }
 
     if (status === "published") {
+      if (!formData.slug) {
+        toast.warn("Please enter a slug");
+        return;
+      }
       if (!formData.content || formData.content === "<p><br></p>") {
         toast.warn("Please enter blog content");
         return;
@@ -166,7 +170,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug *
+              Slug (Required to Publish)
             </label>
             <input
               type="text"
@@ -175,14 +179,13 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               value={formData.slug}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
               maxLength={200}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Author *
+              Author (Required to Publish)
             </label>
             <input
               type="text"
@@ -191,7 +194,6 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
               value={formData.author}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
             />
           </div>
 
@@ -272,7 +274,7 @@ const AddBlogModal = ({ isOpen, onClose, onBlogAdded }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Content *
+              Content (Required to Publish)
             </label>
             <QuillEditor
               value={formData.content}

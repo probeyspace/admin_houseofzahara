@@ -102,6 +102,10 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.slug) {
+      toast.error("Please enter a slug");
+      return;
+    }
     if (!formData.content || formData.content === "<p><br></p>") {
       toast.error("Please enter blog content");
       return;
@@ -189,7 +193,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug *
+              Slug (Required to Publish)
             </label>
             <input
               type="text"
@@ -198,14 +202,13 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               value={formData.slug}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
               maxLength={200}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Author *
+              Author (Required to Publish)
             </label>
             <input
               type="text"
@@ -214,7 +217,6 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
               value={formData.author}
               onChange={handleChange}
               className="w-full border border-gray-300 p-2 rounded"
-              required
             />
           </div>
 
@@ -296,7 +298,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Content *
+              Content (Required to Publish)
             </label>
             <QuillEditor
               value={formData.content}

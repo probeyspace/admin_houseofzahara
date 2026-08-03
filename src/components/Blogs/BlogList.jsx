@@ -133,6 +133,7 @@ function BlogList() {
                   <th className="p-3 font-medium hidden lg:table-cell">Author</th>
                   <th className="p-3 font-medium hidden sm:table-cell">Image</th>
                   <th className="p-3 font-medium hidden md:table-cell">Reading Time</th>
+                  <th className="p-3 font-medium">Status</th>
                   <th className="p-3 font-medium hidden sm:table-cell">Created Date</th>
                   <th className="p-3 font-medium">Actions</th>
                 </tr>
@@ -166,6 +167,15 @@ function BlogList() {
                       </td>
                       <td className="p-2 sm:p-3 hidden md:table-cell">
                         {blog.readingTime ? `${blog.readingTime} min` : "N/A"}
+                      </td>
+                      <td className="p-2 sm:p-3">
+                        <span className={`px-2 py-0.5 text-xs font-semibold rounded capitalize ${
+                          blog.status === "draft" 
+                            ? "bg-gray-100 text-gray-800 border border-gray-200" 
+                            : "bg-green-100 text-green-800"
+                        }`}>
+                          {blog.status || "published"}
+                        </span>
                       </td>
                       <td className="p-2 sm:p-3 hidden sm:table-cell">
                         <div>
