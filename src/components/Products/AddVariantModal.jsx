@@ -16,6 +16,8 @@ const INITIAL_FORM = {
   isActive: true,
   images: [],
   imageAlts: [],
+  allowPreOrder: false,
+  preOrderExpectedDate: "",
   shade: "",
   size: "",
   finish: "",
@@ -128,6 +130,10 @@ function AddVariantModal({ isOpen, onClose, product }) {
     formData.append("stock", form.stock);
     formData.append("sku", form.sku);
     formData.append("isActive", form.isActive);
+    formData.append("allowPreOrder", form.allowPreOrder);
+    if (form.allowPreOrder && form.preOrderExpectedDate) {
+      formData.append("preOrderExpectedDate", form.preOrderExpectedDate);
+    }
 
     const specsFields = [
       "shade", "size", "finish", "skinType", "formulation", "spf",
@@ -284,16 +290,40 @@ function AddVariantModal({ isOpen, onClose, product }) {
                     className="border border-gray-300 rounded p-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="isActive"
-                    checked={form.isActive}
-                    onChange={handleChange}
-                    className="h-4 w-4 cursor-pointer"
-                  />
-                  <span className="text-sm text-gray-700">Active</span>
-                </label>
+                <div className="flex gap-4 items-center">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isActive"
+                      checked={form.isActive}
+                      onChange={handleChange}
+                      className="h-4 w-4 cursor-pointer"
+                    />
+                    <span className="text-sm text-gray-700">Active</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="allowPreOrder"
+                      checked={form.allowPreOrder}
+                      onChange={handleChange}
+                      className="h-4 w-4 cursor-pointer"
+                    />
+                    <span className="text-sm text-gray-700">Allow Pre-Order (if out of stock)</span>
+                  </label>
+                </div>
+                {form.allowPreOrder && (
+                  <div className="flex flex-col gap-0.5">
+                    <label className="text-xs text-gray-500 block">Pre-Order Expected Date</label>
+                    <input
+                      type="date"
+                      name="preOrderExpectedDate"
+                      value={form.preOrderExpectedDate}
+                      onChange={handleChange}
+                      className="border border-gray-300 rounded p-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -18,6 +18,8 @@ const buildEditData = (variant) => ({
   stock: String(variant.stock ?? ""),
   sku: variant.sku ?? "",
   isActive: variant.isActive ?? true,
+  allowPreOrder: variant.allowPreOrder ?? false,
+  preOrderExpectedDate: variant.preOrderExpectedDate ? variant.preOrderExpectedDate.slice(0, 10) : "",
   images: [],
   existingImages: variant.images ?? [],
   imagesToRemove: [],
@@ -371,20 +373,52 @@ const VariantEditForm = ({
               className="border border-gray-300 rounded p-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              name="isActive"
-              checked={editData.isActive}
-              onChange={(e) =>
-                onFieldChange(variantId, {
-                  target: { name: "isActive", type: "checkbox", checked: e.target.checked },
-                })
-              }
-              className="h-4 w-4 cursor-pointer"
-            />
-            <span className="text-sm text-gray-700">Active</span>
-          </label>
+          <div className="flex gap-4 items-center">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="isActive"
+                checked={editData.isActive}
+                onChange={(e) =>
+                  onFieldChange(variantId, {
+                    target: { name: "isActive", type: "checkbox", checked: e.target.checked },
+                  })
+                }
+                className="h-4 w-4 cursor-pointer"
+              />
+              <span className="text-sm text-gray-700">Active</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                name="allowPreOrder"
+                checked={editData.allowPreOrder}
+                onChange={(e) =>
+                  onFieldChange(variantId, {
+                    target: { name: "allowPreOrder", type: "checkbox", checked: e.target.checked },
+                  })
+                }
+                className="h-4 w-4 cursor-pointer"
+              />
+              <span className="text-sm text-gray-700">Allow Pre-Order (if out of stock)</span>
+            </label>
+          </div>
+          {editData.allowPreOrder && (
+            <div className="flex flex-col gap-0.5">
+              <label className="text-xs text-gray-500 block">Pre-Order Expected Date</label>
+              <input
+                type="date"
+                name="preOrderExpectedDate"
+                value={editData.preOrderExpectedDate}
+                onChange={(e) =>
+                  onFieldChange(variantId, {
+                    target: { name: "preOrderExpectedDate", value: e.target.value },
+                  })
+                }
+                className="border border-gray-300 rounded p-2 w-full text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          )}
         </div>
       </EditSection>
 
@@ -742,6 +776,10 @@ function VariantListModal({ isOpen, onClose, variants }) {
       formData.append("stock", d.stock);
       formData.append("sku", d.sku);
       formData.append("isActive", d.isActive);
+      formData.append("allowPreOrder", d.allowPreOrder);
+      if (d.allowPreOrder && d.preOrderExpectedDate) {
+        formData.append("preOrderExpectedDate", d.preOrderExpectedDate);
+      }
       formData.append("specs", JSON.stringify(buildSpecs(d)));
 
       if (Array.isArray(d.images) && d.images.length > 0) {
