@@ -1,8 +1,40 @@
-import { useEffect, useRef } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import api from "../../Api/api";
 
+// ─── Custom Embed Blot for Tables ──────────────────────────────────────────
+// Quill natively struggles with pasting complex tables (it swallows text, breaks rows, etc.)
+// So we intercept <TABLE> tags on paste and insert them as un-editable "Embed" blocks.
+// This perfectly preserves the exact HTML for the frontend to render beautifully.
+const BlockEmbed = Quill.import("blots/block/embed");
+
+class RawHtmlBlot extends BlockEmbed {
+  static create(value) {
+    const node = super.create();
+    node.innerHTML = value;
+    node.setAttribute("contenteditable", "false");
+    node.style.margin = "16px 0";
+    node.style.border = "1px dashed #ccc";
+    node.style.padding = "8px";
+    node.style.background = "#fafafa";
+    node.style.overflowX = "auto";
+    node.title = "Pasted Table (Edit in Google Docs and re-paste if changes are needed)";
+    return node;
+  }
+
+  static value(node) {
+    return node.innerHTML;
+  }
+}
+RawHtmlBlot.blotName = "raw-html";
+RawHtmlBlot.tagName = "div";
+RawHtmlBlot.className = "quill-raw-html";
+
+Quill.register(RawHtmlBlot, true);
+// ───────────────────────────────────────────────────────────────────────────
+
+/* ─── Toolbar configs ─────────────────────────────────────────────────────── */
 const FULL_TOOLBAR = [
   [{ header: [1, 2, 3, 4, 5, 6, false] }],
   ["bold", "italic", "underline", "strike"],
@@ -23,6 +55,7 @@ const SIMPLE_TOOLBAR = [
   ["clean"],
 ];
 
+/* ─── Main QuillEditor ────────────────────────────────────────────────────── */
 const QuillEditor = ({
   value,
   onChange,
@@ -57,28 +90,24 @@ const QuillEditor = ({
 
             try {
               const response = await api.post("/blogs/upload-image", formData, {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
+                headers: { "Content-Type": "multipart/form-data" },
               });
               const imageUrl = response.data?.data?.url;
               if (imageUrl) {
-                // Prompt for alt text
-                const altText = window.prompt(
-                  "Enter alt text for this image (leave blank to use filename):",
-                  file.name.replace(/\.[^/.]+$/, "")
-                ) ?? file.name.replace(/\.[^/.]+$/, "");
+                const altText =
+                  window.prompt(
+                    "Enter alt text for this image (leave blank to use filename):",
+                    file.name.replace(/\.[^/.]+$/, "")
+                  ) ?? file.name.replace(/\.[^/.]+$/, "");
 
                 const range = quill.getSelection();
                 const index = range ? range.index : quill.getLength();
                 quill.insertEmbed(index, "image", imageUrl);
 
-                // Set the alt attribute on the inserted img element
                 setTimeout(() => {
                   const imgs = quill.root.querySelectorAll(`img[src="${imageUrl}"]`);
                   if (imgs.length > 0) {
                     imgs[imgs.length - 1].setAttribute("alt", altText || "");
-                    // Trigger onChange so the updated HTML (with alt) is saved
                     onChangeRef.current(quill.root.innerHTML);
                   }
                 }, 100);
@@ -90,49 +119,57 @@ const QuillEditor = ({
         };
       };
 
-      // Initialize Quill editor
       const quill = new Quill(editorRef.current, {
         theme: "snow",
         placeholder: placeholder || "Write something...",
         modules: {
+          table: false, // We disable the buggy native table module
           toolbar: {
             container: toolbar === "simple" ? SIMPLE_TOOLBAR : FULL_TOOLBAR,
-            handlers: toolbar === "simple" ? {} : { image: imageHandler },
+            handlers:
+              toolbar === "simple"
+                ? {}
+                : {
+                    image: imageHandler,
+                  },
           },
         },
-        formats: [
-          "header",
-          "bold",
-          "italic",
-          "underline",
-          "strike",
-          "color",
-          "background",
-          "list",
-          "bullet",
-          "indent",
-          "align",
-          "link",
-          "image",
-          "video",
-          "blockquote",
-          "code-block",
-        ],
+      });
+
+      // ── Clipboard Matcher for TABLE ──
+      // When pasting an entire document, Quill processes it node by node.
+      // We tell Quill: "When you see a TABLE, wrap its HTML in our custom RawHtmlBlot."
+      quill.clipboard.addMatcher("TABLE", (node, delta) => {
+        const Delta = Quill.import("delta");
+        
+        let html = node.outerHTML;
+        
+        // Strip out Google Docs / Word junk classes and styles so we get a pure table
+        html = html
+          .replace(/<o:p>.*?<\/o:p>/gis, "")
+          .replace(/\s*mso-[^;"]+;?/gi, "")
+          .replace(/class="[^"]*"/gi, "")
+          .replace(/style="[^"]*"/gi, "")
+          .replace(/<\/?colgroup[^>]*>/gi, "")
+          .replace(/<col[^>]*>/gi, "")
+          .replace(/<!--.*?-->/gs, "");
+
+        // Return a Delta that inserts this HTML as our custom embed block
+        return new Delta().insert({ "raw-html": html });
       });
 
       quill.root.setAttribute("dir", dir);
 
-      // Set initial content
       if (value) {
-        quill.root.innerHTML = value;
+        quill.clipboard.dangerouslyPasteHTML(value);
       }
 
-      // Handle text change
       quill.on("text-change", () => {
-        // Quill leaves "<p><br></p>" behind when cleared — report a real empty value
-        const content = quill.getText().trim() === "" && quill.root.querySelector("img, iframe, video") === null
-          ? ""
-          : quill.root.innerHTML;
+        const content =
+          quill.getText().trim() === "" &&
+          quill.root.querySelector("img, iframe, video, .quill-raw-html") === null
+            ? ""
+            : quill.root.innerHTML;
         onChangeRef.current(content);
       });
 
@@ -145,21 +182,23 @@ const QuillEditor = ({
     const quill = quillRef.current;
     if (!quill) return;
     if ((value || "") === quill.root.innerHTML) return;
-    // A cleared editor reports "" while its DOM is "<p><br></p>" — don't reset it
     const editorIsEmpty =
       quill.getText().trim() === "" &&
-      quill.root.querySelector("img, iframe, video") === null;
+      quill.root.querySelector("img, iframe, video, .quill-raw-html") === null;
     if (!value && editorIsEmpty) return;
-    quill.root.innerHTML = value || "";
+    
+    const selection = quill.getSelection();
+    quill.clipboard.dangerouslyPasteHTML(value || "");
+    if (selection) {
+      setTimeout(() => quill.setSelection(selection), 0);
+    }
   }, [value]);
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <div
         ref={editorRef}
-        className={`quill-editor ${
-          error ? "border-red-500" : "border-gray-300"
-        } rounded-md`}
+        className={`quill-editor ${error ? "border-red-500" : "border-gray-300"} rounded-md`}
         style={{ height, marginBottom: "16px" }}
         {...props}
       />
