@@ -20,6 +20,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     slug: "",
     content: "",
     author: "",
+    degree: "",
     image: null,
     metaTitle: "",
     metaDetails: "",
@@ -47,6 +48,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
         slug: blog.slug || "",
         content: blog.content || "",
         author: blog.author || "",
+        degree: blog.degree || "",
         image: null,
         metaTitle: blog.metaTitle || "",
         metaDetails: blog.metaDetails || "",
@@ -125,6 +127,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
     data.append("slug", formData.slug || generateSlug(formData.title));
     data.append("content", formData.content || "");
     data.append("author", formData.author || "");
+    data.append("degree", formData.degree || "");
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDetails", formData.metaDetails);
     data.append("metaKeywords", formData.metaKeywords);
@@ -164,7 +167,7 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
   };
 
   const handleClose = () => {
-    setFormData({ title: "", slug: "", content: "", author: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: "" });
+    setFormData({ title: "", slug: "", content: "", author: "", degree: "", image: null, metaTitle: "", metaDetails: "", metaKeywords: "", imageAlt: "", categoryId: "", publishDate: "" });
     setImagePreview(null);
     onClose();
   };
@@ -206,18 +209,33 @@ const EditBlogModal = ({ isOpen, onClose, blog, onBlogUpdated }) => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Author (Required to Publish)
-            </label>
-            <input
-              type="text"
-              name="author"
-              placeholder="Enter author name"
-              value={formData.author}
-              onChange={handleChange}
-              className="w-full border border-gray-300 p-2 rounded"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Author Name (Required to Publish)
+              </label>
+              <input
+                type="text"
+                name="author"
+                placeholder="e.g. Dr. Goh"
+                value={formData.author}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Author Degree / Credentials <span className="text-gray-400 font-normal">(Optional)</span>
+              </label>
+              <input
+                type="text"
+                name="degree"
+                placeholder="e.g. MBBS (Singapore) FRCSEd..."
+                value={formData.degree}
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded"
+              />
+            </div>
           </div>
 
           <div>

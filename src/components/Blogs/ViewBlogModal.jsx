@@ -55,6 +55,11 @@ const ViewBlogModal = ({ isOpen, onClose, blog }) => {
               <span className="font-semibold">Author:</span> {blog.author}
             </p>
           )}
+          {blog.degree && (
+            <p>
+              <span className="font-semibold">Author Degree / Credentials:</span> {blog.degree}
+            </p>
+          )}
           {blog.readingTime && (
             <p>
               <span className="font-semibold">Reading Time:</span>{" "}
