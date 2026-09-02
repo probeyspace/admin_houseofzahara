@@ -6,6 +6,7 @@ import { updateProduct } from "../../services/products";
 import SvgSpinner from "../../common/SvgSpinner";
 import { updateProductData } from "../../store/slices/productSlice";
 import QuillEditor from "../common/QuillEditor";
+import BundleConfig from "./BundleConfig";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -214,6 +215,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       classification: true,
       media: false,
       seo: false,
+      bundle: false,
     });
 
     setFormData({
@@ -789,6 +791,15 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                   />
                 </div>
               </div>
+            </Section>
+
+            {/* ── § Bundle ── */}
+            <Section title="Frequently Bought Together (Bundle)" sectionKey="bundle" openSections={openSections} toggle={toggleSection}>
+              {productData?._id ? (
+                <BundleConfig productId={productData._id} />
+              ) : (
+                <p className="text-sm text-gray-500">Please save the product first to configure bundles.</p>
+              )}
             </Section>
 
           </form>
