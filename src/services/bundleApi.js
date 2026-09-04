@@ -2,7 +2,7 @@ import api from "../Api/api";
 
 export const getBundleByProduct = async (productId) => {
   try {
-    const response = await api.get(`/bundles/product/${productId}`);
+    const response = await api.get(`/bundles/product/${productId}?forAdmin=true`);
     return response.data;
   } catch (error) {
     throw error;
