@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 
 const TestimonialModal = ({ show, onClose, onSuccess }) => {
   const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -35,6 +36,7 @@ const TestimonialModal = ({ show, onClose, onSuccess }) => {
 
     const formData = new FormData();
     formData.append("name", name);
+    formData.append("title", title);
     formData.append("description", description);
     formData.append("city", city);
     formData.append("rating", rating);
@@ -45,12 +47,13 @@ const TestimonialModal = ({ show, onClose, onSuccess }) => {
       toast.success("Testimonial created successfully");
       // Reset fields
       setName("");
+      setTitle("");
       setDescription("");
       setCity("");
       setRating(0);
       setImage(null);
       setPreview(null);
-      onSuccess();
+      if (onSuccess) onSuccess();
       onClose(); // Close modal
     } catch (error) {
       console.error("Error:", error);
@@ -86,6 +89,18 @@ const TestimonialModal = ({ show, onClose, onSuccess }) => {
               required
               className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
               placeholder="Enter name"
+            />
+          </div>
+
+          {/* Title */}
+          <div>
+            <label className="block text-gray-700 font-medium mb-1">Title / Headline</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300"
+              placeholder="Enter title e.g. Celestial Radiant Glow Serum"
             />
           </div>
 

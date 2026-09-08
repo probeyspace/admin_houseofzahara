@@ -27,6 +27,13 @@ const ViewTestimonialModal = ({ isOpen, onClose, testimonial }) => {
             {testimonial.name}
           </h2>
 
+          {testimonial.title && (
+            <div className="mb-2 flex gap-3">
+              <label className="block text-gray-700 font-medium">Title:</label>
+              <p className="text-gray-600 font-semibold">{testimonial.title}</p>
+            </div>
+          )}
+
           {/* Description */}
           <div className="mb-4 flex gap-3">
             <label className="block text-gray-700 font-medium mb-1">

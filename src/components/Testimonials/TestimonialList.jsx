@@ -85,6 +85,7 @@ function TestimonialList() {
             <tr className="text-left border-b border-gray-100">
               <th className="p-3 font-medium">ID</th>
               <th className="p-3 font-medium">Name</th>
+              <th className="p-3 font-medium">Title</th>
               <th className="p-3 font-medium">Description</th>
               <th className="p-3 font-medium">City</th>
               <th className="p-3 font-medium">Rating</th>
@@ -99,10 +100,11 @@ function TestimonialList() {
               >
                 <td className="p-3">{index + 1 + (page - 1) * perPage}</td>
                 <td className="p-3">{testimonial.name}</td>
+                <td className="p-3">{testimonial.title || "-"}</td>
                 <td className="p-3">{testimonial.description}</td>
                 <td className="p-3">{testimonial.city}</td>
                 <td className="p-3">
-                  {Array.from({ length: testimonial.rating }, (_, i) => (
+                  {Array.from({ length: testimonial.rating || 0 }, (_, i) => (
                     <span key={i} className="text-yellow-500">
                       ★
                     </span>

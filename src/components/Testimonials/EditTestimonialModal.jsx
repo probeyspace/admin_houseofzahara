@@ -10,6 +10,7 @@ function EditTestimonialModal({
   fetchTestimonials,
 }) {
   const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [rating, setRating] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -20,11 +21,13 @@ function EditTestimonialModal({
   useEffect(() => {
     if (testimonial) {
       setName(testimonial.name || "");
+      setTitle(testimonial.title || "");
       setDescription(testimonial.description || "");
       setRating(testimonial.rating || 1);
       setCity(testimonial.city || "");
     }
   }, [testimonial]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -32,21 +35,24 @@ function EditTestimonialModal({
       setPreview(URL.createObjectURL(file));
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("image", image);
+      if (image) formData.append("image", image);
       formData.append("name", name);
+      formData.append("title", title);
       formData.append("city", city);
       formData.append("description", description);
       formData.append("rating", rating);
       await api.put(`testimonials/${testimonial._id}`, formData);
       toast.success("Testimonial updated successfully!");
-      fetchTestimonials(); // Update the testimonials list after successful update
+      if (fetchTestimonials) fetchTestimonials();
       setImage(null);
       setName("");
+      setTitle("");
       setCity("");
       setDescription("");
       setRating(1);
@@ -83,6 +89,17 @@ function EditTestimonialModal({
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 font-medium">Title / Headline</label>
+            <input
+              type="text"
+              className="border border-gray-300 p-2 w-full rounded-lg focus:ring focus:ring-primary outline-none"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Enter title e.g. Celestial Radiant Glow Serum"
             />
           </div>
 
