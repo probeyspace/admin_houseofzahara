@@ -7,6 +7,7 @@ import SvgSpinner from "../../common/SvgSpinner";
 import { addProductData } from "../../store/slices/productSlice";
 import { useBrand } from "../../Hooks/useBrand";
 import QuillEditor from "../common/QuillEditor";
+import RegionalAvailabilitySelector from "./RegionalAvailabilitySelector";
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -37,6 +38,12 @@ const INITIAL_FORM = {
   metaTitle: "",
   metaDescription: "",
   metaKeywords: "",
+  restrictedCountries: [],
+  regionalAvailability: {
+    isGlobal: true,
+    allowedCountries: [],
+    unavailableNotice: "",
+  },
 };
 
 const INITIAL_SECTIONS = {
@@ -292,6 +299,8 @@ const AddProductModal = ({ isOpen, onClose }) => {
     formData.thumbnails.forEach((file) => data.append("thumbnails", file));
     data.append("imageAlts", JSON.stringify(formData.imageAlts || ["", ""]));
     if (formData.video) data.append("video", formData.video);
+    data.append("regionalAvailability", JSON.stringify(formData.regionalAvailability));
+    data.append("restrictedCountries", JSON.stringify(formData.restrictedCountries || []));
 
     try {
       const response = await createProduct(data);
@@ -676,6 +685,19 @@ const AddProductModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
             </Section>
+
+            {/* ── § Regional Availability ── */}
+            <RegionalAvailabilitySelector
+              restrictedCountries={formData.restrictedCountries}
+              regionalAvailability={formData.regionalAvailability}
+              onChange={({ restrictedCountries, regionalAvailability }) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  restrictedCountries,
+                  regionalAvailability,
+                }))
+              }
+            />
 
           </form>
         </div>

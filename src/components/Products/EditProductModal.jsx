@@ -7,6 +7,8 @@ import SvgSpinner from "../../common/SvgSpinner";
 import { updateProductData } from "../../store/slices/productSlice";
 import QuillEditor from "../common/QuillEditor";
 import BundleConfig from "./BundleConfig";
+import RegionalAvailabilitySelector from "./RegionalAvailabilitySelector";
+import { WORLD_COUNTRIES } from "../../common/worldCountries";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 const toggleArrayItem = (arr, item) =>
@@ -166,6 +168,12 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
+    restrictedCountries: [],
+    regionalAvailability: {
+      isGlobal: true,
+      allowedCountries: [],
+      unavailableNotice: "",
+    },
   });
 
   const categories = useSelector((state) => state.category);
@@ -247,6 +255,20 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       metaTitle: productData.metaTitle || "",
       metaDescription: productData.metaDescription || "",
       metaKeywords: productData.metaKeywords || "",
+      restrictedCountries: Array.isArray(productData.restrictedCountries)
+        ? productData.restrictedCountries
+        : (productData.regionalAvailability?.isGlobal === false &&
+           Array.isArray(productData.regionalAvailability?.allowedCountries) &&
+           productData.regionalAvailability.allowedCountries.length > 0
+            ? WORLD_COUNTRIES.filter(
+                (c) => !productData.regionalAvailability.allowedCountries.includes(c.code)
+              ).map((c) => c.code)
+            : []),
+      regionalAvailability: {
+        isGlobal: productData.regionalAvailability?.isGlobal !== false,
+        allowedCountries: productData.regionalAvailability?.allowedCountries || [],
+        unavailableNotice: productData.regionalAvailability?.unavailableNotice || "",
+      },
     });
     setThumbnailPreviews([]);
   }, [isOpen, productData]);
@@ -367,6 +389,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     formData.thumbnails.forEach((file) => data.append("thumbnails", file));
     data.append("imageAlts", JSON.stringify(formData.imageAlts || ["", ""]));
     if (formData.video) data.append("video", formData.video);
+    data.append("regionalAvailability", JSON.stringify(formData.regionalAvailability));
+    data.append("restrictedCountries", JSON.stringify(formData.restrictedCountries || []));
 
     try {
       const response = await updateProduct(productData._id, data);
@@ -801,6 +825,19 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                 <p className="text-sm text-gray-500">Please save the product first to configure bundles.</p>
               )}
             </Section>
+
+            {/* ── § Regional Availability ── */}
+            <RegionalAvailabilitySelector
+              restrictedCountries={formData.restrictedCountries}
+              regionalAvailability={formData.regionalAvailability}
+              onChange={({ restrictedCountries, regionalAvailability }) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  restrictedCountries,
+                  regionalAvailability,
+                }))
+              }
+            />
 
           </form>
         </div>
