@@ -29,8 +29,8 @@ import WalletManagement from "./Pages/WalletManagement";
 import MembershipConfig from "./Pages/MembershipConfig";
 import MembershipManagement from "./Pages/MembershipManagement";
 import SeoSettings from "./Pages/SeoSettings";
-// import Articles from "./components/Articles/Articles";
-// import SearchedLogs from "./components/Searched/SearchedLogs";
+import CustomerVideoList from "./components/CustomerVideos/CustomerVideoList";
+
 function App() {
   useCurrentUser();
   return (
@@ -52,6 +52,7 @@ function App() {
             <Route path="influencer-coupons" element={<InfluencerCouponsList />} />
             <Route path="banners" element={<BannerList />} />
             <Route path="testimonials" element={<TestimonialList />} />
+            <Route path="customer-videos" element={<CustomerVideoList />} />
             <Route path="contacts" element={<ContactList />} />
             <Route path="brands" element={<BrandPage />} />
             <Route path="reviews" element={<ReviewsList />} />

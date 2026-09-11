@@ -4,7 +4,7 @@ import { FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { fetchUnseenMembershipCount } from "../services/membershipApi";
 import { MdArticle, MdDashboard, MdLock, MdSearch, MdAccountBalanceWallet, MdSettings } from "react-icons/md";
 import { BsEyeglasses } from "react-icons/bs";
-import { FaUsers, FaUserPlus, FaPlus, FaCommentDots } from "react-icons/fa";
+import { FaUsers, FaUserPlus, FaPlus, FaCommentDots, FaVideo } from "react-icons/fa";
 import { BiCategory } from "react-icons/bi";
 import { TbCategoryPlus } from "react-icons/tb";
 // import logo from "../assets/logo.png";
@@ -85,6 +85,11 @@ const Sidebar = ({ mobileSidebarOpen, toggleSidebar }) => {
       icon: <BiCategory />,
       text: "Testimonials",
       to: "/testimonials",
+    },
+    {
+      icon: <FaVideo />,
+      text: "Customer Videos",
+      to: "/customer-videos",
     },
     {
       to: "/reviews",
