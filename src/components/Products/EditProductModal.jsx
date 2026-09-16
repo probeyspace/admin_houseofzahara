@@ -255,6 +255,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       metaTitle: productData.metaTitle || "",
       metaDescription: productData.metaDescription || "",
       metaKeywords: productData.metaKeywords || "",
+      isSpecial: Boolean(productData.isSpecial),
       restrictedCountries: Array.isArray(productData.restrictedCountries)
         ? productData.restrictedCountries
         : (productData.regionalAvailability?.isGlobal === false &&
@@ -378,6 +379,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDescription", formData.metaDescription);
     data.append("metaKeywords", formData.metaKeywords);
+    data.append("isSpecial", formData.isSpecial ? "true" : "false");
 
     const ingredientsArray = formData.ingredientsRaw
       .split(",")
@@ -465,6 +467,21 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                 <LabeledInput label="Brand Name" name="brandName" value={formData.brandName} onChange={handleChange} required />
                 <LabeledInput label="Product Type" name="productType" value={formData.productType} onChange={handleChange} placeholder="e.g. Serum, Moisturiser" />
                 <LabeledInput label="Country of Origin" name="countryOfOrigin" value={formData.countryOfOrigin} onChange={handleChange} placeholder="e.g. Italy" colSpan={2} />
+
+                {/* Special Homepage Product Toggle */}
+                <div className="col-span-2 flex items-center gap-3 p-3 bg-amber-50/70 border border-amber-200 rounded-lg mt-1">
+                  <input
+                    type="checkbox"
+                    id="edit-isSpecial"
+                    name="isSpecial"
+                    checked={Boolean(formData.isSpecial)}
+                    onChange={(e) => setFormData(prev => ({ ...prev, isSpecial: e.target.checked }))}
+                    className="h-4 w-4 rounded text-primary focus:ring-primary cursor-pointer accent-black"
+                  />
+                  <label htmlFor="edit-isSpecial" className="text-xs font-semibold text-gray-800 cursor-pointer">
+                    ⭐ Feature in Special Homepage Section (Iconic / Special Products)
+                  </label>
+                </div>
               </div>
             </Section>
 
