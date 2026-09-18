@@ -138,6 +138,24 @@ function ViewProductModal({ isOpen, onClose, product }) {
                         <strong className="text-gray-500">Slug:</strong>{" "}
                         {product.slug}
                       </div>
+                      {Array.isArray(product.highlights) && product.highlights.length > 0 && (
+                        <div className="md:col-span-2 bg-amber-50/60 border border-amber-200/60 p-3 rounded">
+                          <strong className="block text-gray-700 mb-1 font-semibold">
+                            Subtitle / Key Details (Under Title):
+                          </strong>
+                          <div className="space-y-1">
+                            {product.highlights.map((hl, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-xs">
+                                <span className="font-bold text-primary">•</span>
+                                <span>{hl.en || hl.ar || (typeof hl === "string" ? hl : "")}</span>
+                                {hl.ar && hl.en && (
+                                  <span className="text-gray-400 font-arabic">({hl.ar})</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </section>
 

@@ -168,6 +168,8 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     metaTitle: "",
     metaDescription: "",
     metaKeywords: "",
+    isSpecial: false,
+    highlights: [],
     restrictedCountries: [],
     regionalAvailability: {
       isGlobal: true,
@@ -256,6 +258,9 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
       metaDescription: productData.metaDescription || "",
       metaKeywords: productData.metaKeywords || "",
       isSpecial: Boolean(productData.isSpecial),
+      highlights: Array.isArray(productData.highlights)
+        ? productData.highlights.map(normalizeBilingual)
+        : [],
       restrictedCountries: Array.isArray(productData.restrictedCountries)
         ? productData.restrictedCountries
         : (productData.regionalAvailability?.isGlobal === false &&
@@ -290,6 +295,40 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
 
   const handleBilingualChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const addHighlight = () => {
+    setFormData((prev) => ({
+      ...prev,
+      highlights: [...(prev.highlights || []), { en: "", ar: "" }],
+    }));
+  };
+
+  const removeHighlight = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      highlights: (prev.highlights || []).filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateHighlight = (index, field, value) => {
+    setFormData((prev) => {
+      const updated = [...(prev.highlights || [])];
+      updated[index] = { ...(updated[index] || { en: "", ar: "" }), [field]: value };
+      return { ...prev, highlights: updated };
+    });
+  };
+
+  const moveHighlight = (index, direction) => {
+    setFormData((prev) => {
+      const list = [...(prev.highlights || [])];
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= list.length) return prev;
+      const temp = list[index];
+      list[index] = list[targetIndex];
+      list[targetIndex] = temp;
+      return { ...prev, highlights: list };
+    });
   };
 
   const handleMasterCategoryChange = (e) => {
@@ -380,6 +419,7 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
     data.append("metaDescription", formData.metaDescription);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("isSpecial", formData.isSpecial ? "true" : "false");
+    data.append("highlights", JSON.stringify(formData.highlights || []));
 
     const ingredientsArray = formData.ingredientsRaw
       .split(",")
@@ -481,6 +521,84 @@ const EditProductModal = ({ isOpen, onClose, productData }) => {
                   <label htmlFor="edit-isSpecial" className="text-xs font-semibold text-gray-800 cursor-pointer">
                     ⭐ Feature in Special Homepage Section (Iconic / Special Products)
                   </label>
+                </div>
+
+                {/* Subtitle & Key Details (under Product Title) */}
+                <div className="col-span-2 mt-2 pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700">
+                        Product Subtitle / Detail Texts (Under Title on Detail Page)
+                      </label>
+                      <p className="text-[11px] text-gray-400">
+                        Add text items (e.g. Text 1: "Visible Damage", Text 2: "Skin Barrier Recovery"). They will display together under the title joined by "&".
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={addHighlight}
+                      className="text-xs px-2.5 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded transition flex items-center gap-1"
+                    >
+                      + Add Detail Text
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {(formData.highlights || []).map((hl, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5 bg-gray-50/70 p-1.5 rounded-lg border border-gray-200">
+                        <span className="text-[11px] font-bold text-gray-500 w-5 text-center shrink-0">
+                          #{idx + 1}
+                        </span>
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            value={hl[lang] || ""}
+                            onChange={(e) => updateHighlight(idx, lang, e.target.value)}
+                            placeholder={`Detail line ${idx + 1} in ${lang === "en" ? "English (e.g. Visible Damage & Skin Barrier Recovery)" : "Arabic"}`}
+                            dir={lang === "ar" ? "rtl" : "ltr"}
+                            className="border border-gray-300 rounded p-1.5 w-full text-sm bg-white focus:outline-none focus:ring-1 focus:ring-primary"
+                          />
+                        </div>
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => moveHighlight(idx, -1)}
+                            className={`p-1 rounded text-xs ${idx === 0 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-200"}`}
+                            title="Move Up"
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            disabled={idx === (formData.highlights || []).length - 1}
+                            onClick={() => moveHighlight(idx, 1)}
+                            className={`p-1 rounded text-xs ${idx === (formData.highlights || []).length - 1 ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-200"}`}
+                            title="Move Down"
+                          >
+                            ▼
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeHighlight(idx)}
+                            className="p-1 text-red-500 hover:bg-red-50 rounded transition text-xs ml-1"
+                            title="Remove detail"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                    {(!formData.highlights || formData.highlights.length === 0) && (
+                      <button
+                        type="button"
+                        onClick={addHighlight}
+                        className="w-full py-2 border border-dashed border-gray-300 rounded text-xs text-gray-500 hover:border-gray-400 hover:text-gray-700 transition text-center"
+                      >
+                        + Add Subtitle / Detail Line (e.g. Visible Damage & Skin Barrier Recovery)
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </Section>
