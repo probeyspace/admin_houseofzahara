@@ -39,6 +39,7 @@ const INITIAL_FORM = {
   metaDescription: "",
   metaKeywords: "",
   isSpecial: false,
+  isBestSeller: false,
   highlights: [{ en: "", ar: "" }],
   restrictedCountries: [],
   regionalAvailability: {
@@ -134,9 +135,8 @@ const PillToggle = ({ label, isSelected, onClick, color = "blue" }) => {
       : "bg-blue-100 border-blue-400 text-blue-700 font-medium";
   return (
     <label
-      className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${
-        isSelected ? active : "border-gray-300 text-gray-600 hover:border-gray-400"
-      }`}
+      className={`flex items-center gap-1 px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-colors ${isSelected ? active : "border-gray-300 text-gray-600 hover:border-gray-400"
+        }`}
       onClick={onClick}
     >
       {label}
@@ -319,12 +319,13 @@ const AddProductModal = ({ isOpen, onClose }) => {
     data.append("primaryPurpose", JSON.stringify(formData.primaryPurpose));
     if (formData.antiAgingEffect) data.append("antiAgingEffect", formData.antiAgingEffect);
     if (formData.YTVideoUrl) data.append("YTVideoUrl", formData.YTVideoUrl);
-    
+
     // SEO fields
     data.append("metaTitle", formData.metaTitle);
     data.append("metaDescription", formData.metaDescription);
     data.append("metaKeywords", formData.metaKeywords);
     data.append("isSpecial", formData.isSpecial ? "true" : "false");
+    data.append("isBestSeller", formData.isBestSeller ? "true" : "false");
     data.append("highlights", JSON.stringify(formData.highlights || []));
 
     const ingredientsArray = formData.ingredientsRaw
@@ -388,11 +389,10 @@ const AddProductModal = ({ isOpen, onClose }) => {
                   key={key}
                   type="button"
                   onClick={() => setActiveLanguage(key)}
-                  className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer border-b-2 ${
-                    activeLanguage === key
+                  className={`px-4 py-2 text-sm font-medium transition-colors cursor-pointer border-b-2 ${activeLanguage === key
                       ? "border-primary text-dark"
                       : "border-transparent text-gray-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {label}
                 </button>
@@ -443,6 +443,21 @@ const AddProductModal = ({ isOpen, onClose }) => {
                   />
                   <label htmlFor="add-isSpecial" className="text-xs font-semibold text-gray-800 cursor-pointer">
                     ⭐ Feature in Special Homepage Section (Iconic / Special Products)
+                  </label>
+                </div>
+
+                {/* Best Sellers Homepage Product Toggle */}
+                <div className="col-span-2 flex items-center gap-3 p-3 bg-rose-50/70 border border-rose-200 rounded-lg mt-1">
+                  <input
+                    type="checkbox"
+                    id="add-isBestSeller"
+                    name="isBestSeller"
+                    checked={Boolean(formData.isBestSeller)}
+                    onChange={(e) => setFormData(prev => ({ ...prev, isBestSeller: e.target.checked }))}
+                    className="h-4 w-4 rounded text-primary focus:ring-primary cursor-pointer accent-black"
+                  />
+                  <label htmlFor="add-isBestSeller" className="text-xs font-semibold text-gray-800 cursor-pointer">
+                    🔥 Feature in Best Sellers Section (Homepage Best Sellers)
                   </label>
                 </div>
 
