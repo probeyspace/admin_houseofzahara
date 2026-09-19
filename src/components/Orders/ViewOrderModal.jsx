@@ -314,8 +314,8 @@ const ViewOrderModal = ({ isOpen, onClose, order }) => {
               {order.address.houseNo}, {order.address.street}
             </p>
             <p>
-              {order.address.city}, {order.address.state} -{" "}
-              {order.address.zipCode}
+              {[order.address.city, order.address.state].filter(Boolean).join(", ")}
+              {order.address.zipCode ? ` - ${order.address.zipCode}` : ""}
             </p>
             <p>{order.address.country}</p>
           </div>
