@@ -9,6 +9,7 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
     discountValue: "",
     minOrderValue: "",
     expiresAt: "",
+    usageLimit: "",
     isHidden: false,
     influencerEmail: "",
   });
@@ -21,6 +22,10 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
         discountValue: coupon.discountValue || "",
         minOrderValue: coupon.minOrderValue || "",
         expiresAt: coupon.expiresAt ? coupon.expiresAt.slice(0, 10) : "",
+        usageLimit:
+          coupon.usageLimit !== undefined && coupon.usageLimit !== null
+            ? coupon.usageLimit
+            : "",
         isHidden: coupon.isHidden || false,
         influencerEmail: coupon.influencerEmail || "",
       });
@@ -125,7 +130,7 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Expiry Date
+              Expiry Date <span className="text-gray-400 font-normal">(Optional)</span>
             </label>
             <input
               type="date"
@@ -133,7 +138,21 @@ const EditCouponModal = ({ show, onClose, coupon, onUpdate }) => {
               value={formData.expiresAt}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
-              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Max Usage Limit (e.g. 50 buyers)
+            </label>
+            <input
+              type="number"
+              name="usageLimit"
+              value={formData.usageLimit}
+              onChange={handleChange}
+              min={1}
+              placeholder="Leave empty for unlimited"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
             />
           </div>
 

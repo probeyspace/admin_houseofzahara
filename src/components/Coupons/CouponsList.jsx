@@ -171,6 +171,7 @@ function CouponsList() {
                 <th className="p-3 font-medium">Discount Type</th>
                 <th className="p-3 font-medium">Discount</th>
                 <th className="p-3 font-medium">Expiry Date</th>
+                <th className="p-3 font-medium">Usage</th>
                 <th className="p-3 font-medium">Visibility</th>
                 <th className="p-3 font-medium">Actions</th>
               </tr>
@@ -178,6 +179,8 @@ function CouponsList() {
             <tbody>
               {paginatedCoupons?.map((coupon, index) => {
                 const isSelected = selectedIds.includes(coupon._id);
+                const isLimitReached =
+                  coupon.usageLimit && (coupon.usedCount || 0) >= coupon.usageLimit;
                 return (
                   <tr
                     key={coupon._id}
@@ -240,10 +243,27 @@ function CouponsList() {
                             title="Click to edit expiry date"
                           >
                             <FaCalendarAlt size={12} className="text-gray-400 group-hover:text-primary transition" />
-                            <span>{new Date(coupon.expiresAt).toLocaleDateString()}</span>
+                            <span>
+                              {coupon.expiresAt
+                                ? new Date(coupon.expiresAt).toLocaleDateString()
+                                : "No Expiry"}
+                            </span>
                           </button>
                         </div>
                       )}
+                    </td>
+                    <td className="p-2 text-sm sm:text-base">
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                          isLimitReached
+                            ? "bg-red-100 text-red-700"
+                            : coupon.usageLimit
+                            ? "bg-blue-100 text-blue-700"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {coupon.usedCount || 0} / {coupon.usageLimit ? coupon.usageLimit : "∞"}
+                      </span>
                     </td>
                     <td className="p-2 text-sm sm:text-base">
                       <span
